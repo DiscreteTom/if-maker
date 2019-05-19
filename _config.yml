@@ -1,0 +1,13 @@
+project:
+  name: 'The Amnisia Detective'
+  welcome: 'Welcome to The Amnisia Detective'
+
+
+system:
+  shellPrefix: '>'
+  printInterval: 20 # ms
+
+mainMenu:
+  - new
+  - continue
+  - exit
