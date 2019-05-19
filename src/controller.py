@@ -2,45 +2,41 @@ import yaml
 import msvcrt
 import os
 from time import sleep
+from data import data
+from shell import shell
 
 class Controller:
-	config = None
-	def __init__(self):
-		'load config msg from _config.yml'
-		f = open('_config.yml', 'r')
-		self.config = yaml.load(f)
-	
 	def start(self):
 		# print welcome
-		if 'welcome' in self.config['project']:
-			print(self.config['project']['welcome'])
+		if 'welcome' in data.config['project']:
+			print(data.config['project']['welcome'])
 		else:
-			print(self.config['project']['name'])
+			print(data.config['project']['name'])
 
 		# print main menu
-		for i in range(len(self.config['mainMenu'])):
-			print(i + 1, self.config['mainMenu'][i])
+		for i in range(len(data.config['mainMenu'])):
+			print(i + 1, data.config['mainMenu'][i])
 
 		# get user's choice
 		index = 0
 		while True:
 			index = ord(msvcrt.getch()) - ord('0')
-			if index in range(1, len(self.config['mainMenu']) + 1):
+			if index in range(1, len(data.config['mainMenu']) + 1):
 				break
 
 		# os.system('cls') # clear the console
 
 		# judge user input
-		if self.config['mainMenu'][index - 1] == 'new':
+		if data.config['mainMenu'][index - 1] == 'new':
 			return self.newGame()
-		elif self.config['mainMenu'][index - 1] == 'continue':
-			return self.continueGame()
-		elif self.config['mainMenu'][index - 1] == 'exit':
+		elif data.config['mainMenu'][index - 1] == 'continue':
+			return self.loop()
+		elif data.config['mainMenu'][index - 1] == 'exit':
 			return 0
 
 	def newGame(self):
 		# open story file
-		f = open('_stories/main.ift', encoding='utf-8')
+		f = open('../_stories/index.ift', encoding='utf-8')
 
 		# find the first story
 		line = ''
@@ -58,26 +54,28 @@ class Controller:
 			if len(line) == 0 or line == '\n':
 				#EOF or end of story
 				break
-			if line[0] != '{':
-				# not a command
-				if self.config['system']['printInterval'] <= 0:
+			if line[0] != '{' and line[0] != '#':
+				# not a command or a comment
+				if data.config['system']['printInterval'] <= 0:
 					# pring line by once
 					print(line, end='')
 				else:
 					# print line by char
 					for c in line:
 						print(c, end='', flush=True)
-						sleep(self.config['system']['printInterval'] / 1000)
+						sleep(data.config['system']['printInterval'] / 1000)
 				msvcrt.getch()
 
-		self.shell()
+		self.loop()
 
-	def continueGame(self):
-		self.shell()
+	def loop(self):
+		while True:
+			s = input(data.config['system']['shell']['prefix'])
+			if s == data.config['system']['shell']['exitCmd']:
+				break
+			if shell.parse(s) == False:
+				print(data.config['system']['shell']['errorMsg'])
 
-	def shell(self):
-		print(self.config['system']['shellPrefix'], end='')
-		return
 
 
 
