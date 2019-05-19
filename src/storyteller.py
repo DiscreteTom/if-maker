@@ -32,6 +32,7 @@ class StoryTeller:
 				continue
 			if s[0] == '{':
 				self.__parseCmd(s)
+				continue
 			# story
 			if data.config['system']['printInterval'] <= 0:
 				# pring line by once
