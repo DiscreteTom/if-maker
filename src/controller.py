@@ -4,6 +4,7 @@ import os
 from time import sleep
 from data import data
 from shell import shell
+from storyteller import story
 
 class Controller:
 	def start(self):
@@ -35,37 +36,7 @@ class Controller:
 			return 0
 
 	def newGame(self):
-		# open story file
-		f = open('../_stories/index.ift', encoding='utf-8')
-
-		# find the first story
-		line = ''
-		while True:
-			line = f.readline() # include '\n'
-			if len(line) == 0:
-				# EOF without finding the first story
-				return 1
-			if line == '{0}\n':
-				break
-
-		# now we find the '{0}'
-		while True:
-			line = f.readline()
-			if len(line) == 0 or line == '\n':
-				#EOF or end of story
-				break
-			if line[0] != '{' and line[0] != '#':
-				# not a command or a comment
-				if data.config['system']['printInterval'] <= 0:
-					# pring line by once
-					print(line, end='')
-				else:
-					# print line by char
-					for c in line:
-						print(c, end='', flush=True)
-						sleep(data.config['system']['printInterval'] / 1000)
-				msvcrt.getch()
-
+		story.tell(0)
 		self.loop()
 
 	def loop(self):
