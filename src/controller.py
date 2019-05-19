@@ -3,8 +3,8 @@ import msvcrt
 import os
 from time import sleep
 from data import data
-from shell import shell
-from storyteller import story
+from shell import Shell
+from storyteller import StoryTeller
 
 class Controller:
 	def start(self):
@@ -36,7 +36,7 @@ class Controller:
 			return 0
 
 	def newGame(self):
-		story.tell(0)
+		StoryTeller.tell(0)
 		self.loop()
 
 	def loop(self):
@@ -44,7 +44,7 @@ class Controller:
 			s = input(data.config['system']['shell']['prefix'])
 			if s == data.config['system']['shell']['exitCmd']:
 				break
-			if shell.parse(s) == False:
+			if Shell.parse(s) == False:
 				print(data.config['system']['shell']['errorMsg'])
 
 
