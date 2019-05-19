@@ -2,6 +2,9 @@ from src.data import data
 from src.translator import translator
 
 class Shell:
+	'''
+	provide `shell.load`, `shell.unload` and `shell.parse`
+	'''
 	itemActions = {}
 
 	def load(self, itemID: str):
