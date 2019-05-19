@@ -1,8 +1,12 @@
+'''
+use `data.config` to access config file, use `data.items` to access items file
+'''
+
 import yaml
 
 class Data:
 	config = {}
-	items = []
+	items = {}
 	def __init__(self):
 		# load config
 		f = open('_config.yml', encoding='utf-8')
