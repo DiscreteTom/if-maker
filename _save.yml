@@ -1,0 +1,18 @@
+# define save file's format and initial value
+
+story: 0
+
+player:
+  name: '???'
+  clothes: '睡衣'
+  location: '卧室'
+  money: 0
+  items:
+    - 
+
+locations:
+  - name: '卧室'
+    items:
+      - name: '床'
+      - name: '衣柜'
+  - name: '客厅'
