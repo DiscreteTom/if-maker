@@ -2,10 +2,10 @@ import re
 from data import data
 import msvcrt
 from time import sleep
-from translator import translator
 
 class StoryTeller:
-	def tell(self, story_id):
+	@classmethod
+	def tell(cls, story_id):
 		'''
 		return False if story_id is not found in story file. story_id could be a number or a string
 		'''
@@ -31,7 +31,7 @@ class StoryTeller:
 				# comment
 				continue
 			if s[0] == '{':
-				self.__parseCmd(s)
+				cls.__parseCmd(s)
 				continue
 			# story
 			if data.config['system']['printInterval'] <= 0:
@@ -44,10 +44,12 @@ class StoryTeller:
 					sleep(data.config['system']['printInterval'] / 1000)
 			msvcrt.getch()
 
-	def __parseCmd(self, s: str):
+	@classmethod
+	def __parseCmd(cls, s: str):
 		'''
 		parse command in story, format: `{operation: value}`
 		'''
+		from translator import Translator
 		match = re.search('\\{([^}:]+)\\s*(:\\s*([^}]+))?\\}', s)
 		op = match.group(1)
 		value = match.group(3)
@@ -56,7 +58,4 @@ class StoryTeller:
 		elif op == 'call':
 			pass
 		elif op == 'code':
-			translator.do(value)
-
-
-story = StoryTeller()
+			Translator.do(value)

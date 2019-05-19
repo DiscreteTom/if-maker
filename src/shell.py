@@ -1,5 +1,4 @@
 from data import data
-from translator import translator
 
 class Shell:
 	'''
@@ -7,7 +6,8 @@ class Shell:
 	'''
 	itemActions = {}
 
-	def load(self, itemID: str):
+	@classmethod
+	def load(cls, itemID: str):
 		# judge existance
 		if itemID not in data.items:
 			return False
@@ -15,37 +15,38 @@ class Shell:
 			return False
 
 		# clear actions about this item
-		self.itemActions[itemID] = []
+		cls.itemActions[itemID] = []
 
 		# add actions
 		for action in data.items[itemID]['actions']:
 			action['name'] = action['name'].split()
-			self.itemActions[itemID].append(action)
+			cls.itemActions[itemID].append(action)
 
-	def unload(self, itemID: str):
+	@classmethod
+	def unload(cls, itemID: str):
 		'''
 		remove actions of `itemID`, return False if `itemID` have not been loaded, otherwise return True
 		'''
-		if itemID not in self.itemActions:
+		if itemID not in cls.itemActions:
 			return False
-		self.itemActions.pop(itemID)
+		cls.itemActions.pop(itemID)
 		return True
 
-	def parse(self, cmd: str):
+	@classmethod
+	def parse(cls, cmd: str):
 		'''
 		if `cmd` is valid, return the return value of action's code. if `cmd` is invalid, return False.
 		if you want to stop parse, return 'stop-shell'
 		'''
+		from translator import Translator
 		cmd = cmd.split()
 		# traverse actions
-		for itemID in self.itemActions.keys():
-			for action in self.itemActions[itemID]:
+		for itemID in cls.itemActions.keys():
+			for action in cls.itemActions[itemID]:
 				# change 'this' in action.name to item.name
-				for i in len(action['name']):
+				for i in range(len(action['name'])):
 					if action['name'][i] == 'this':
 						action['name'][i] = data.items[itemID]['name']
 				if action['name'] == cmd:
-					return translator.do(action['code'])
+					return Translator.do(action['code'])
 		return False
-
-shell = Shell()
