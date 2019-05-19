@@ -1,5 +1,5 @@
-from src.data import data
-from src.translator import translator
+from data import data
+from translator import translator
 
 class Shell:
 	'''
@@ -32,6 +32,10 @@ class Shell:
 		return True
 
 	def parse(self, cmd: str):
+		'''
+		if `cmd` is valid, return the return value of action's code. if `cmd` is invalid, return False.
+		if you want to stop parse, return 'stop-shell'
+		'''
 		cmd = cmd.split()
 		# traverse actions
 		for itemID in self.itemActions.keys:
