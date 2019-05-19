@@ -1,0 +1,45 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "interactive fiction text",
+	"patterns": [
+		{
+			"include": "#commands"
+		},
+		{
+			"include": "#comments"
+		}
+	],
+	"repository": {
+		"commands": {
+			"patterns": [
+				{
+					"match": "(\\{)([^}:]+)\\s*(:\\s*([^}]+))?(\\})",
+					"captures": {
+						"1": {
+							"name": "keyword.control.ift"
+						},
+						"2": {
+							"name": "variable.parameter.ift"
+						},
+						"4": {
+							"name": "entity.other.attribute-name.ift"
+						},
+						"5": {
+							"name": "keyword.control.ift"
+						}
+					}
+				}
+			]
+		},
+		"comments": {
+			"patterns": [
+				{
+					"name": "comment.line.double-slash.ifc",
+					"begin": "#",
+					"end": "\n"
+				}
+			]
+		}
+	},
+	"scopeName": "source.ift"
+}
