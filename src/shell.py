@@ -38,7 +38,7 @@ class Shell:
 		'''
 		cmd = cmd.split()
 		# traverse actions
-		for itemID in self.itemActions.keys:
+		for itemID in self.itemActions.keys():
 			for action in self.itemActions[itemID]:
 				# change 'this' in action.name to item.name
 				for i in len(action['name']):
