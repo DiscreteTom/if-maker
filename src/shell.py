@@ -8,6 +8,7 @@ class Shell:
 
 	@classmethod
 	def load(cls, itemID: str):
+		from translator import Translator
 		# judge existance
 		if itemID not in data.items:
 			return False
@@ -21,6 +22,9 @@ class Shell:
 		for action in data.items[itemID]['actions']:
 			action['name'] = action['name'].split()
 			cls.itemActions[itemID].append(action)
+
+		if 'onload' in data.items[itemID]:
+			Translator.do(data.items[itemID]['onload'])
 
 	@classmethod
 	def unload(cls, itemID: str):
