@@ -22,6 +22,7 @@ class StoryTeller:
 				if str(story_id) == match.group(1) or story_id == match.group(3):
 					break
 		# print the story
+		skip = False
 		while True:
 			s = f.readline()
 			if len(s) == 0 or s == '\n':
@@ -34,7 +35,7 @@ class StoryTeller:
 				cls.__parseCmd(s)
 				continue
 			# story
-			if data.config['system']['printInterval'] <= 0:
+			if skip or data.config['system']['printInterval'] <= 0:
 				# pring line by once
 				print(s, end='')
 			else:
@@ -42,7 +43,10 @@ class StoryTeller:
 				for c in s:
 					print(c, end='', flush=True)
 					sleep(data.config['system']['printInterval'] / 1000)
-			msvcrt.getch()
+			if not skip:
+				if msvcrt.getwch() == '\u001B':
+					# if `esc` is pressed
+					skip = True
 
 	@classmethod
 	def __parseCmd(cls, s: str):
