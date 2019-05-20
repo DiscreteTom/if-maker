@@ -25,7 +25,7 @@ class Shell:
 				cls.itemActions[itemID].append(action)
 
 			if 'onLoad' in data.items[itemID]:
-				Translator.do(data.items[itemID]['onLoad'])
+				Translator.do(data.items[itemID]['onLoad'].replace('this', 'data.items["' + itemID + '"]'))
 
 	@classmethod
 	def unload(cls, *items: str):
@@ -37,7 +37,7 @@ class Shell:
 				return False
 			cls.itemActions.pop(itemID)
 			if 'onUnload' in data.items[itemID]:
-				Translator.do(data.items[itemID]['onUnload'])
+				Translator.do(data.items[itemID]['onUnload'].replace('this', 'data.items["' + itemID + '"]'))
 		return True
 
 	@classmethod
