@@ -56,5 +56,5 @@ class Shell:
 					if action['name'][i] == 'this':
 						action['name'][i] = data.items[itemID]['name']
 				if action['name'] == cmd:
-					return Translator.do(action['code'])
+					return Translator.do(action['code'].replace('this', 'data.items["' + itemID + '"]'))
 		return False
