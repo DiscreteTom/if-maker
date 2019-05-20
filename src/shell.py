@@ -7,33 +7,37 @@ class Shell:
 	itemActions = {}
 
 	@classmethod
-	def load(cls, itemID: str):
+	def load(cls, *items: str):
 		from translator import Translator
-		# judge existance
-		if itemID not in data.items:
-			return False
-		if 'actions' not in data.items[itemID]:
-			return False
+		for itemID in items:
+			# judge existance
+			if itemID not in data.items:
+				return False
+			if 'actions' not in data.items[itemID]:
+				return False
 
-		# clear actions about this item
-		cls.itemActions[itemID] = []
+			# clear actions about this item
+			cls.itemActions[itemID] = []
 
-		# add actions
-		for action in data.items[itemID]['actions']:
-			action['name'] = action['name'].split()
-			cls.itemActions[itemID].append(action)
+			# add actions
+			for action in data.items[itemID]['actions']:
+				action['name'] = action['name'].split()
+				cls.itemActions[itemID].append(action)
 
-		if 'onload' in data.items[itemID]:
-			Translator.do(data.items[itemID]['onload'])
+			if 'onLoad' in data.items[itemID]:
+				Translator.do(data.items[itemID]['onLoad'])
 
 	@classmethod
-	def unload(cls, itemID: str):
+	def unload(cls, *items: str):
 		'''
 		remove actions of `itemID`, return False if `itemID` have not been loaded, otherwise return True
 		'''
-		if itemID not in cls.itemActions:
-			return False
-		cls.itemActions.pop(itemID)
+		for itemID in items:
+			if itemID not in cls.itemActions:
+				return False
+			cls.itemActions.pop(itemID)
+			if 'onUnload' in data.items[itemID]:
+				Translator.do(data.items[itemID]['onUnload'])
 		return True
 
 	@classmethod
