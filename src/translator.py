@@ -1,9 +1,9 @@
-from shell import Shell
+from shell import shell
 from data import data
 
-class Translator:
+class translator:
 	@classmethod
-	def do(cls, code: str):
+	def run(cls, code: str):
 		lines = code.split(';')
 		result = None
 		for line in lines:
