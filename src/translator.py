@@ -5,6 +5,8 @@ class Translator:
 	@classmethod
 	def do(cls, code: str):
 		lines = code.split(';')
+		result = None
 		for line in lines:
 			if len(line.strip()):
-				eval(line.strip())
+				result = eval(line.strip())
+		return result
