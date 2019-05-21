@@ -3,7 +3,7 @@ import msvcrt
 import os
 from time import sleep
 from data import data
-from shell import Shell
+from shell import shell
 from storyteller import StoryTeller
 
 class Controller:
@@ -44,7 +44,7 @@ class Controller:
 			s = input(data.config['system']['shell']['prefix'])
 			if s == data.config['system']['shell']['exitCmd']:
 				break
-			if Shell.parse(s) == False:
+			if shell.parse(s) == False:
 				print(data.config['system']['shell']['errorMsg'])
 
 

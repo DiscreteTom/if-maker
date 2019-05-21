@@ -3,7 +3,7 @@ from data import data
 import msvcrt
 from time import sleep
 
-class StoryTeller:
+class story:
 	@classmethod
 	def tell(cls, story_id):
 		'''
@@ -62,4 +62,4 @@ class StoryTeller:
 		elif op == 'call':
 			pass
 		elif op == 'code':
-			Translator.do(value)
+			translator.run(value)

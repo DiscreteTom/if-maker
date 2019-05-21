@@ -1,6 +1,6 @@
 from data import data
 
-class Shell:
+class shell:
 	'''
 	provide `shell.load`, `shell.unload` and `shell.parse`
 	'''
@@ -25,7 +25,7 @@ class Shell:
 				cls.itemActions[itemID].append(action)
 
 			if 'onLoad' in data.items[itemID]:
-				Translator.do(data.items[itemID]['onLoad'].replace('this', 'data.items["' + itemID + '"]'))
+				translator.run(data.items[itemID]['onLoad'].replace('this', 'data.items["' + itemID + '"]'))
 
 	@classmethod
 	def unload(cls, *items: str):
@@ -37,7 +37,7 @@ class Shell:
 				return False
 			cls.itemActions.pop(itemID)
 			if 'onUnload' in data.items[itemID]:
-				Translator.do(data.items[itemID]['onUnload'].replace('this', 'data.items["' + itemID + '"]'))
+				translator.run(data.items[itemID]['onUnload'].replace('this', 'data.items["' + itemID + '"]'))
 		return True
 
 	@classmethod
@@ -56,12 +56,12 @@ class Shell:
 					if action['name'][i] == 'this':
 						action['name'][i] = data.items[itemID]['name']
 				if action['name'] == cmd:
-					return Translator.do(action['code'].replace('this', 'data.items["' + itemID + '"]'))
+					return translator.run(action['code'].replace('this', 'data.items["' + itemID + '"]'))
 		return False
 
 	@classmethod
 	def test(cls, contidion: str, code_if_true: str, code_if_false: str):
-		if Translator.do(condition):
-			Translator.do(code_if_true)
+		if translator.run(condition):
+			translator.run(code_if_true)
 		else:
-			Translator.do(code_if_false)
+			translator.run(code_if_false)
