@@ -58,3 +58,10 @@ class Shell:
 				if action['name'] == cmd:
 					return Translator.do(action['code'].replace('this', 'data.items["' + itemID + '"]'))
 		return False
+
+	@classmethod
+	def test(cls, contidion: str, code_if_true: str, code_if_false: str):
+		if Translator.do(condition):
+			Translator.do(code_if_true)
+		else:
+			Translator.do(code_if_false)
