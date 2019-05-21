@@ -16,5 +16,13 @@ class Data:
 		f = open('../_items.yml', encoding='utf-8')
 		self.items = yaml.safe_load(f)
 		f.close()
+	def findItem(self, itemName: str):
+		'''
+		return itemID
+		'''
+		for itemID in self.items:
+			if items[itemID]["name"] == itemName:
+				return itemID
+		return None
 
 data = Data()
