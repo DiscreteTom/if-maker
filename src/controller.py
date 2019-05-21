@@ -4,7 +4,7 @@ import os
 from time import sleep
 from data import data
 from shell import shell
-from storyteller import StoryTeller
+from story import story
 
 class Controller:
 	def start(self):
@@ -36,7 +36,7 @@ class Controller:
 			return 0
 
 	def newGame(self):
-		StoryTeller.tell(0)
+		story.tell(0)
 		self.loop()
 
 	def loop(self):
