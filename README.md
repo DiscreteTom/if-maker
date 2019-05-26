@@ -1,2 +1,2 @@
-# z-maker
+# if-maker
 An interactive fiction maker system
