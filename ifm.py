@@ -138,7 +138,10 @@ if __name__ == '__main__':
 		items = processYamlInclude('items')
 		classes = processYamlInclude('classes')
 		mergeItemsAndClasses(items, classes)
-		os.mkdir('.ifm')
-		f = open('.ifm/items', 'w+', encoding='utf-8')
+		try:
+			os.mkdir('.ifm')
+		except FileExistsError:
+			pass
+		f = open('.ifm/items', 'w', encoding='utf-8')
 		f.write(str(items))
 		f.close()
