@@ -6,10 +6,12 @@ import shutil
 
 def mergeItemsAndClasses(items: dict, classes: dict):
 	# traverse all items
-	for item in items:
+	for key in items:
+		item = items[key]
 		if 'classes' not in item:
-			continue
+			item['classes'] = ['object']
 		for classID in item['classes']:
+			item['classes'] = item['classes'] + ['object']
 			processSingleClass(classes, classID)
 			merge(item, classes[classID])
 
