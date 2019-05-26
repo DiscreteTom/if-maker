@@ -12,11 +12,11 @@ class Data:
 		self.config = refdict(yaml.safe_load(f))
 		f.close()
 		# load items
-		f = open('../_items.yml', encoding='utf-8')
+		f = open('../.ifm/items', encoding='utf-8')
 		self.items = refdict(yaml.safe_load(f))
 		f.close()
 		# user defined global data
-		self.globalData = refdict({})
+		self.game = refdict({})
 	def findItem(self, itemName: str):
 		'''
 		return itemID
