@@ -28,18 +28,84 @@ if __name__ == '__main__':
 	elif sys.argv[1] == 'make':
 		items = processYamlInclude('items')
 		classes = processYamlInclude('classes')
+		mergeItemsAndClasses(items, classes)
+		f = open('.ifm/items', 'r')
+		f.write(items)
+		f.close()
 
 def mergeItemsAndClasses(items: dict, classes: dict):
-	pass
+	# traverse all items
+	for item in items:
+		if 'classes' not in item:
+			continue
+		for classID in item['classes']:
+			processSingleClass(classes, classID)
+			merge(item, classes[classID])
 
-def processClasses(classses: dict):
-	pass
+def processSingleClass(classes: dict, classID: str):
+	if 'classes' not in classes[classID]:
+		# not need to process
+		return
+	currentClass = classes[classID]
+	# merge currentClass['classes'] to currentClass
+	for classID in currentClass:
+		# recursively process
+		processSingleClass(classes, classID)
+		targetClass = classes[classID]
+		merge(currentClass, targetClass)
+	currentClass.pop('classes')
+
+def merge(higher: dict, lower: dict):
+	'''
+	merge those attributes below:
+	```
+	result = {
+		'name': '', # use higher's
+		'description': '', # use higher's
+		'actions': [ # merge, ignore conflict, lower's after higher's
+			{
+				'name': '',
+				'code': ''
+			}
+		],
+		'onLoad': '', # merge, ignore conflict, higher's after lower's, separated by ';'
+		'onUnload': '', # merge, ignore conflict, higher's after lower's, separated by ';'
+		'data': {} # merge, consider conflict, use higher's
+	}
+	```
+	'''
+	if 'name' not in higher and 'name' in lower:
+		higher['name'] = lower['name']
+	if 'description' not in higher and 'description' in lower:
+		higher['description'] = lower['description']
+	if 'actions' in lower:
+		if 'actions' in higher:
+			higher['actions'] += lower['actions']
+		else:
+			higher['actions'] = lower['actions']
+	if 'onLoad' in lower:
+		if 'onLoad' in higher:
+			higher['onLoad'] = lower['onLoad'] + ';' + higher['onLoad']
+		else:
+			higher['onLoad'] = lower['onLoad']
+	if 'onUnload' in lower:
+		if 'onUnload' in higher:
+			higher['onUnload'] = lower['onUnload'] + ';' + higher['onUnload']
+		else:
+			higher['onUnload'] = lower['onUnload']
+	if 'data' in lower:
+		if 'data' not in higher:
+			higher['data'] = lower['data']
+		else:
+			for key in lower['data']:
+				if key in higher['data']:
+					print('warning: data ignored: key =', key)
+				else:
+					higher[key] = lower[key]
 
 def processYamlInclude(processType: str):
 	'''
 	`processType` should be one of `['items', 'classes']`
-
-	write result to .ifm/items and .ifm/classes
 	'''
 	# open root file
 	f = open('_' + processType + '/index.yml')
