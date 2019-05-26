@@ -4,35 +4,6 @@ import yaml
 from refdict import refdict
 import shutil
 
-if __name__ == '__main__':
-	if len(sys.argv) == 1:
-		print('usage:\nifm [new|make]')
-	if sys.argv[1] == 'new':
-		proName = 'untitled'
-		if len(sys.argv) == 2:
-			proName = input('please input the name of your project: (untitled)')
-			if proName == '':
-				proName = 'untitled'
-		elif len(sys.argv) > 2:
-			proName = sys.argv[2]
-		
-		os.mkdir('_classes')
-		os.mkdir('_result')
-		os.mkdir('_scripts')
-		os.mkdir('_stories')
-		open('_config.yml', 'w').close()
-		open('_classes/index.yml', 'w').close()
-		open('_result/index.yml', 'w').close()
-		open('_stories/index.yml', 'w').close()
-		open('_scripts/index.yml', 'w').close()
-	elif sys.argv[1] == 'make':
-		items = processYamlInclude('items')
-		classes = processYamlInclude('classes')
-		mergeItemsAndClasses(items, classes)
-		f = open('.ifm/items', 'r')
-		f.write(items)
-		f.close()
-
 def mergeItemsAndClasses(items: dict, classes: dict):
 	# traverse all items
 	for item in items:
@@ -108,14 +79,14 @@ def processYamlInclude(processType: str):
 	`processType` should be one of `['items', 'classes']`
 	'''
 	# open root file
-	f = open('_' + processType + '/index.yml')
+	f = open('_' + processType + '/index.yml', encoding='utf-8')
 	result = yaml.safe_load(f)
 	f.close()
 	if 'include' in result:
 		# include other file
 		while len(result['include']):
 			# load target file, order is not matter
-			f = open('_' + processType + '/' + result['include'].pop())
+			f = open('_' + processType + '/' + result['include'].pop(), encoding='utf-8')
 			current = yaml.safe_load(f)
 			f.close()
 			# merge include
@@ -138,3 +109,34 @@ def errorHandler():
 	'''
 	shutil.rmtree('.ifm')
 	os._exit(1)
+
+
+if __name__ == '__main__':
+	if len(sys.argv) == 1:
+		print('usage:\nifm [new|make]')
+	if sys.argv[1] == 'new':
+		proName = 'untitled'
+		if len(sys.argv) == 2:
+			proName = input('please input the name of your project: (untitled)')
+			if proName == '':
+				proName = 'untitled'
+		elif len(sys.argv) > 2:
+			proName = sys.argv[2]
+		
+		os.mkdir('_classes')
+		os.mkdir('_result')
+		os.mkdir('_scripts')
+		os.mkdir('_stories')
+		open('_config.yml', 'w', encoding='utf-8').close()
+		open('_classes/index.yml', 'w', encoding='utf-8').close()
+		open('_result/index.yml', 'w', encoding='utf-8').close()
+		open('_stories/index.yml', 'w', encoding='utf-8').close()
+		open('_scripts/index.yml', 'w', encoding='utf-8').close()
+	elif sys.argv[1] == 'make':
+		items = processYamlInclude('items')
+		classes = processYamlInclude('classes')
+		mergeItemsAndClasses(items, classes)
+		os.mkdir('.ifm')
+		f = open('.ifm/items', 'w+', encoding='utf-8')
+		f.write(str(items))
+		f.close()
