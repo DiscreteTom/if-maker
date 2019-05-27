@@ -26,14 +26,15 @@ class shell:
 			# add actions
 			cls.itemActions[itemID] = data.items[itemID]['actions']
 
-			# if 'onLoad' in data.items[itemID]:
-				# translator.run(data.items[itemID]['onLoad'].replace('this', 'data.items["' + itemID + '"]'))
+			if 'onLoad' in data.items[itemID]:
+				translator.run(data.items[itemID]['onLoad'].replace('this["', 'data.items["' + itemID + '.'))
 
 	@classmethod
 	def unload(cls, items):
 		'''
 		`items` can be a `str` or a `list`
 		'''
+		from translator import translator
 		# convert items to a list
 		if isinstance(items, str):
 			items = [items]
@@ -42,25 +43,38 @@ class shell:
 			if itemID not in cls.itemActions:
 				continue
 			cls.itemActions.pop(itemID)
-			# if 'onUnload' in data.items[itemID]:
-				# translator.run(data.items[itemID]['onUnload'].replace('this', 'data.items["' + itemID + '"]'))
+			if 'onUnload' in data.items[itemID]:
+				translator.run(data.items[itemID]['onUnload'].replace('this["', 'data.items["' + itemID + '.'))
 		return True
 
 	@classmethod
 	def parse(cls, cmd: str):
-		'''
-		if `cmd` is valid, return the return value of action's code. if `cmd` is invalid, return False.
-		if you want to stop parse, return 'stop-shell'
-		'''
-		from translator import Translator
+		from translator import translator
 		cmd = cmd.split()
 		# traverse actions
-		for itemID in cls.itemActions.keys():
+		for itemID in cls.itemActions:
 			for action in cls.itemActions[itemID]:
-				# change 'this' in action.name to item.name
-				for i in range(len(action['name'])):
-					if action['name'][i] == 'this':
-						action['name'][i] = data.items[itemID]['name']
-				if action['name'] == cmd:
-					return translator.run(action['code'].replace('this', 'data.items["' + itemID + '"]'))
+				# try to match
+				pattern = action['name'].split()
+				# judge cmd length
+				if len(cmd) != len(pattern):
+					continue
+				# match each part
+				match = True
+				params = {}
+				for i in range(len(cmd)):
+					if pattern[i] == 'this' and cmd[i] != data.items[itemID]['name']:
+						# this
+						match = False
+						break
+					elif pattern[i][0] == '(' and pattern[i][-1] == ')':
+						# params
+						params[pattern[1:-1]] = cmd[i]
+					else:
+						# normal
+						if pattern[i] != cmd[i]:
+							match = False
+							break
+				if match:
+					return translator.run(action['code'].replace('this["', 'data.items["' + itemID + '.'))
 		return False
