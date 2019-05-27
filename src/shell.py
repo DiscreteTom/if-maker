@@ -7,37 +7,43 @@ class shell:
 	itemActions = {}
 
 	@classmethod
-	def load(cls, *items: str):
+	def load(cls, items):
+		'''
+		`items` can be a `str` or a `list`
+		'''
 		from translator import Translator
+		# convert items to a list
+		if isinstance(items, str):
+			items = [items]
+
 		for itemID in items:
 			# judge existance
 			if itemID not in data.items:
-				return False
+				continue
 			if 'actions' not in data.items[itemID]:
-				return False
-
-			# clear actions about this item
-			cls.itemActions[itemID] = []
+				continue
 
 			# add actions
-			for action in data.items[itemID]['actions']:
-				action['name'] = action['name'].split()
-				cls.itemActions[itemID].append(action)
+			cls.itemActions[itemID] = data.items[itemID]['actions']
 
-			if 'onLoad' in data.items[itemID]:
-				translator.run(data.items[itemID]['onLoad'].replace('this', 'data.items["' + itemID + '"]'))
+			# if 'onLoad' in data.items[itemID]:
+				# translator.run(data.items[itemID]['onLoad'].replace('this', 'data.items["' + itemID + '"]'))
 
 	@classmethod
-	def unload(cls, *items: str):
+	def unload(cls, items):
 		'''
-		remove actions of `itemID`, return False if `itemID` have not been loaded, otherwise return True
+		`items` can be a `str` or a `list`
 		'''
+		# convert items to a list
+		if isinstance(items, str):
+			items = [items]
+
 		for itemID in items:
 			if itemID not in cls.itemActions:
-				return False
+				continue
 			cls.itemActions.pop(itemID)
-			if 'onUnload' in data.items[itemID]:
-				translator.run(data.items[itemID]['onUnload'].replace('this', 'data.items["' + itemID + '"]'))
+			# if 'onUnload' in data.items[itemID]:
+				# translator.run(data.items[itemID]['onUnload'].replace('this', 'data.items["' + itemID + '"]'))
 		return True
 
 	@classmethod
@@ -58,10 +64,3 @@ class shell:
 				if action['name'] == cmd:
 					return translator.run(action['code'].replace('this', 'data.items["' + itemID + '"]'))
 		return False
-
-	@classmethod
-	def test(cls, contidion: str, code_if_true: str, code_if_false: str):
-		if translator.run(condition):
-			translator.run(code_if_true)
-		else:
-			translator.run(code_if_false)
