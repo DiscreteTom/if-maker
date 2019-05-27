@@ -11,7 +11,7 @@ class shell:
 		'''
 		`items` can be a `str` or a `list`
 		'''
-		from translator import Translator
+		from translator import translator
 		# convert items to a list
 		if isinstance(items, str):
 			items = [items]
@@ -63,18 +63,20 @@ class shell:
 				match = True
 				params = {}
 				for i in range(len(cmd)):
-					if pattern[i] == 'this' and cmd[i] != data.items[itemID]['name']:
-						# this
-						match = False
-						break
+					if pattern[i] == 'this':
+						if cmd[i] != data.items[itemID]['name']:
+							# can not match `this`
+							match = False
+							break
 					elif pattern[i][0] == '(' and pattern[i][-1] == ')':
-						# params
-						params[pattern[1:-1]] = cmd[i]
+						# match params
+						params[pattern[i][1:-1]] = cmd[i]
 					else:
 						# normal
 						if pattern[i] != cmd[i]:
 							match = False
 							break
 				if match:
-					return translator.run(action['code'].replace('this["', 'data.items["' + itemID + '.'))
+					# process `this`
+					return translator.run(action['code'].replace('this["', 'data.items["' + itemID + '.'), params)
 		return False
