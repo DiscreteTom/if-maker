@@ -37,7 +37,9 @@ class story:
 
 	@classmethod
 	def parse(cls, cmd: str, value = '', params = {}):
-		print(cmd, value, params)
+		print('cmd:', cmd)
+		print('value:', value)
+		print('params:', params)
 
 	@classmethod
 	def print(cls, s: str, skip = False, end = '\n', indent = ''):
@@ -69,7 +71,7 @@ class story:
 			if not match:
 				# no more value refs
 				break
-			s = s[:match.begin()] + data.items[match.group(2).strip()] + s[match.end():]
+			s = s[:match.start()] + data.items[match.group(2).strip()] + s[match.end():]
 		# print story
 		if skip or data.config['system.printInterval'] <= 0:
 			# pring line by once
