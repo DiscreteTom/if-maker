@@ -36,37 +36,49 @@ class story:
 					skip = True
 
 	@classmethod
-	def parse(cls, s: str):
-		'''
-		parse command in story, format: `{operation: value @params="params value"}`
-		'''
-		from translator import translator
-		match = re.search('\\{([^}:]+)\\s*(:\\s*([^}]+))?\\}', s)
-		op = match.group(1)
-		value = match.group(3)
-		if op == 'bgm':
-			pass
-		elif op == 'call':
-			pass
-		elif op == 'code':
-			translator.run(value)
+	def parse(cls, cmd: str, value = '', params = {}):
+		print(cmd, value, params)
 
 	@classmethod
 	def print(cls, s: str, skip = False, end = '\n', indent = ''):
 		'''
 		print one line, parse commands and other things in `{}`
 		'''
-		from translator import translator
-		if s[0] == '#':
+		# ignore comment
+		s = s.split('#')[0].strip()
+		if len(s) == 0:
 			return
-		if s[0] == '{':
-			parse(s)
-		# story
-		if skip or data.config['system']['printInterval'] <= 0:
+		# test if this line is a command
+		match = re.match("\\{\\s*([a-zA-Z][^ \\f\\n\\r\\t\\v:\\}]*)\\s*(:\\s*(([^}@'\"]+|('[^']*'|\"[^\"]*\")|\\s)+))?", s)
+		if match:
+			# this line is a command
+			cmd = match.group(1)
+			value = match.group(3).strip()
+			params = {}
+			while True:
+				s = s[match.end():].strip()
+				match = re.match("(@\\w+)\\s*=\\s*('[^']*'|\"[^\"]*\")", s)
+				if not match:
+					break
+				params[match.group(1)[1:]] = match.group(2)[1:-1]
+			cls.parse(cmd, value, params)
+			return
+		# this line is a story, parse value refs
+		while True:
+			match = re.search("(\\{\\{)(\\s*[^ \\f\\n\\r\\t\\v\\}]+\\s*)(\\}\\})", s)
+			if not match:
+				# no more value refs
+				break
+			s = s[:match.begin()] + data.items[match.group(2).strip()] + s[match.end():]
+		# print story
+		if skip or data.config['system.printInterval'] <= 0:
 			# pring line by once
-			print(s, end='')
+			print(indent, end='')
+			print(s, end=end)
 		else:
 			# print line by char
+			print(indent, end='')
 			for c in s:
 				print(c, end='', flush=True)
-				sleep(data.config['system']['printInterval'] / 1000)
+				sleep(data.config['system.printInterval'] / 1000)
+			print('', end=end)
