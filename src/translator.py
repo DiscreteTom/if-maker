@@ -19,7 +19,7 @@ def run(code: str, params = {}):
 def preprocess(cmd: str):
 	if cmd.startswith('load(') or cmd.startswith('unload(') or cmd.startswith('parse('):
 		return 'shell.' + cmd
-	if cmd.startswith('print(') or cmd.startswith('printStory('):
+	if cmd.startswith('print(') or cmd.startswith('printStory(') or cmd.startswith('printItemList('):
 		return 'story.' + cmd
 	if cmd.startswith('findItem('):
 		return 'data.' + cmd

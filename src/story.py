@@ -47,7 +47,9 @@ class story:
 	@classmethod
 	def print(cls, *values: str, **kwargs):
 		'''
-		print `s` at once, parse commands and other things in `{}`
+		print values at once, parse commands and other things in `{}`
+
+		values can contain an item list, but no other list
 
 		kwargs: `skip = True`, `sep = ' '`, `end = '\\n'`, `indent = ''`
 		'''
@@ -94,3 +96,19 @@ class story:
 					sleep(data.config['system.printInterval'])
 			print(sep, end='')
 		print('', end=end)
+
+	@classmethod
+	def printItemList(cls, l: list, **kwargs):
+		'''
+		`l` should be a list of item id
+
+		kwargs: `skip = True`, `indent = '- '`
+		'''
+		
+		skip = True if 'skip' not in kwargs else kwargs['skip']
+		indent = '- ' if 'indent' not in kwargs else kwargs['indent']
+
+		for itemID in l:
+			if itemID.startswith('@'):
+				itemID = itemID[1:]
+			cls.print(data.items[itemID]['name'], skip=skip, indent=indent)
