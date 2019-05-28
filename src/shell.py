@@ -82,7 +82,12 @@ class shell:
 							break
 					elif pattern[i][0] == '(' and pattern[i][-1] == ')':
 						# match params
-						params[pattern[i][1:-1]] = cmd[i]
+						targetID = data.findItem(cmd[i])
+						if targetID:
+							# target exist, get id
+							params[pattern[i][1:-1]] = targetID
+						else:
+							break
 					else:
 						# normal
 						if pattern[i] != cmd[i]:
