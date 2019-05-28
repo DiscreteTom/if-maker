@@ -37,9 +37,12 @@ class story:
 
 	@classmethod
 	def __parse(cls, cmd: str, value = '', params = {}):
+		import translator
 		print('cmd:', cmd)
 		print('value:', value)
 		print('params:', params)
+		if cmd == 'code':
+			translator.run(value, params)
 
 	@classmethod
 	def print(cls, *values: str, **kwargs):
