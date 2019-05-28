@@ -1,5 +1,4 @@
 def run(code: str, params = {}):
-	print(code)
 	from shell import shell
 	from data import data
 	from story import story
