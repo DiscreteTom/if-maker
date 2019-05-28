@@ -21,7 +21,10 @@ class shell:
 			if isinstance(itemID, dict):
 				cls.load(itemID['id'])
 				continue
-			# itemID is a str, judge existance
+			# itemID is a str, judge `@`
+			if itemID.startswith('@'):
+				itemID = itemID[1:]
+			# judge existance
 			if itemID not in data.items:
 				continue
 			if 'actions' not in data.items[itemID]:
