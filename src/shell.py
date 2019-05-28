@@ -58,6 +58,8 @@ class shell:
 				cls.unload(itemID['id'])
 				continue
 			# itemID is a str, judge existance
+			if itemID.startswith('@'):
+				itemID = itemID[1:]
 			if itemID not in cls.__itemActions:
 				if 'debug.unload' in data.config:
 					print('debug.unload:', itemID, 'not found in items')
