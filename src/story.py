@@ -5,7 +5,7 @@ from time import sleep
 
 class story:
 	@classmethod
-	def tell(cls, story_id):
+	def printStory(cls, story_id):
 		'''
 		return False if story_id is not found in story file. story_id should be a number or a string
 		'''
