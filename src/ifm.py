@@ -127,7 +127,7 @@ def processStories():
 			if len(s) == 0:
 				# EOF
 				break
-			s = s.strip()
+			s = s.strip() + '\n'
 			if s.startswith('#include '):
 				# add another story file
 				storyQueue.append(s.split()[1])
@@ -139,7 +139,7 @@ def processStories():
 					s = s[0:match.start()] + '\n'
 					if len(s) == 1:
 						# this line has nothing but comment, do not output
-						break
+						continue
 				fout.write(s.replace('##', '#'))
 		fin.close()
 	fout.close()
@@ -174,7 +174,7 @@ def make():
 	try:
 		os.mkdir('.ifm')
 	except FileExistsError:
-		return
+		pass
 	items = processYamlInclude('items')
 	classes = processYamlInclude('classes')
 	mergeItemsAndClasses(items, classes)
@@ -182,4 +182,3 @@ def make():
 	f.write(str(items))
 	f.close()
 	processStories()
-
