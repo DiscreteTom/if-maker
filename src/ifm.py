@@ -19,8 +19,10 @@ def mergeItemsAndClasses(items: dict, classes: dict):
 		item = items[key]
 		if 'classes' not in item:
 			item['classes'] = ['object']
+		else:
+			if 'object' not in item['classes']:
+				item['classes'].append('object')
 		for classID in item['classes']:
-			item['classes'] = item['classes'] + ['object']
 			processSingleClass(classes, classID)
 			merge(item, classes[classID])
 
