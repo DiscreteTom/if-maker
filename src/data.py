@@ -22,7 +22,7 @@ class Data:
 		return itemID
 		'''
 		for itemID in self.items:
-			if items[itemID]["name"] == itemName:
+			if self.items[itemID]["name"] == itemName:
 				return itemID
 		return None
 
