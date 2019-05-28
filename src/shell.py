@@ -16,7 +16,8 @@ class shell:
 		for itemID in items:
 			if isinstance(itemID, list) or isinstance(itemID, tuple):
 				# not a str, process list or tuple recursively
-				cls.load(*itemID)
+				if len(itemID):
+					cls.load(*itemID)
 				continue
 			if isinstance(itemID, dict):
 				cls.load(itemID['id'])
@@ -50,7 +51,8 @@ class shell:
 		for itemID in items:
 			if isinstance(itemID, list) or isinstance(itemID, tuple):
 				# not a str, process list or tuple recursively
-				cls.unload(*itemID)
+				if len(itemID):
+					cls.unload(*itemID)
 				continue
 			if isinstance(itemID, dict):
 				cls.unload(itemID['id'])
