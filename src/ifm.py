@@ -4,11 +4,14 @@ import yaml
 from refdict import refdict
 import shutil
 import re
+from controller import Controller
 
 '''
 `ifm new`: create a new project, create folders and files
 
 `ifm make`: generate files in `.ifm/`, combine items and classes, ignore comments in stories
+
+`ifm run`: run game
 '''
 
 def mergeItemsAndClasses(items: dict, classes: dict):
@@ -184,3 +187,6 @@ if __name__ == '__main__':
 		new()
 	elif sys.argv[1] == 'make':
 		make()
+	elif sys.argv[1] == 'run':
+		c = Controller()
+		c.start()
