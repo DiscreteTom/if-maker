@@ -127,6 +127,7 @@ def processStories():
 			if len(s) == 0:
 				# EOF
 				break
+			s = s.strip()
 			if s.startswith('#include '):
 				# add another story file
 				storyQueue.append(s.split()[1])
@@ -136,6 +137,9 @@ def processStories():
 				if match:
 					# comment exist, remove comment
 					s = s[0:match.start()] + '\n'
+					if len(s) == 1:
+						# this line has nothing but comment, do not output
+						break
 				fout.write(s.replace('##', '#'))
 		fin.close()
 	fout.close()
@@ -157,12 +161,12 @@ def new():
 		proName = sys.argv[2]
 	
 	os.mkdir('_classes')
-	os.mkdir('_result')
+	os.mkdir('_items')
 	os.mkdir('_scripts')
 	os.mkdir('_stories')
 	open('_config.yml', 'w', encoding='utf-8').close()
 	open('_classes/index.yml', 'w', encoding='utf-8').close()
-	open('_result/index.yml', 'w', encoding='utf-8').close()
+	open('_items/index.yml', 'w', encoding='utf-8').close()
 	open('_stories/index.yml', 'w', encoding='utf-8').close()
 	open('_scripts/index.yml', 'w', encoding='utf-8').close()
 
