@@ -9,7 +9,7 @@ class story:
 		'''
 		return False if story_id is not found in story file. story_id should be a number or a string
 		'''
-		f = open('../.ifm/story', encoding='utf-8')
+		f = open('.ifm/story', encoding='utf-8')
 		# find the story
 		while True:
 			s = f.readline()

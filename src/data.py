@@ -8,11 +8,11 @@ import yaml
 class Data:
 	def __init__(self):
 		# load config
-		f = open('../_config.yml', encoding='utf-8')
+		f = open('_config.yml', encoding='utf-8')
 		self.config = refdict(yaml.safe_load(f))
 		f.close()
 		# load items
-		f = open('../.ifm/items', encoding='utf-8')
+		f = open('.ifm/items', encoding='utf-8')
 		self.items = refdict(yaml.safe_load(f))
 		f.close()
 		# user defined global data
