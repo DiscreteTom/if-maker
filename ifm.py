@@ -3,6 +3,13 @@ import sys
 import yaml
 from refdict import refdict
 import shutil
+import re
+
+'''
+`ifm new`: create a new project, create folders and files
+
+`ifm make`: generate files in `.ifm/`, combine items and classes, ignore comments in stories
+'''
 
 def mergeItemsAndClasses(items: dict, classes: dict):
 	# traverse all items
@@ -105,6 +112,32 @@ def processYamlInclude(processType: str):
 		result.pop('include')
 	return result
 
+def processStories():
+	'''
+	process _stories/index.ift, save result to .ifm/story
+	'''
+	fout = open('.ifm/story', 'w', encoding='utf-8')
+	storyQueue = ['index.ift']
+	while len(storyQueue):
+		fin = open('_stories/' + storyQueue.pop(), 'r', encoding='utf-8')
+		while True:
+			s = fin.readline()
+			if len(s) == 0:
+				# EOF
+				break
+			if s.startswith('#include '):
+				# add another story file
+				storyQueue.append(s.split()[1])
+			else:
+				# normal story, get rid of comment
+				match = re.search("#[^#]", s)
+				if match:
+					# comment exist, remove comment
+					s = s[0:match.start()] + '\n'
+				fout.write(s.replace('##', '#'))
+		fin.close()
+	fout.close()
+
 def errorHandler():
 	'''
 	clear output folder and exit
@@ -112,36 +145,42 @@ def errorHandler():
 	shutil.rmtree('.ifm')
 	os._exit(1)
 
+def new():
+	proName = 'untitled'
+	if len(sys.argv) == 2:
+		proName = input('please input the name of your project: (untitled)')
+		if proName == '':
+			proName = 'untitled'
+	elif len(sys.argv) > 2:
+		proName = sys.argv[2]
+	
+	os.mkdir('_classes')
+	os.mkdir('_result')
+	os.mkdir('_scripts')
+	os.mkdir('_stories')
+	open('_config.yml', 'w', encoding='utf-8').close()
+	open('_classes/index.yml', 'w', encoding='utf-8').close()
+	open('_result/index.yml', 'w', encoding='utf-8').close()
+	open('_stories/index.yml', 'w', encoding='utf-8').close()
+	open('_scripts/index.yml', 'w', encoding='utf-8').close()
+
+def make():
+	try:
+		os.mkdir('.ifm')
+	except FileExistsError:
+		return
+	items = processYamlInclude('items')
+	classes = processYamlInclude('classes')
+	mergeItemsAndClasses(items, classes)
+	f = open('.ifm/items', 'w', encoding='utf-8')
+	f.write(str(items))
+	f.close()
+	processStories()
 
 if __name__ == '__main__':
 	if len(sys.argv) == 1:
 		print('usage:\nifm [new|make]')
 	if sys.argv[1] == 'new':
-		proName = 'untitled'
-		if len(sys.argv) == 2:
-			proName = input('please input the name of your project: (untitled)')
-			if proName == '':
-				proName = 'untitled'
-		elif len(sys.argv) > 2:
-			proName = sys.argv[2]
-		
-		os.mkdir('_classes')
-		os.mkdir('_result')
-		os.mkdir('_scripts')
-		os.mkdir('_stories')
-		open('_config.yml', 'w', encoding='utf-8').close()
-		open('_classes/index.yml', 'w', encoding='utf-8').close()
-		open('_result/index.yml', 'w', encoding='utf-8').close()
-		open('_stories/index.yml', 'w', encoding='utf-8').close()
-		open('_scripts/index.yml', 'w', encoding='utf-8').close()
+		new()
 	elif sys.argv[1] == 'make':
-		items = processYamlInclude('items')
-		classes = processYamlInclude('classes')
-		mergeItemsAndClasses(items, classes)
-		try:
-			os.mkdir('.ifm')
-		except FileExistsError:
-			pass
-		f = open('.ifm/items', 'w', encoding='utf-8')
-		f.write(str(items))
-		f.close()
+		make()
