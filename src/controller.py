@@ -46,10 +46,3 @@ class Controller:
 				break
 			if shell.parse(s) == False:
 				print(data.config['system']['shell']['errorMsg'])
-
-
-
-
-if __name__ == '__main__':
-	c = Controller()
-	c.start()
