@@ -29,7 +29,7 @@ class story:
 			if len(s) == 0 or s == '\n':
 				# EOF or end of story
 				return True
-			cls.print(s, skip)
+			cls.print(s, skip=skip)
 			if not skip:
 				if msvcrt.getwch() == '\u001B':
 					# if `esc` is pressed
@@ -42,45 +42,52 @@ class story:
 		print('params:', params)
 
 	@classmethod
-	def print(cls, s: str, skip = False, end = '\n', indent = ''):
+	def print(cls, *values: str, **kwargs):
 		'''
-		print one line, parse commands and other things in `{}`
+		print `s` at once, parse commands and other things in `{}`
+
+		kwargs: `skip = False`, `sep = ' '`, `end = '\\n'`, `indent = ''`
 		'''
-		# ignore comment
-		s = s.split('#')[0].strip()
-		if len(s) == 0:
-			return
-		# test if this line is a command
-		match = re.match("\\{\\s*([a-zA-Z][^ \\f\\n\\r\\t\\v:\\}]*)\\s*(:\\s*(([^}@'\"]+|('[^']*'|\"[^\"]*\")|\\s)+))?", s)
-		if match:
-			# this line is a command
-			cmd = match.group(1)
-			value = match.group(3).strip()
-			params = {}
+
+		skip = False if 'skip' not in kwargs else kwargs['skip']
+		sep = ' ' if 'sep' not in kwargs else kwargs['sep']
+		end = '\n' if 'end' not in kwargs else kwargs['end']
+		indent = '' if 'indent' not in kwargs else kwargs['indent']
+
+		print(indent)
+		for i in range(len(values)):
+			s = values[i]
+			s = str(s)
+			# test if this line is a command
+			match = re.match("\\{\\s*([a-zA-Z][^ \\f\\n\\r\\t\\v:\\}]*)\\s*(:\\s*(([^}@'\"]+|('[^']*'|\"[^\"]*\")|\\s)+))?", s)
+			if match:
+				# this line is a command
+				cmd = match.group(1)
+				value = match.group(3).strip()
+				params = {}
+				while True:
+					s = s[match.end():].strip()
+					match = re.match("(@\\w+)\\s*=\\s*('[^']*'|\"[^\"]*\")", s)
+					if not match:
+						break
+					params[match.group(1)[1:]] = match.group(2)[1:-1]
+				cls.parse(cmd, value, params)
+				continue
+			# this line is a story, parse value refs
 			while True:
-				s = s[match.end():].strip()
-				match = re.match("(@\\w+)\\s*=\\s*('[^']*'|\"[^\"]*\")", s)
+				match = re.search("(\\{\\{)(\\s*[^ \\f\\n\\r\\t\\v\\}]+\\s*)(\\}\\})", s)
 				if not match:
+					# no more value refs
 					break
-				params[match.group(1)[1:]] = match.group(2)[1:-1]
-			cls.parse(cmd, value, params)
-			return
-		# this line is a story, parse value refs
-		while True:
-			match = re.search("(\\{\\{)(\\s*[^ \\f\\n\\r\\t\\v\\}]+\\s*)(\\}\\})", s)
-			if not match:
-				# no more value refs
-				break
-			s = s[:match.start()] + data.items[match.group(2).strip()] + s[match.end():]
-		# print story
-		if skip or data.config['system.printInterval'] <= 0:
-			# pring line by once
-			print(indent, end='')
-			print(s, end=end)
-		else:
-			# print line by char
-			print(indent, end='')
-			for c in s:
-				print(c, end='', flush=True)
-				sleep(data.config['system.printInterval'] / 1000)
-			print('', end=end)
+				s = s[:match.start()] + data.items[match.group(2).strip()] + s[match.end():]
+			# print story
+			if skip or 'system.printInterval' not in data.config or data.config['system.printInterval'] <= 0:
+				# pring line by once
+				print(s, end='', flush=True)
+			else:
+				# print line by char
+				for c in s:
+					print(c, end='', flush=True)
+					sleep(data.config['system.printInterval'])
+			print(sep, end='')
+		print('', end=end)
