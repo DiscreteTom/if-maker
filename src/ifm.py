@@ -32,7 +32,7 @@ def processSingleClass(classes: dict, classID: str):
 		return
 	currentClass = classes[classID]
 	# merge currentClass['classes'] to currentClass
-	for classID in currentClass:
+	for classID in currentClass['classes']:
 		# recursively process
 		processSingleClass(classes, classID)
 		targetClass = classes[classID]
@@ -85,7 +85,7 @@ def merge(higher: dict, lower: dict):
 				if key in higher['data']:
 					print('warning: data ignored: key =', key)
 				else:
-					higher[key] = lower[key]
+					higher['data'][key] = lower['data'][key]
 
 def processYamlInclude(processType: str):
 	'''
