@@ -4,35 +4,36 @@ class shell:
 	'''
 	provide `shell.load`, `shell.unload` and `shell.parse`
 	'''
-	itemActions = {}
+	__itemActions = {}
 
 	@classmethod
-	def load(cls, items):
+	def load(cls, *items):
 		'''
-		`items` can be a `str` or a `list`
+		`items` can be a list of `str` or `list` or `tuple`
 		'''
 		from translator import translator
-		# convert items to a list
-		if isinstance(items, str):
-			items = [items]
 
 		for itemID in items:
-			# judge existance
+			if isinstance(itemID, list) or isinstance(itemID, tuple):
+				# not a str, process list or tuple recursively
+				cls.load(*itemID)
+				continue
+			# itemID is a str, judge existance
 			if itemID not in data.items:
 				continue
 			if 'actions' not in data.items[itemID]:
 				continue
 
 			# add actions
-			cls.itemActions[itemID] = data.items[itemID]['actions']
+			cls.__itemActions[itemID] = data.items[itemID]['actions']
 
 			if 'onLoad' in data.items[itemID]:
 				translator.run(data.items[itemID]['onLoad'].replace('this["', 'data.items["' + itemID + '.'))
 
 	@classmethod
-	def unload(cls, items):
+	def unload(cls, *items):
 		'''
-		`items` can be a `str` or a `list`
+		`items` can be a list of `str` or `list` or `tuple`
 		'''
 		from translator import translator
 		# convert items to a list
@@ -40,9 +41,14 @@ class shell:
 			items = [items]
 
 		for itemID in items:
-			if itemID not in cls.itemActions:
+			if isinstance(itemID, list) or isinstance(itemID, tuple):
+				# not a str, process list or tuple recursively
+				cls.unload(*itemID)
 				continue
-			cls.itemActions.pop(itemID)
+			# itemID is a str, judge existance
+			if itemID not in cls.__itemActions:
+				continue
+			cls.__itemActions.pop(itemID)
 			if 'onUnload' in data.items[itemID]:
 				translator.run(data.items[itemID]['onUnload'].replace('this["', 'data.items["' + itemID + '.'))
 		return True
@@ -52,8 +58,8 @@ class shell:
 		from translator import translator
 		cmd = cmd.split()
 		# traverse actions
-		for itemID in cls.itemActions:
-			for action in cls.itemActions[itemID]:
+		for itemID in cls.__itemActions:
+			for action in cls.__itemActions[itemID]:
 				# try to match
 				pattern = action['name'].split()
 				# judge cmd length
