@@ -26,7 +26,7 @@ class story:
 		skip = False
 		while True:
 			s = f.readline().strip()
-			if len(s) == 0 or s == '\n':
+			if len(s) == 0:
 				# EOF or end of story
 				return True
 			cls.print(s, skip=skip)
@@ -49,15 +49,15 @@ class story:
 		'''
 		print `s` at once, parse commands and other things in `{}`
 
-		kwargs: `skip = False`, `sep = ' '`, `end = '\\n'`, `indent = ''`
+		kwargs: `skip = True`, `sep = ' '`, `end = '\\n'`, `indent = ''`
 		'''
 
-		skip = False if 'skip' not in kwargs else kwargs['skip']
+		skip = True if 'skip' not in kwargs else kwargs['skip']
 		sep = ' ' if 'sep' not in kwargs else kwargs['sep']
 		end = '\n' if 'end' not in kwargs else kwargs['end']
 		indent = '' if 'indent' not in kwargs else kwargs['indent']
 
-		print(indent)
+		print(indent, end='')
 		for i in range(len(values)):
 			s = values[i]
 			s = str(s)
