@@ -26,14 +26,14 @@ class shell:
 				itemID = itemID[1:]
 			# judge existance
 			if itemID not in data.items:
-				if 'shell' in data.config['debug']:
+				if 'load' in data.config['debug']:
 					print('debug.load:', itemID, 'not exist in items')
 				continue
 			if 'actions' not in data.items[itemID]:
 				continue
 
 			# add actions
-			if 'shell' in data.config['debug']:
+			if 'load' in data.config['debug']:
 				print('debug.load: loading', itemID)
 			cls.__itemActions[itemID] = data.items[itemID]['actions']
 
@@ -57,10 +57,10 @@ class shell:
 				continue
 			# itemID is a str, judge existance
 			if itemID not in cls.__itemActions:
-				if 'shell' in data.config['debug']:
+				if 'unload' in data.config['debug']:
 					print('debug.unload:', itemID, 'not found in items')
 				continue
-			if 'shell' in data.config['debug']:
+			if 'unload' in data.config['debug']:
 				print('debug.unload: unloading', itemID)
 			cls.__itemActions.pop(itemID)
 			if 'onUnload' in data.items[itemID]:
@@ -69,7 +69,7 @@ class shell:
 
 	@classmethod
 	def parse(cls, cmd: str):
-		if 'shell' in data.config['debug']:
+		if 'parse' in data.config['debug']:
 			print('debug.parse: parsing', cmd)
 		import translator
 		cmd = cmd.split()
@@ -105,7 +105,7 @@ class shell:
 							break
 				if match:
 					# process `this`
-					if 'shell' in data.config['debug']:
+					if 'parse' in data.config['debug']:
 						print('debug.parse: matching', action['name'], 'of', itemID)
 					return translator.run(action['code'].replace('this["', 'data.items["' + itemID + '.'), params)
 		return False
