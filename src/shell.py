@@ -9,15 +9,17 @@ class shell:
 	@classmethod
 	def load(cls, *items):
 		'''
-		`items` can be a list of `str` or `list` or `tuple`
+		`items` can be a list of `str` or `list` or `tuple` or `dict`
 		'''
 		import translator
-
 
 		for itemID in items:
 			if isinstance(itemID, list) or isinstance(itemID, tuple):
 				# not a str, process list or tuple recursively
 				cls.load(*itemID)
+				continue
+			if isinstance(itemID, dict):
+				cls.load(itemID['id'])
 				continue
 			# itemID is a str, judge existance
 			if itemID not in data.items:
@@ -34,17 +36,17 @@ class shell:
 	@classmethod
 	def unload(cls, *items):
 		'''
-		`items` can be a list of `str` or `list` or `tuple`
+		`items` can be a list of `str` or `list` or `tuple` or `dict`
 		'''
 		import translator
-		# convert items to a list
-		if isinstance(items, str):
-			items = [items]
 
 		for itemID in items:
 			if isinstance(itemID, list) or isinstance(itemID, tuple):
 				# not a str, process list or tuple recursively
 				cls.unload(*itemID)
+				continue
+			if isinstance(itemID, dict):
+				cls.unload(itemID['id'])
 				continue
 			# itemID is a str, judge existance
 			if itemID not in cls.__itemActions:
