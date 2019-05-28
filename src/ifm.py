@@ -144,6 +144,10 @@ def processStories():
 		fin.close()
 	fout.close()
 
+def itemsAddID(items: dict):
+	for key in items:
+		items[key]['id'] = key
+
 def errorHandler():
 	'''
 	clear output folder and exit
@@ -178,6 +182,7 @@ def make():
 	items = processYamlInclude('items')
 	classes = processYamlInclude('classes')
 	mergeItemsAndClasses(items, classes)
+	itemsAddID(items)
 	f = open('.ifm/items', 'w', encoding='utf-8')
 	f.write(str(items))
 	f.close()
