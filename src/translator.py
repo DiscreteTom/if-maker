@@ -2,6 +2,8 @@ def run(code: str, params = {}):
 	from shell import shell
 	from data import data
 	from story import story
+	if 'run' in data.config['debug']:
+		print('debug.run: running', code, 'params:', params)
 	cmds = code.split(';')
 	for cmd in cmds:
 		cmd = cmd.strip()
