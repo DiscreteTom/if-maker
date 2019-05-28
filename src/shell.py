@@ -11,7 +11,8 @@ class shell:
 		'''
 		`items` can be a list of `str` or `list` or `tuple`
 		'''
-		from translator import translator
+		import translator
+
 
 		for itemID in items:
 			if isinstance(itemID, list) or isinstance(itemID, tuple):
@@ -35,7 +36,7 @@ class shell:
 		'''
 		`items` can be a list of `str` or `list` or `tuple`
 		'''
-		from translator import translator
+		import translator
 		# convert items to a list
 		if isinstance(items, str):
 			items = [items]
@@ -55,7 +56,7 @@ class shell:
 
 	@classmethod
 	def parse(cls, cmd: str):
-		from translator import translator
+		import translator
 		cmd = cmd.split()
 		# traverse actions
 		for itemID in cls.__itemActions:
