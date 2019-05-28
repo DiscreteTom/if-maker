@@ -36,7 +36,7 @@ class story:
 					skip = True
 
 	@classmethod
-	def parse(cls, cmd: str, value = '', params = {}):
+	def __parse(cls, cmd: str, value = '', params = {}):
 		print('cmd:', cmd)
 		print('value:', value)
 		print('params:', params)
@@ -71,7 +71,7 @@ class story:
 					if not match:
 						break
 					params[match.group(1)[1:]] = match.group(2)[1:-1]
-				cls.parse(cmd, value, params)
+				cls.__parse(cmd, value, params)
 				continue
 			# this line is a story, parse value refs
 			while True:
