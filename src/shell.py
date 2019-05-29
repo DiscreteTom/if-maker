@@ -39,7 +39,7 @@ class shell:
 			cls.__itemActions[itemID] = data.items[itemID]['actions']
 
 			if 'onLoad' in data.items[itemID]:
-				translator.run(data.items[itemID]['onLoad'].replace('this["', 'data.items["' + itemID + '.'))
+				translator.run(data.items[itemID]['onLoad'].replace('this["', 'data.items["' + itemID + '.').replace("this['", "data.items['" + itemID + '.'))
 
 	@classmethod
 	def unload(cls, *items):
@@ -68,7 +68,7 @@ class shell:
 				print('debug.unload: unloading', itemID)
 			cls.__itemActions.pop(itemID)
 			if 'onUnload' in data.items[itemID]:
-				translator.run(data.items[itemID]['onUnload'].replace('this["', 'data.items["' + itemID + '.'))
+				translator.run(data.items[itemID]['onUnload'].replace('this["', 'data.items["' + itemID + '.')).replace("this['", "data.items['" + itemID + '.')
 		return True
 
 	@classmethod
@@ -111,5 +111,5 @@ class shell:
 					# process `this`
 					if 'debug.parse' in data.config:
 						print('debug.parse: matching', action['name'], 'of', itemID)
-					return translator.run(action['code'].replace('this["', 'data.items["' + itemID + '.'), params)
+					return translator.run(action['code'].replace('this["', 'data.items["' + itemID + '.').replace("this['", "data.items['" + itemID + '.'), params)
 		return False
