@@ -106,12 +106,11 @@ def processYamlInclude(processType: str):
 			if 'include' in current:
 				result['include'] += current.pop('include')
 			# merge other result
-			for key in current:
-				if key not in result:
-					result[key] = current[key]
+			for item in current:
+				if item in result:
+					merge(result[item], current[item])
 				else:
-					print(processType, 'conflict:', key)
-					errorHandler()
+					result[item] = current[item]
 		# now result['include'] is empty
 		result.pop('include')
 	return result
