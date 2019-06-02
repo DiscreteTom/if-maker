@@ -80,8 +80,9 @@ class shell:
 
 		`pos` start from 1
 		'''
+		result = ''
 		if not len(part):
-			return ''
+			return result
 		for itemID in cls.__itemActions:
 			for action in cls.__itemActions[itemID]:
 				if len(action['name']) < pos:
@@ -92,9 +93,10 @@ class shell:
 					continue
 				if current == 'this':
 					current = data.items[itemID]['name']
-				if current.startswith(part):
-					return current[len(part):]
-		return ''
+				if current.startswith(part) and len(current) > len(part):
+					if result == '' or len(result) > len(current[len(part):]):
+						result = current[len(part):]
+		return result
 
 
 	@classmethod

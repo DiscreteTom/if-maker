@@ -19,8 +19,8 @@ class lineDiscipline:
 				if cmd[-1] != ' ':
 					cmds = cmd.split()
 					rest = shell.getComletion(len(cmds), cmds[-1])
-					cmd += rest + ' '
-					print(rest, end=' ', flush=True)
+					cmd += rest
+					print(rest, end='', flush=True)
 			elif ch == '\b':
 				# backspace
 				if len(cmd):
