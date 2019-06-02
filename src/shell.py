@@ -36,7 +36,9 @@ class shell:
 			# add actions
 			if 'debug.load' in data.config:
 				print('debug.load: loading', itemID)
-			cls.__itemActions[itemID] = data.items[itemID]['actions']
+			cls.__itemActions[itemID] = []
+			for action in data.items[itemID]['actions']:
+				cls.__itemActions[itemID].append({'name': action['name'].split(), 'code': action['code']})
 
 			if 'onLoad' in data.items[itemID]:
 				translator.run(data.items[itemID]['onLoad'], {'this': data.items(itemID)})
@@ -81,7 +83,7 @@ class shell:
 		for itemID in cls.__itemActions:
 			for action in cls.__itemActions[itemID]:
 				# try to match
-				pattern = action['name'].split()
+				pattern = action['name']
 				# judge cmd length
 				if len(cmd) != len(pattern):
 					continue
