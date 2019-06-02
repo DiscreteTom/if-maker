@@ -5,13 +5,14 @@ from time import sleep
 from data import data
 from shell import shell
 from story import story
+from ld import lineDiscipline
 
 def start():
 	# print welcome
-	if 'welcome' in data.config['project']:
-		print(data.config['project']['welcome'])
+	if 'project.welcome' in data.config:
+		print(data.config['project.welcome'])
 	else:
-		print(data.config['project']['name'])
+		print(data.config['project.name'])
 
 	# print main menu
 	for i in range(len(data.config['mainMenu'])):
@@ -38,8 +39,10 @@ def newGame():
 
 def loop():
 	while True:
-		s = input(data.config['system']['shell']['prefix'])
+		print(data.config['system']['shell']['prefix'], end='', flush=True)
+		s = lineDiscipline.getCmd()
 		if s == data.config['system']['shell']['exitCmd']:
 			break
 		if shell.parse(s) == False:
 			print(data.config['system']['shell']['errorMsg'])
+

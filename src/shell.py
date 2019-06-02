@@ -74,6 +74,30 @@ class shell:
 		return True
 
 	@classmethod
+	def getComletion(cls, pos: int, part: str):
+		'''
+		return the rest of a command
+
+		`pos` start from 1
+		'''
+		if not len(part):
+			return ''
+		for itemID in cls.__itemActions:
+			for action in cls.__itemActions[itemID]:
+				if len(action['name']) < pos:
+					continue
+				current = action['name'][pos - 1]
+				if current[0] == '(':
+					# it's a param
+					continue
+				if current == 'this':
+					current = data.items[itemID]['name']
+				if current.startswith(part):
+					return current[len(part):]
+		return ''
+
+
+	@classmethod
 	def parse(cls, cmd: str):
 		if 'debug.parse' in data.config:
 			print('debug.parse: parsing', cmd)
