@@ -47,11 +47,9 @@ class story:
 	@classmethod
 	def print(cls, *values: str, **kwargs):
 		'''
-		print values at once, parse commands and other things in `{}`
+		`print(values, ..., skip = True, sep = ' ', end = '\\n', indent = '')`
 
-		values can contain an item list, but no other list
-
-		kwargs: `skip = True`, `sep = ' '`, `end = '\\n'`, `indent = ''`
+		print `values` as `str`, parse `{}` commands in `values`
 		'''
 
 		skip = True if 'skip' not in kwargs else kwargs['skip']
