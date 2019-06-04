@@ -9,7 +9,13 @@ class shell:
 	@classmethod
 	def load(cls, *items):
 		'''
-		`items` can be a list of `str` or `list` or `tuple` or `dict`
+		load `items` to shell so that shell can parse their commands
+
+		`items` can be a list of:
+		- `str` as item ID
+		- `list` as a list of item ID
+		- `tuple` as a list of item ID
+		- `dict` as an existing item
 		'''
 		import translator
 
@@ -46,7 +52,13 @@ class shell:
 	@classmethod
 	def unload(cls, *items):
 		'''
-		`items` can be a list of `str` or `list` or `tuple` or `dict`
+		unload `items` from shell so that shell can not parse their commands
+
+		`items` can be a list of:
+		- `str` as item ID
+		- `list` as a list of item ID
+		- `tuple` as a list of item ID
+		- `dict` as an existing item
 		'''
 		import translator
 
