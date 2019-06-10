@@ -170,10 +170,10 @@ def new():
 	os.mkdir('_scripts')
 	os.mkdir('_stories')
 	open('_config.yml', 'w', encoding='utf-8').close()
-	open('_classes/index.yml', 'w', encoding='utf-8').close()
-	open('_items/index.yml', 'w', encoding='utf-8').close()
-	open('_stories/index.yml', 'w', encoding='utf-8').close()
-	open('_scripts/index.yml', 'w', encoding='utf-8').close()
+	open('_classes/index.ifd', 'w', encoding='utf-8').close()
+	open('_items/index.ifd', 'w', encoding='utf-8').close()
+	open('_stories/index.ift', 'w', encoding='utf-8').close()
+	# open('_scripts/index.yml', 'w', encoding='utf-8').close()
 
 def make():
 	try:
