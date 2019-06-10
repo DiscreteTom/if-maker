@@ -16,5 +16,6 @@ def run(code: str, params = {}):
 	params['items'] = data.items
 	params['game'] = data.game
 	params['findItem'] = data.findItem
+	params['run'] = run
 	result = exec(code, {}, params)
 	return result
