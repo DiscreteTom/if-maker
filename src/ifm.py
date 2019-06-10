@@ -6,6 +6,13 @@ import shutil
 import re
 import json
 
+def processCode(code: str) -> str:
+	index = code.rfind('^')
+	if index == -1:
+		return code
+	else:
+		return code[:index]
+
 def mergeItemsAndClasses(items: dict, classes: dict, globalClasses: list):
 	# traverse all items
 	for key in items:
@@ -124,19 +131,25 @@ def processIfdInclude(processType: str, modules: list):
 			f.close()
 		except: pass
 	# add missing attribute
-	for item in result:
-		if 'name' not in result[item]:
-			result[item]['name'] = ''
-		if 'description' not in result[item]:
-			result[item]['description'] = ''
-		if 'actions' not in result[item]:
-			result[item]['actions'] = []
-		if 'onLoad' not in result[item]:
-			result[item]['onLoad'] = ''
-		if 'onUnload' not in result[item]:
-			result[item]['onUnload'] = ''
-		if 'data' not in result[item]:
-			result[item]['data'] = {}
+	for itemID in result:
+		if 'name' not in result[itemID]:
+			result[itemID]['name'] = ''
+		if 'description' not in result[itemID]:
+			result[itemID]['description'] = ''
+		if 'actions' not in result[itemID]:
+			result[itemID]['actions'] = []
+		if 'onLoad' not in result[itemID]:
+			result[itemID]['onLoad'] = ''
+		if 'onUnload' not in result[itemID]:
+			result[itemID]['onUnload'] = ''
+		if 'data' not in result[itemID]:
+			result[itemID]['data'] = {}
+	# process with `^`
+	for itemID in result:
+		result[itemID]['onLoad'] = processCode(result[itemID]['onLoad'])
+		result[itemID]['onUnload'] = processCode(result[itemID]['onUnload'])
+		for action in result[itemID]['actions']:
+			action['code'] = processCode(action['code'])
 	return result
 
 def processStories():
@@ -175,16 +188,6 @@ def processStories():
 def itemsAddID(items: dict):
 	for key in items:
 		items[key]['id'] = key
-
-def processItemsCode(items: dict):
-	'''
-	get rid of `^`
-	'''
-	for key in items:
-		items[key]['onLoad'] = items[key]['onLoad'].replace('^\n', '')
-		items[key]['onUnload'] = items[key]['onUnload'].replace('^\n', '')
-		for action in items[key]['actions']:
-			action['code'] = action['code'].replace('^\n', '')
 
 def errorHandler():
 	'''
@@ -265,8 +268,10 @@ def make():
 	classes = processIfdInclude('classes', config['modules'])
 	mergeItemsAndClasses(items, classes, config['globalClasses'])
 	itemsAddID(items)
-	processItemsCode(items)
 	f = open('.ifm/items', 'w', encoding='utf-8')
 	json.dump(items, f)
 	f.close()
 	processStories()
+
+if __name__ == '__main__':
+	make()
