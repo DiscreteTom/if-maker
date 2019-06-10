@@ -4,6 +4,7 @@ import yaml
 from refdict import refdict
 import shutil
 import re
+import json
 
 def mergeItemsAndClasses(items: dict, classes: dict, globalClasses: list):
 	# traverse all items
@@ -202,7 +203,7 @@ def getConfig() -> dict:
 	result = configTemplate.pop('make')
 
 	f = open('.ifm/config', 'w', encoding='utf-8')
-	f.write(str(configTemplate))
+	json.dump(configTemplate, f)
 	f.close()
 	return result
 
@@ -243,6 +244,6 @@ def make():
 	itemsAddID(items)
 	processItemsCode(items)
 	f = open('.ifm/items', 'w', encoding='utf-8')
-	f.write(str(items))
+	json.dump(items, f)
 	f.close()
 	processStories()
