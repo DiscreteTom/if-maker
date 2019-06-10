@@ -1,6 +1,6 @@
 from ifm import *
 if len(sys.argv) == 1:
-	print('usage:\nifm [new|make]')
+	print('usage:\nifm [new|make|run]')
 if sys.argv[1] == 'new':
 	new()
 elif sys.argv[1] == 'make':
