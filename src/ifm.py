@@ -7,10 +7,6 @@ import re
 import json
 
 def mergeItemsAndClasses(items: dict, classes: dict, globalClasses: list):
-	if items is None:
-		return
-	if classes is None:
-		return
 	# traverse all items
 	for key in items:
 		item = items[key]
@@ -83,16 +79,19 @@ def merge(higher: dict, lower: dict):
 
 def processIfdInclude(processType: str, modules: list):
 	'''
-	load files. missing attributes will be added
+	load files. missing attributes will be added. If file is empty or not exist, return empty dict
 
 	`processType` should be one of `['items', 'classes']`
 	'''
 	# open root file
-	f = open('_' + processType + '/index.ifd', encoding='utf-8')
-	result = yaml.safe_load(f)
-	f.close()
+	try:
+		f = open('_' + processType + '/index.ifd', encoding='utf-8')
+		result = yaml.safe_load(f)
+		f.close()
+	except: 
+		result = {}
 	if result is None:
-		return None
+		result = {}
 	# process root file include
 	if 'include' in result:
 		# include other file
@@ -174,8 +173,6 @@ def processStories():
 	fout.close()
 
 def itemsAddID(items: dict):
-	if items is None:
-		return
 	for key in items:
 		items[key]['id'] = key
 
@@ -183,8 +180,6 @@ def processItemsCode(items: dict):
 	'''
 	get rid of `^`
 	'''
-	if items is None:
-		return
 	for key in items:
 		items[key]['onLoad'] = items[key]['onLoad'].replace('^\n', '')
 		items[key]['onUnload'] = items[key]['onUnload'].replace('^\n', '')
