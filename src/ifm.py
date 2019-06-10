@@ -7,6 +7,10 @@ import re
 import json
 
 def mergeItemsAndClasses(items: dict, classes: dict, globalClasses: list):
+	if items is None:
+		return
+	if classes is None:
+		return
 	# traverse all items
 	for key in items:
 		item = items[key]
@@ -38,7 +42,7 @@ def processSingleClass(classes: dict, classID: str):
 
 def merge(higher: dict, lower: dict):
 	'''
-	merge those attributes below from lower to higher(higher will be changed), missing attributes will be added:
+	merge those attributes below from lower to higher(higher will be changed):
 	```
 	result = {
 		'name': '', # use higher's if higher's is not empty
@@ -55,33 +59,21 @@ def merge(higher: dict, lower: dict):
 	}
 	```
 	'''
-	if 'name' not in higher:
-		higher['name'] = ''
 	if len(higher['name']) == 0 and 'name' in lower:
 		higher['name'] = lower['name']
 
-	if 'description' not in higher:
-		higher['description'] = ''
 	if len(higher['description']) == 0 and 'description' in lower:
 		higher['description'] = lower['description']
 	
-	if 'actions' not in higher:
-		higher['actions'] = []
 	if 'actions' in lower:
 		higher['actions'] += lower['actions']
 
-	if 'onLoad' not in higher:
-		higher['onLoad'] = ''
 	if 'onLoad' in lower:
 		higher['onLoad'] = lower['onLoad'] + '\n' + higher['onLoad']
 
-	if 'onUnload' not in higher:
-		higher['onUnload'] = ''
 	if 'onUnload' in lower:
 		higher['onUnload'] = lower['onUnload'] + '\n' + higher['onUnload']
 
-	if 'data' not in higher:
-		higher['data'] = {}
 	if 'data' in lower:
 		for key in lower['data']:
 			if key in higher['data'] and lower['data'][key] is not None:
@@ -89,14 +81,19 @@ def merge(higher: dict, lower: dict):
 			else:
 				higher['data'][key] = lower['data'][key]
 
-def processIfdInclude(processType: str):
+def processIfdInclude(processType: str, modules: list):
 	'''
+	load files. missing attributes will be added
+
 	`processType` should be one of `['items', 'classes']`
 	'''
 	# open root file
 	f = open('_' + processType + '/index.ifd', encoding='utf-8')
 	result = yaml.safe_load(f)
 	f.close()
+	if result is None:
+		return None
+	# process root file include
 	if 'include' in result:
 		# include other file
 		while len(result['include']):
@@ -115,6 +112,32 @@ def processIfdInclude(processType: str):
 					result[item] = current[item]
 		# now result['include'] is empty
 		result.pop('include')
+	# process modules
+	for module in modules:
+		try:
+			f = open('_modules/' + module + '/' + processType + '.ifd', encoding='utf-8')
+			yml = yaml.safe_load(f)
+			for item in yml:
+				if item in result:
+					merge(result[item], yml[item])
+				else:
+					result[item] = yml[item]
+			f.close()
+		except: pass
+	# add missing attribute
+	for item in result:
+		if 'name' not in result[item]:
+			result[item]['name'] = ''
+		if 'description' not in result[item]:
+			result[item]['description'] = ''
+		if 'actions' not in result[item]:
+			result[item]['actions'] = []
+		if 'onLoad' not in result[item]:
+			result[item]['onLoad'] = ''
+		if 'onUnload' not in result[item]:
+			result[item]['onUnload'] = ''
+		if 'data' not in result[item]:
+			result[item]['data'] = {}
 	return result
 
 def processStories():
@@ -151,6 +174,8 @@ def processStories():
 	fout.close()
 
 def itemsAddID(items: dict):
+	if items is None:
+		return
 	for key in items:
 		items[key]['id'] = key
 
@@ -158,6 +183,8 @@ def processItemsCode(items: dict):
 	'''
 	get rid of `^`
 	'''
+	if items is None:
+		return
 	for key in items:
 		items[key]['onLoad'] = items[key]['onLoad'].replace('^\n', '')
 		items[key]['onUnload'] = items[key]['onUnload'].replace('^\n', '')
@@ -194,7 +221,8 @@ def getConfig() -> dict:
 			'history': 10 if 'system.history' not in config else config['system.history']
 		},
 		'make': {
-			'globalClasses': [] if 'make.globalClasses' not in config else config['make.globalClasses']
+			'globalClasses': [] if 'make.globalClasses' not in config else config['make.globalClasses'],
+			'modules': [] if 'make.modules' not in config else config['make.modules']
 		},
 		'mainMenu': ['start', 'exit'] if 'mainMenu' not in config else config['mainMenu'],
 		'debug': [] if 'debug' not in config or not isinstance(config['debug'], list) else config['debug']
@@ -238,8 +266,8 @@ def make():
 	except FileExistsError:
 		pass
 	config = getConfig()
-	items = processIfdInclude('items')
-	classes = processIfdInclude('classes')
+	items = processIfdInclude('items', config['modules'])
+	classes = processIfdInclude('classes', config['modules'])
 	mergeItemsAndClasses(items, classes, config['globalClasses'])
 	itemsAddID(items)
 	processItemsCode(items)
