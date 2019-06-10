@@ -5,15 +5,16 @@ from refdict import refdict
 import shutil
 import re
 
-def mergeItemsAndClasses(items: dict, classes: dict):
+def mergeItemsAndClasses(items: dict, classes: dict, globalClasses: list):
 	# traverse all items
 	for key in items:
 		item = items[key]
 		if 'classes' not in item:
-			item['classes'] = ['object']
+			item['classes'] = globalClasses
 		else:
-			if 'object' not in item['classes']:
-				item['classes'].append('object')
+			for c in globalClasses:
+				if c not in item['classes']:
+					item['classes'].append(c)
 		for classID in item['classes']:
 			processSingleClass(classes, classID)
 			merge(item, classes[classID])
@@ -169,6 +170,42 @@ def errorHandler():
 	shutil.rmtree('.ifm')
 	os._exit(1)
 
+def getConfig() -> dict:
+	'''
+	generate .ifm/config and return config['make']
+	'''
+	f = open('_config.yml', encoding='utf-8')
+	config = refdict(yaml.safe_load(f))
+	f.close()
+
+	configTemplate = {
+		'project': {
+			'name': 'untitled project' if 'project.name' not in config else config['project.name'],
+			'welcome': '' if 'project.welcome' not in config else config['project.welcome']
+		},
+		'system': {
+			'shell': {
+				'prefix': '>' if 'system.shell.prefix' not in config else config['system.shell.prefix'],
+				'exitCmd': 'exit' if 'system.shell.exitCmd' not in config else config['system.shell.exitCmd'],
+				'errorMsg': 'invalid command' if 'system.shell.errorMsg' not in config else config['system.shell.errorMsg']
+			},
+			'printInterval': 0.02 if 'system.printInterval' not in config else config['system.printInterval'],
+			'history': 10 if 'system.history' not in config else config['system.history']
+		},
+		'make': {
+			'globalClasses': [] if 'make.globalClasses' not in config else config['make.globalClasses']
+		},
+		'mainMenu': ['start', 'exit'] if 'mainMenu' not in config else config['mainMenu'],
+		'debug': [] if 'debug' not in config or not isinstance(config['debug'], list) else config['debug']
+	}
+
+	result = configTemplate.pop('make')
+
+	f = open('.ifm/config', 'w', encoding='utf-8')
+	f.write(str(configTemplate))
+	f.close()
+	return result
+
 def new():
 	'''
 	`ifm new`: create a new project, create folders and files
@@ -193,15 +230,16 @@ def new():
 
 def make():
 	'''
-	`ifm make`: generate middle files to `.ifm/`, combine items and classes, ignore comments in stories
+	`ifm make`: generate middle files to `.ifm/`, combine items and classes, ignore comments in stories, generate config
 	'''
 	try:
 		os.mkdir('.ifm')
 	except FileExistsError:
 		pass
+	config = getConfig()
 	items = processIfdInclude('items')
 	classes = processIfdInclude('classes')
-	mergeItemsAndClasses(items, classes)
+	mergeItemsAndClasses(items, classes, config['globalClasses'])
 	itemsAddID(items)
 	processItemsCode(items)
 	f = open('.ifm/items', 'w', encoding='utf-8')
