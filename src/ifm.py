@@ -5,14 +5,6 @@ from refdict import refdict
 import shutil
 import re
 
-'''
-`ifm new`: create a new project, create folders and files
-
-`ifm make`: generate files in `.ifm/`, combine items and classes, ignore comments in stories
-
-`ifm run`: run game
-'''
-
 def mergeItemsAndClasses(items: dict, classes: dict):
 	# traverse all items
 	for key in items:
@@ -27,6 +19,9 @@ def mergeItemsAndClasses(items: dict, classes: dict):
 			merge(item, classes[classID])
 
 def processSingleClass(classes: dict, classID: str):
+	'''
+	if `'classes' in classes[classID]`, merge those classes recursively
+	'''
 	if 'classes' not in classes[classID]:
 		# not need to process
 		return
@@ -41,58 +36,63 @@ def processSingleClass(classes: dict, classID: str):
 
 def merge(higher: dict, lower: dict):
 	'''
-	merge those attributes below:
+	merge those attributes below from lower to higher(higher will be changed), missing attributes will be added:
 	```
 	result = {
-		'name': '', # use higher's
-		'description': '', # use higher's
+		'name': '', # use higher's if higher's is not empty
+		'description': '', # use higher's if higher's is not empty
 		'actions': [ # merge, ignore conflict, lower's after higher's
 			{
 				'name': '',
 				'code': ''
 			}
 		],
-		'onLoad': '', # merge, ignore conflict, higher's after lower's, separated by ';'
-		'onUnload': '', # merge, ignore conflict, higher's after lower's, separated by ';'
+		'onLoad': '', # merge, ignore conflict, higher's after lower's
+		'onUnload': '', # merge, ignore conflict, higher's after lower's
 		'data': {} # merge, consider conflict, use higher's
 	}
 	```
 	'''
-	if 'name' not in higher and 'name' in lower:
+	if 'name' not in higher:
+		higher['name'] = ''
+	if len(higher['name']) == 0 and 'name' in lower:
 		higher['name'] = lower['name']
-	if 'description' not in higher and 'description' in lower:
-		higher['description'] = lower['description']
-	if 'actions' in lower:
-		if 'actions' in higher:
-			higher['actions'] += lower['actions']
-		else:
-			higher['actions'] = lower['actions']
-	if 'onLoad' in lower:
-		if 'onLoad' in higher:
-			higher['onLoad'] = lower['onLoad'] + ';' + higher['onLoad']
-		else:
-			higher['onLoad'] = lower['onLoad']
-	if 'onUnload' in lower:
-		if 'onUnload' in higher:
-			higher['onUnload'] = lower['onUnload'] + ';' + higher['onUnload']
-		else:
-			higher['onUnload'] = lower['onUnload']
-	if 'data' in lower:
-		if 'data' not in higher:
-			higher['data'] = lower['data']
-		else:
-			for key in lower['data']:
-				if key in higher['data']:
-					print('warning: data ignored: key =', key)
-				else:
-					higher['data'][key] = lower['data'][key]
 
-def processYamlInclude(processType: str):
+	if 'description' not in higher:
+		higher['description'] = ''
+	if len(higher['description']) == 0 and 'description' in lower:
+		higher['description'] = lower['description']
+	
+	if 'actions' not in higher:
+		higher['actions'] = []
+	if 'actions' in lower:
+		higher['actions'] += lower['actions']
+
+	if 'onLoad' not in higher:
+		higher['onLoad'] = ''
+	if 'onLoad' in lower:
+		higher['onLoad'] = lower['onLoad'] + '\n' + higher['onLoad']
+
+	if 'onUnload' not in higher:
+		higher['onUnload'] = ''
+	if 'onUnload' in lower:
+		higher['onUnload'] = lower['onUnload'] + '\n' + higher['onUnload']
+
+	if 'data' not in higher:
+		higher['data'] = {}
+	if 'data' in lower:
+		for key in lower['data']:
+			if key in higher['data'] and lower['data'][key] is not None:
+				print('warning: data conflict, key=', key, ', using ', higher['data'][key], ' instead of ', lower['data'][key], sep='')
+			else:
+				higher['data'][key] = lower['data'][key]
+
+def processIfdInclude(processType: str):
 	'''
 	`processType` should be one of `['items', 'classes']`
 	'''
 	# open root file
-	f = open('_' + processType + '/index.yml', encoding='utf-8')
+	f = open('_' + processType + '/index.ifd', encoding='utf-8')
 	result = yaml.safe_load(f)
 	f.close()
 	if 'include' in result:
@@ -118,6 +118,9 @@ def processYamlInclude(processType: str):
 def processStories():
 	'''
 	process _stories/index.ift, save result to .ifm/story
+	- get rid of comments
+	- process `#include`
+	- process `##` as `#`
 	'''
 	fout = open('.ifm/story', 'w', encoding='utf-8')
 	storyQueue = ['index.ift']
@@ -149,6 +152,16 @@ def itemsAddID(items: dict):
 	for key in items:
 		items[key]['id'] = key
 
+def processItemsCode(items: dict):
+	'''
+	get rid of `^`
+	'''
+	for key in items:
+		items[key]['onLoad'] = items[key]['onLoad'].replace('^\n', '')
+		items[key]['onUnload'] = items[key]['onUnload'].replace('^\n', '')
+		for action in items[key]['actions']:
+			action['code'] = action['code'].replace('^\n', '')
+
 def errorHandler():
 	'''
 	clear output folder and exit
@@ -157,6 +170,9 @@ def errorHandler():
 	os._exit(1)
 
 def new():
+	'''
+	`ifm new`: create a new project, create folders and files
+	'''
 	proName = 'untitled'
 	if len(sys.argv) == 2:
 		proName = input('please input the name of your project: (untitled)')
@@ -176,14 +192,18 @@ def new():
 	# open('_scripts/index.yml', 'w', encoding='utf-8').close()
 
 def make():
+	'''
+	`ifm make`: generate middle files to `.ifm/`, combine items and classes, ignore comments in stories
+	'''
 	try:
 		os.mkdir('.ifm')
 	except FileExistsError:
 		pass
-	items = processYamlInclude('items')
-	classes = processYamlInclude('classes')
+	items = processIfdInclude('items')
+	classes = processIfdInclude('classes')
 	mergeItemsAndClasses(items, classes)
 	itemsAddID(items)
+	processItemsCode(items)
 	f = open('.ifm/items', 'w', encoding='utf-8')
 	f.write(str(items))
 	f.close()
