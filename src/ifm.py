@@ -5,6 +5,7 @@ from refdict import refdict
 import shutil
 import re
 import json
+import xml.etree.ElementTree as ET
 
 def processCode(code: str) -> str:
 	index = code.rfind('^')
@@ -155,11 +156,12 @@ def processIfdInclude(processType: str, modules: list):
 def processStories():
 	'''
 	process _stories/index.ift, save result to .ifm/story
-	- get rid of comments
 	- process `#include`
-	- process `##` as `#`
+	- add xml header and root element
 	'''
 	fout = open('.ifm/story', 'w', encoding='utf-8')
+	fout.write('<?xml version="1.0"?>')
+	fout.write('<root>')
 	storyQueue = ['index.ift']
 	while len(storyQueue):
 		fin = open('_stories/' + storyQueue.pop(), 'r', encoding='utf-8')
@@ -168,22 +170,21 @@ def processStories():
 			if len(s) == 0:
 				# EOF
 				break
-			s = s.strip() + '\n'
 			if s.startswith('#include '):
 				# add another story file
 				storyQueue.append(s.split()[1])
 			else:
-				# normal story, get rid of comment
-				match = re.search("#[^#]", s)
-				if match:
-					# comment exist, remove comment
-					s = s[0:match.start()] + '\n'
-					if len(s) == 1:
-						# this line has nothing but comment, do not output
-						continue
-				fout.write(s.replace('##', '#'))
+				# normal story
+				fout.write(s)
 		fin.close()
+	fout.write('</root>')
 	fout.close()
+	# try to parse xml
+	try:
+		ET.parse('.ifm/story')
+	except:
+		print('wrong format story')
+		errorHandler()
 
 def itemsAddID(items: dict):
 	for key in items:
