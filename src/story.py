@@ -82,51 +82,35 @@ class story:
 	@classmethod
 	def print(cls, *values: str, **kwargs):
 		'''
-		`print(values, ..., skip = True, sep = ' ', end = '\\n', indent = '')`
+		`print(values, ..., skip = True, sep = ' ', end = '\\n', indent = config['system.print.indent'])`
 
-		print `values` as `str`, parse `{}` commands in `values`
+		replace variables in `{{}}` with its value
 		'''
-
-		skip = True if 'skip' not in kwargs else kwargs['skip']
-		sep = ' ' if 'sep' not in kwargs else kwargs['sep']
-		end = '\n' if 'end' not in kwargs else kwargs['end']
-		indent = '' if 'indent' not in kwargs else kwargs['indent']
+		skip = kwargs.get('skip', True)
+		sep = kwargs.get('sep', ' ')
+		end = kwargs.get('end', '\n')
+		indent = kwargs.get('indent', data.config['system.print.indent'])
 
 		print(indent, end='')
-		for i in range(len(values)):
-			s = values[i]
-			s = str(s)
-			# test if this line is a command
-			match = re.match("\\{\\s*([a-zA-Z][^ \\f\\n\\r\\t\\v:\\}]*)\\s*(:\\s*(([^}@'\"]+|('[^']*'|\"[^\"]*\")|\\s)+))?", s)
-			if match:
-				# this line is a command
-				cmd = match.group(1)
-				value = match.group(3).strip()
-				params = {}
-				while True:
-					s = s[match.end():].strip()
-					match = re.match("(@\\w+)\\s*=\\s*('[^']*'|\"[^\"]*\")", s)
-					if not match:
-						break
-					params[match.group(1)[1:]] = match.group(2)[1:-1]
-				cls.__parse(cmd, value, params)
-				continue
+		for value in values:
+			s = str(value)
 			# this line is a story, parse value refs
 			while True:
 				match = re.search("(\\{\\{)(\\s*[^ \\f\\n\\r\\t\\v\\}]+\\s*)(\\}\\})", s)
 				if not match:
 					# no more value refs
 					break
-				s = s[:match.start()] + data.items[match.group(2).strip()] + s[match.end():]
+				from translator import globalData
+				s = s[:match.start()] + eval(match.group(2).strip(), globalData) + s[match.end():]
 			# print story
-			if skip or 'system.printInterval' not in data.config or data.config['system.printInterval'] <= 0:
+			if skip or 'system.print.interval' not in data.config or data.config['system.print.interval'] <= 0:
 				# pring line by once
 				print(s, end='', flush=True)
 			else:
 				# print line by char
 				for c in s:
 					print(c, end='', flush=True)
-					sleep(data.config['system.printInterval'])
+					sleep(data.config['system.print.interval'])
 			print(sep, end='')
 		print('', end=end)
 
