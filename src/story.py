@@ -115,17 +115,12 @@ class story:
 		print('', end=end)
 
 	@classmethod
-	def printItemList(cls, l: list, **kwargs):
+	def printItemList(cls, l: list, skip = True, indent = '- ', sep = '\n', end = '\n'):
 		'''
-		`l` should be a list of item id
-
-		kwargs: `skip = True`, `indent = '- '`
+		`l` should be a list of item id, print those names
 		'''
-		
-		skip = True if 'skip' not in kwargs else kwargs['skip']
-		indent = '- ' if 'indent' not in kwargs else kwargs['indent']
-
 		for itemID in l:
 			if itemID.startswith('@'):
 				itemID = itemID[1:]
-			cls.print(data.items[itemID]['name'], skip=skip, indent=indent)
+			cls.print(data.items[itemID]['name'], skip=skip, indent=indent, end=sep)
+		cls.print(end)
