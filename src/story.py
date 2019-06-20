@@ -60,13 +60,24 @@ class story:
 		return skip
 
 	@classmethod
-	def __parse(cls, cmd: str, value = '', params = {}):
-		import translator
-		print('cmd:', cmd)
-		print('value:', value)
-		print('params:', params)
-		if cmd == 'code':
-			translator.run(value, params)
+	def __parseElement(cls, el: ElementTree.Element, skip: bool) -> bool:
+		'''
+		parse `el` according to its tag, return `skip`
+		'''
+		localData = {}
+		if el.tag == 'if':
+			if eval(el.get('condition')):
+				cls.__printElement(el)
+		elif el.tag == 'while':
+			while eval(el.get('condition')):
+				cls.__printElement(el)
+		elif el.tag == 'input':
+			if el.get('prompt'):
+				cls.print(el.get('prompt'), skip = skip, end = '')
+				localData[el.text] = input()
+		elif el.tag == 'code':
+			from translator import run
+			run(el.text, localData)
 
 	@classmethod
 	def print(cls, *values: str, **kwargs):
