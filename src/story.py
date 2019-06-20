@@ -2,38 +2,62 @@ import re
 from data import data
 import msvcrt
 from time import sleep
+import xml.etree.ElementTree as ElementTree
 
 class story:
 	@classmethod
-	def printStory(cls, story_id):
+	def printStory(cls, story_id: str) -> bool:
 		'''
-		return False if story_id is not found in story file. story_id should be a number or a string
+		print the story whose id is `story_id`
+
+		return False if story_id is not found in story file
 		'''
-		f = open('.ifm/story', encoding='utf-8')
 		# find the story
-		while True:
-			s = f.readline()
-			if len(s) == 0:
-				# EOF without finding out the story
-				return False
-			# use regex to find story token
-			match = re.search('(\\{)\\s*(\\d+)(\\s*:\\s*([^ \\f\\n\\r\\t\\v\\}]+))?\\s*(\\})', s)
-			if match:
-				if story_id == match.group(4) or str(story_id) == match.group(2):
-					# touch the story tag
-					break
-		# print the story
-		skip = False
-		while True:
-			s = f.readline().strip()
-			if len(s) == 0:
-				# EOF or end of story
+		xml = ElementTree.parse('.ifm/story')
+		stories = xml.findall('story')
+		for story in stories:
+			if story.get('id') == story_id:
+				# print the story element
+				cls.__printElement(story, data.config['system.print.skip'])
 				return True
-			cls.print(s, skip=skip)
-			if not skip:
-				if msvcrt.getwch() == '\u001B':
-					# if `esc` is pressed
-					skip = True
+		return False
+
+	@classmethod
+	def __printElement(cls, el: ElementTree.Element, skip: bool) -> bool:
+		'''
+		print the text of `el` and parse its children, ignore the tag of `el`
+
+		return `skip` if player pressed `esc`
+		'''
+		# print text
+		if el.text:
+			skip = cls.__printStoryText(el.text, skip)
+		# parse each child and it's tail text
+		for child in el:
+			skip = cls.__parseElement(child, skip)
+			# print tail text
+			if child.tail:
+				skip = cls.__printStoryText(child.tail, skip)
+		return skip
+	
+	@classmethod
+	def __printStoryText(cls, text: str, skip: bool) -> bool:
+		'''
+		`text` can contain `\\n`
+
+		print `text` by lines, strip each line, skip empty lines, start with `config['system.print.indent']`
+
+		return `skip`. `skip` will changed from `False` to `True` if player press `esc`
+		'''
+		for line in text.split('\n'):
+			line = line.strip()
+			if len(line):
+				cls.print(line, skip = skip, indent = data.config['system.print.indent'])
+				if not skip:
+					if msvcrt.getwch() == '\u001B':
+						# if `esc` is pressed
+						skip = True
+		return skip
 
 	@classmethod
 	def __parse(cls, cmd: str, value = '', params = {}):
