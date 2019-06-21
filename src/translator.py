@@ -23,3 +23,4 @@ globalData['items'] = data.items
 globalData['game'] = data.game
 globalData['findItem'] = data.findItem
 globalData['run'] = run
+globalData['loadedItems'] = shell.loadedItems

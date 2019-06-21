@@ -4,6 +4,15 @@ class shell:
 	'''
 	provide `shell.load`, `shell.unload` and `shell.parse`
 	'''
+
+	# itemActions = {
+	# 	'itemID': [
+	# 		{
+	# 			'name': str[],
+	# 			'code': str
+	# 		}
+	# 	]
+	# }
 	__itemActions = {}
 
 	@classmethod
@@ -110,7 +119,6 @@ class shell:
 						result = current[len(part):]
 		return result
 
-
 	@classmethod
 	def parse(cls, cmd: str):
 		if 'debug.parse' in data.config:
@@ -154,3 +162,10 @@ class shell:
 					params['this'] = data.items(itemID)
 					return translator.run(action['code'], params)
 		return False
+
+	@classmethod
+	def loadedItems(cls) -> list:
+		'''
+		return a list of item id which are loaded in shell
+		'''
+		return cls.__itemActions.keys()
