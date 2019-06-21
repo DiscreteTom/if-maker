@@ -222,6 +222,9 @@ def getConfig() -> dict:
 				'indent': config.get('system.print.indent', ''),
 				'skip': config.get('system.print.skip', False)
 			},
+			'story': {
+				'first': config.get('system.story.first', '0')
+			}
 		},
 		'make': {
 			'modules': config.get('make.modules', []),

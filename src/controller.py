@@ -34,7 +34,7 @@ def start():
 		return 0
 
 def newGame():
-	story.printStory(0)
+	story.printStory(data.config['system.story.first'])
 	loop()
 
 def loop():
