@@ -86,7 +86,7 @@ class story:
 
 		replace variables in `{{}}` with its value
 		'''
-		skip = kwargs.get('skip', True)
+		skip = kwargs.get('skip', data.config['system.print.skip'])
 		sep = kwargs.get('sep', ' ')
 		end = kwargs.get('end', '\n')
 		indent = kwargs.get('indent', data.config['system.print.indent'])
