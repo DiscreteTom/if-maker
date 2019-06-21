@@ -39,7 +39,6 @@ def newGame():
 
 def loop():
 	while True:
-		print(data.config['system']['shell']['prefix'], end='', flush=True)
 		s = lineDiscipline.getCmd()
 		if s == data.config['system']['shell']['exitCmd']:
 			break
