@@ -82,7 +82,7 @@ class story:
 	@classmethod
 	def print(cls, *values: str, **kwargs):
 		'''
-		`print(values, ..., skip = True, sep = ' ', end = '\\n', indent = config['system.print.indent'])`
+		`print(values, ..., skip = config['system.print.skip'], sep = ' ', end = '\\n', indent = config['system.print.indent'])`
 
 		replace variables in `{{}}` with its value
 		'''
@@ -92,7 +92,8 @@ class story:
 		indent = kwargs.get('indent', data.config['system.print.indent'])
 
 		print(indent, end='')
-		for value in values:
+		for i in range(len(values)):
+			value = values[i]
 			s = str(value)
 			# this line is a story, parse value refs
 			while True:
@@ -111,7 +112,8 @@ class story:
 				for c in s:
 					print(c, end='', flush=True)
 					sleep(data.config['system.print.interval'])
-			print(sep, end='')
+			if i != len(values) - 1:
+				print(sep, end='')
 		print('', end=end)
 
 	@classmethod
@@ -119,8 +121,11 @@ class story:
 		'''
 		`l` should be a list of item id, print those names
 		'''
-		for itemID in l:
+		for i in range(len(l)):
+			itemID = l[i]
 			if itemID.startswith('@'):
 				itemID = itemID[1:]
-			cls.print(data.items[itemID]['name'], skip=skip, indent=indent, end=sep)
-		cls.print(end)
+			cls.print(data.items[itemID]['name'], skip=skip, indent=indent, end='')
+			if i != len(l) - 1:
+				cls.print(sep, skip = skip, end = '')
+		cls.print(end, skip=skip, end='')
