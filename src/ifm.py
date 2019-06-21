@@ -207,24 +207,28 @@ def getConfig() -> dict:
 
 	configTemplate = {
 		'project': {
-			'name': 'untitled project' if 'project.name' not in config else config['project.name'],
-			'welcome': '' if 'project.welcome' not in config else config['project.welcome']
+			'name': config.get('project.name', 'untitled project'),
+			'welcome': config.get('project.welcome', None)
 		},
 		'system': {
 			'shell': {
-				'prefix': '>' if 'system.shell.prefix' not in config else config['system.shell.prefix'],
-				'exitCmd': 'exit' if 'system.shell.exitCmd' not in config else config['system.shell.exitCmd'],
-				'errorMsg': 'invalid command' if 'system.shell.errorMsg' not in config else config['system.shell.errorMsg']
+				'prefix': config.get('system.shell.prefix', '>'),
+				'exitCmd': config.get('system.shell.exitCmd', 'exit'),
+				'errorMsg': config.get('system.shell.errorMsg', 'invalid command'),
+				'history': config.get('system.shell.history', 10)
 			},
-			'printInterval': 0.02 if 'system.printInterval' not in config else config['system.printInterval'],
-			'history': 10 if 'system.history' not in config else config['system.history']
+			'print': {
+				'interval': config.get('system.print.interval', 0.02),
+				'indent': config.get('system.print.indent', ''),
+				'skip': config.get('system.print.skip', False)
+			},
 		},
 		'make': {
-			'globalClasses': [] if 'make.globalClasses' not in config else config['make.globalClasses'],
-			'modules': [] if 'make.modules' not in config else config['make.modules']
+			'modules': config.get('make.modules', []),
+			'globalClasses': config.get('make.globalClasses', []),
 		},
-		'mainMenu': ['start', 'exit'] if 'mainMenu' not in config else config['mainMenu'],
-		'debug': [] if 'debug' not in config or not isinstance(config['debug'], list) else config['debug']
+		'mainMenu': config.get('mainMenu', ['start', 'exit']),
+		'debug': config.get('debug', [])
 	}
 
 	result = configTemplate.pop('make')
