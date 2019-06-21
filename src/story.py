@@ -18,7 +18,7 @@ class story:
 		for story in stories:
 			if story.get('id') == story_id:
 				# print the story element
-				cls.__printElement(story, data.config['system.print.skip'])
+				cls.__printElement(story, data.config['system.story.skip'])
 				return True
 		return False
 

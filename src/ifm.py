@@ -220,10 +220,11 @@ def getConfig() -> dict:
 			'print': {
 				'interval': config.get('system.print.interval', 0.02),
 				'indent': config.get('system.print.indent', ''),
-				'skip': config.get('system.print.skip', False)
+				'skip': config.get('system.print.skip', True)
 			},
 			'story': {
-				'first': config.get('system.story.first', '0')
+				'first': config.get('system.story.first', '0'),
+				'skip': config.get('system.story.skip', False)
 			}
 		},
 		'make': {
