@@ -231,7 +231,7 @@ def getConfig() -> dict:
 			'globalClasses': config.get('make.globalClasses', []),
 		},
 		'mainMenu': config.get('mainMenu', ['start', 'exit']),
-		'debug': config.get('debug', [])
+		'debug': [] if config.get('debug', []) is None else config.get('debug', []) 
 	}
 
 	result = configTemplate.pop('make')
