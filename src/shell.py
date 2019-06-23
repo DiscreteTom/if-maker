@@ -95,31 +95,6 @@ class shell:
 		return True
 
 	@classmethod
-	def getComletion(cls, pos: int, part: str):
-		'''
-		return the rest of a command
-
-		`pos` start from 1
-		'''
-		result = ''
-		if not len(part):
-			return result
-		for itemID in cls.__itemActions:
-			for action in cls.__itemActions[itemID]:
-				if len(action['name']) < pos:
-					continue
-				current = action['name'][pos - 1]
-				if current[0] == '(':
-					# it's a param
-					continue
-				if current == 'this':
-					current = data.items[itemID]['name']
-				if current.startswith(part) and len(current) > len(part):
-					if result == '' or len(result) > len(current[len(part):]):
-						result = current[len(part):]
-		return result
-
-	@classmethod
 	def parse(cls, cmd: str):
 		if 'debug.parse' in data.config:
 			print('debug.parse: parsing', cmd)
@@ -169,3 +144,8 @@ class shell:
 		return a list of item id which are loaded in shell
 		'''
 		return cls.__itemActions.keys()
+
+def completer(text: str, state: int):
+	result = [data.items[x]['name'] for x in shell.loadedItems() if data.items[x]['name'].startswith(text)]
+	result += [x for x in data.completer if x.startswith(text)] + [None]
+	return result[state]

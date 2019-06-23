@@ -3,9 +3,12 @@ import msvcrt
 import os
 from time import sleep
 from data import data
-from shell import shell
+from shell import shell, completer
 from story import story
-from ld import lineDiscipline
+import readline
+
+readline.parse_and_bind('tab: complete')
+readline.set_completer(completer)
 
 def start():
 	# print welcome
@@ -39,7 +42,7 @@ def newGame():
 
 def loop():
 	while True:
-		s = lineDiscipline.getCmd()
+		s = input(data.config['system.shell.prefix'])
 		if s == data.config['system']['shell']['exitCmd']:
 			break
 		if shell.parse(s) == False:

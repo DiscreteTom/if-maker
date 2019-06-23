@@ -1,5 +1,9 @@
 '''
-use `data.config` to access config file, use `data.items` to access items file
+- `data.config` to access config variables
+- `data.items` to access items
+- `data.game` to access global variables
+- `data.completer` to add user defined words
+- `data.findItem(itemName)` to get item id
 '''
 
 from refdict import refdict
@@ -17,6 +21,7 @@ class Data:
 		f.close()
 		# user defined global data
 		self.game = refdict({})
+		self.completer = []
 	def findItem(self, itemName: str):
 		'''
 		return itemID
