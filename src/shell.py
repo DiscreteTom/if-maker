@@ -55,8 +55,8 @@ class shell:
 			for action in data.items[itemID]['actions']:
 				cls.__itemActions[itemID].append({'name': action['name'].split(), 'code': action['code']})
 
-			if 'onLoad' in data.items[itemID]:
-				translator.run(data.items[itemID]['onLoad'], {'this': data.items(itemID)})
+			if 'onMount' in data.items[itemID]:
+				translator.run(data.items[itemID]['onMount'], {'this': data.items(itemID)})
 
 	@classmethod
 	def unmount(cls, *items):
@@ -90,8 +90,8 @@ class shell:
 			if 'debug.unmount' in data.config:
 				print('debug.unmount: unloading', itemID)
 			cls.__itemActions.pop(itemID)
-			if 'onUnload' in data.items[itemID]:
-				translator.run(data.items[itemID]['onUnload'], {'this': data.items(itemID)})
+			if 'onUnmount' in data.items[itemID]:
+				translator.run(data.items[itemID]['onUnmount'], {'this': data.items(itemID)})
 		return True
 
 	@classmethod

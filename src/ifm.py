@@ -57,8 +57,8 @@ def merge(higher: dict, lower: dict):
 				'code': ''
 			}
 		],
-		'onLoad': '', # merge, ignore conflict, higher's after lower's
-		'onUnload': '', # merge, ignore conflict, higher's after lower's
+		'onMount': '', # merge, ignore conflict, higher's after lower's
+		'onUnmount': '', # merge, ignore conflict, higher's after lower's
 		'data': {} # merge, consider conflict, use higher's
 	}
 	```
@@ -72,11 +72,11 @@ def merge(higher: dict, lower: dict):
 	if 'actions' in lower:
 		higher['actions'] += lower['actions']
 
-	if 'onLoad' in lower:
-		higher['onLoad'] = lower['onLoad'] + '\n' + higher['onLoad']
+	if 'onMount' in lower:
+		higher['onMount'] = lower['onMount'] + '\n' + higher['onMount']
 
-	if 'onUnload' in lower:
-		higher['onUnload'] = lower['onUnload'] + '\n' + higher['onUnload']
+	if 'onUnmount' in lower:
+		higher['onUnmount'] = lower['onUnmount'] + '\n' + higher['onUnmount']
 
 	if 'data' in lower:
 		for key in lower['data']:
@@ -139,16 +139,16 @@ def processIfdInclude(processType: str, modules: list):
 			result[itemID]['description'] = ''
 		if 'actions' not in result[itemID]:
 			result[itemID]['actions'] = []
-		if 'onLoad' not in result[itemID]:
-			result[itemID]['onLoad'] = ''
-		if 'onUnload' not in result[itemID]:
-			result[itemID]['onUnload'] = ''
+		if 'onMount' not in result[itemID]:
+			result[itemID]['onMount'] = ''
+		if 'onUnmount' not in result[itemID]:
+			result[itemID]['onUnmount'] = ''
 		if 'data' not in result[itemID]:
 			result[itemID]['data'] = {}
 	# process with `^`
 	for itemID in result:
-		result[itemID]['onLoad'] = processCode(result[itemID]['onLoad'])
-		result[itemID]['onUnload'] = processCode(result[itemID]['onUnload'])
+		result[itemID]['onMount'] = processCode(result[itemID]['onMount'])
+		result[itemID]['onUnmount'] = processCode(result[itemID]['onUnmount'])
 		for action in result[itemID]['actions']:
 			action['code'] = processCode(action['code'])
 	return result
