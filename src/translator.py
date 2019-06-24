@@ -12,8 +12,8 @@ def run(code: str, params = {}):
 	result = exec(code, globalData, params)
 	return result
 
-globalData['load'] = shell.load
-globalData['unload'] = shell.unload
+globalData['mount'] = shell.mount
+globalData['unmount'] = shell.unmount
 globalData['parse'] = shell.parse
 globalData['print'] = story.print
 globalData['printStory'] = story.printStory
@@ -24,3 +24,5 @@ globalData['game'] = data.game
 globalData['findItem'] = data.findItem
 globalData['run'] = run
 globalData['loadedItems'] = shell.loadedItems
+globalData['save'] = data.save
+globalData['load'] = data.load

@@ -2,7 +2,7 @@ from data import data
 
 class shell:
 	'''
-	provide `shell.load`, `shell.unload` and `shell.parse`
+	provide `shell.mount`, `shell.unmount` and `shell.parse`
 	'''
 
 	# itemActions = {
@@ -16,9 +16,9 @@ class shell:
 	__itemActions = {}
 
 	@classmethod
-	def load(cls, *items):
+	def mount(cls, *items):
 		'''
-		load `items` to shell so that shell can parse their commands
+		mount `items` to shell so that shell can parse their commands
 
 		`items` can be a list of:
 		- `str` as item ID
@@ -32,25 +32,25 @@ class shell:
 			if isinstance(itemID, list) or isinstance(itemID, tuple):
 				# not a str, process list or tuple recursively
 				if len(itemID):
-					cls.load(*itemID)
+					cls.mount(*itemID)
 				continue
 			if isinstance(itemID, dict):
-				cls.load(itemID['id'])
+				cls.mount(itemID['id'])
 				continue
 			# itemID is a str, judge `@`
 			if itemID.startswith('@'):
 				itemID = itemID[1:]
 			# judge existance
 			if itemID not in data.items:
-				if 'debug.load' in data.config:
-					print('debug.load:', itemID, 'not exist in items')
+				if 'debug.mount' in data.config:
+					print('debug.mount:', itemID, 'not exist in items')
 				continue
 			if 'actions' not in data.items[itemID]:
 				continue
 
 			# add actions
-			if 'debug.load' in data.config:
-				print('debug.load: loading', itemID)
+			if 'debug.mount' in data.config:
+				print('debug.mount: loading', itemID)
 			cls.__itemActions[itemID] = []
 			for action in data.items[itemID]['actions']:
 				cls.__itemActions[itemID].append({'name': action['name'].split(), 'code': action['code']})
@@ -59,9 +59,9 @@ class shell:
 				translator.run(data.items[itemID]['onLoad'], {'this': data.items(itemID)})
 
 	@classmethod
-	def unload(cls, *items):
+	def unmount(cls, *items):
 		'''
-		unload `items` from shell so that shell can not parse their commands
+		unmount `items` from shell so that shell can not parse their commands
 
 		`items` can be a list of:
 		- `str` as item ID
@@ -75,20 +75,20 @@ class shell:
 			if isinstance(itemID, list) or isinstance(itemID, tuple):
 				# not a str, process list or tuple recursively
 				if len(itemID):
-					cls.unload(*itemID)
+					cls.unmount(*itemID)
 				continue
 			if isinstance(itemID, dict):
-				cls.unload(itemID['id'])
+				cls.unmount(itemID['id'])
 				continue
 			# itemID is a str, judge existance
 			if itemID.startswith('@'):
 				itemID = itemID[1:]
 			if itemID not in cls.__itemActions:
-				if 'debug.unload' in data.config:
-					print('debug.unload:', itemID, 'not found in items')
+				if 'debug.unmount' in data.config:
+					print('debug.unmount:', itemID, 'not found in items')
 				continue
-			if 'debug.unload' in data.config:
-				print('debug.unload: unloading', itemID)
+			if 'debug.unmount' in data.config:
+				print('debug.unmount: unloading', itemID)
 			cls.__itemActions.pop(itemID)
 			if 'onUnload' in data.items[itemID]:
 				translator.run(data.items[itemID]['onUnload'], {'this': data.items(itemID)})

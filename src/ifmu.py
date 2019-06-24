@@ -28,9 +28,9 @@ def parse(cmd: str):
 	let shell parse `cmd`
 	'''
 
-def load(*items):
+def mount(*items):
 	'''
-	load `items` to shell so that shell can parse their commands
+	mount `items` to shell so that shell can parse their commands
 
 	`items` can be a list of:
 	- `str` as item ID
@@ -39,9 +39,9 @@ def load(*items):
 	- `dict` as an existing item
 	'''
 
-def unload(*items):
+def unmount(*items):
 	'''
-	unload `items` from shell so that shell can not parse their commands
+	unmount `items` from shell so that shell can not parse their commands
 
 	`items` can be a list of:
 	- `str` as item ID

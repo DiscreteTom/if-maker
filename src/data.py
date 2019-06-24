@@ -4,6 +4,7 @@
 - `data.game` to access global variables
 - `data.completer` to add user defined words
 - `data.findItem(itemName)` to get item id
+- `data.save/load(fileName)` to save/mount game progress
 '''
 
 from refdict import refdict
@@ -30,5 +31,33 @@ class Data:
 			if self.items[itemID]["name"] == itemName:
 				return itemID
 		return None
+	
+	def save(self, fileName: str):
+		'''
+		save game progress to `fileName`
+		'''
+		f = open(fileName, 'w', encoding='utf-8')
+		result = {
+			'items': str(self.items),
+			'config': str(self.config),
+			'game': str(self.game)
+		}
+		json.dump(result, f)
+		f.close()
+	
+	def load(self, fileName: str):
+		'''
+		load game progress from `fileName`
+		'''
+		try:
+			f = open(fileName, encoding='utf-8')
+			d = json.load(f)
+			self.completer = eval(d.completer)
+			self.items = eval(d.items)
+			self.config = eval(d.config)
+			self.game = eval(d.game)
+			f.close()
+		except:
+			print('can not load SAVE file')
 
 data = Data()
