@@ -40,7 +40,8 @@ class Data:
 		result = {
 			'items': str(self.items),
 			'config': str(self.config),
-			'game': str(self.game)
+			'game': str(self.game),
+			'completer': str(self.completer)
 		}
 		json.dump(result, f)
 		f.close()
@@ -49,15 +50,12 @@ class Data:
 		'''
 		load game progress from `fileName`
 		'''
-		try:
-			f = open(fileName, encoding='utf-8')
-			d = json.load(f)
-			self.completer = eval(d.completer)
-			self.items = eval(d.items)
-			self.config = eval(d.config)
-			self.game = eval(d.game)
-			f.close()
-		except:
-			print('can not load SAVE file')
+		f = open(fileName, encoding='utf-8')
+		d = json.load(f)
+		self.completer = eval(d['completer'])
+		self.items = eval(d['items'])
+		self.config = eval(d['config'])
+		self.game = eval(d['game'])
+		f.close()
 
 data = Data()
