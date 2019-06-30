@@ -36,12 +36,14 @@ class Data:
 		'''
 		save game progress to `fileName`
 		'''
+		from shell import shell
 		f = open(fileName, 'w', encoding='utf-8')
 		result = {
 			'items': str(self.items),
 			'config': str(self.config),
 			'game': str(self.game),
-			'completer': str(self.completer)
+			'completer': str(self.completer),
+			'shell': str(shell.data())
 		}
 		json.dump(result, f)
 		f.close()
@@ -50,12 +52,14 @@ class Data:
 		'''
 		load game progress from `fileName`
 		'''
+		from shell import shell
 		f = open(fileName, encoding='utf-8')
 		d = json.load(f)
 		self.completer = eval(d['completer'])
 		self.items = eval(d['items'])
 		self.config = eval(d['config'])
 		self.game = eval(d['game'])
+		shell.load(eval(d['shell']))
 		f.close()
 
 data = Data()

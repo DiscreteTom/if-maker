@@ -145,6 +145,14 @@ class shell:
 		'''
 		return cls.__itemActions.keys()
 
+	@classmethod
+	def data(cls) -> dict:
+		return cls.__itemActions
+
+	@classmethod
+	def load(cls, data = {}):
+		cls.__itemActions = data
+
 def completer(text: str, state: int):
 	result = [data.items[x]['name'] for x in shell.loadedItems() if data.items[x]['name'].startswith(text)]
 	result += [x for x in data.completer if x.startswith(text)] + [None]
