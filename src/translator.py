@@ -5,6 +5,7 @@ from story import story
 globalData = {}
 
 def run(code: str, params = {}):
+	code = 'from output import *\n' + code
 	if 'debug.run' in data.config:
 		print('debug.run: running', code, 'params:', params)
 	result = None

@@ -155,11 +155,11 @@ def processIfdInclude(processType: str, modules: list):
 
 def processStories():
 	'''
-	process _stories/index.ift, save result to .ifm/story
+	process _stories/index.ift, save result to output/story
 	- process `#include`
 	- add xml header and root element
 	'''
-	fout = open('.ifm/story', 'w', encoding='utf-8')
+	fout = open('output/story', 'w', encoding='utf-8')
 	fout.write('<?xml version="1.0"?>')
 	fout.write('<root>')
 	storyQueue = ['index.ift']
@@ -181,7 +181,7 @@ def processStories():
 	fout.close()
 	# try to parse xml
 	try:
-		ET.parse('.ifm/story')
+		ET.parse('output/story')
 	except:
 		print('wrong format story')
 		errorHandler()
@@ -194,12 +194,12 @@ def errorHandler():
 	'''
 	clear output folder and exit
 	'''
-	shutil.rmtree('.ifm')
+	shutil.rmtree('output')
 	os._exit(1)
 
 def getConfig() -> dict:
 	'''
-	generate .ifm/config and return config['make']
+	generate output/config and return config['make']
 	'''
 	f = open('_config.yml', encoding='utf-8')
 	config = refdict(yaml.safe_load(f))
@@ -237,14 +237,14 @@ def getConfig() -> dict:
 
 	result = configTemplate.pop('make')
 
-	f = open('.ifm/config', 'w', encoding='utf-8')
+	f = open('output/config', 'w', encoding='utf-8')
 	json.dump(configTemplate, f)
 	f.close()
 	return result
 
 def new():
 	'''
-	`ifm new`: create a new project, create folders and files
+	`output new`: create a new project, create folders and files
 	'''
 	proName = 'untitled'
 	if len(sys.argv) == 2:
@@ -264,12 +264,25 @@ def new():
 	open('_stories/index.ift', 'w', encoding='utf-8').close()
 	# open('_scripts/index.yml', 'w', encoding='utf-8').close()
 
+def processScripts():
+	'''
+	combine scripts in _scripts into output/scripts.py
+	'''
+	fout = open('output/__init__.py', 'w', encoding='utf-8')
+	for file in os.listdir('_scripts'):
+		if file.endswith('.py'):
+			fin = open('_scripts/' + file, encoding='utf-8')
+			fout.write(fin.read() + '\n')
+			fin.close()
+	fout.close()
+
+
 def make():
 	'''
-	`ifm make`: generate middle files to `.ifm/`, combine items and classes, ignore comments in stories, generate config
+	`output make`: generate middle files to `output/`, combine items and classes, ignore comments in stories, generate config
 	'''
 	try:
-		os.mkdir('.ifm')
+		os.mkdir('output')
 	except FileExistsError:
 		pass
 	config = getConfig()
@@ -277,10 +290,11 @@ def make():
 	classes = processIfdInclude('classes', config['modules'])
 	mergeItemsAndClasses(items, classes, config['globalClasses'])
 	itemsAddID(items)
-	f = open('.ifm/items', 'w', encoding='utf-8')
+	f = open('output/items', 'w', encoding='utf-8')
 	json.dump(items, f)
 	f.close()
 	processStories()
+	processScripts()
 
 if __name__ == '__main__':
 	make()

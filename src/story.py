@@ -13,7 +13,7 @@ class story:
 		return False if story_id is not found in story file
 		'''
 		# find the story
-		xml = ElementTree.parse('.ifm/story')
+		xml = ElementTree.parse('output/story')
 		stories = xml.findall('story')
 		for story in stories:
 			if story.get('id') == story_id:

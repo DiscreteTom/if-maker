@@ -13,11 +13,11 @@ import json
 class Data:
 	def __init__(self):
 		# load config
-		f = open('.ifm/config', encoding='utf-8')
+		f = open('output/config', encoding='utf-8')
 		self.config = refdict(json.load(f))
 		f.close()
 		# load items
-		f = open('.ifm/items', encoding='utf-8')
+		f = open('output/items', encoding='utf-8')
 		self.items = refdict(json.load(f))
 		f.close()
 		# user defined global data
