@@ -153,7 +153,22 @@ class shell:
 	def load(cls, data = {}):
 		cls.__itemActions = data
 
+	@classmethod
+	def actionWords(cls):
+		'''
+		return a `set` of words appeared in itemActions.name
+		'''
+		result = set()
+		for itemID in cls.__itemActions:
+			for action in cls.__itemActions[itemID]:
+				for word in action['name']:
+					if not word.startswith('('):
+						result.add(word)
+		return result
+
 def completer(text: str, state: int):
-	result = [data.items[x]['name'] for x in shell.loadedItems() if data.items[x]['name'].startswith(text)]
-	result += [x for x in data.completer if x.startswith(text)] + [None]
+	result = set([data.items[x]['name'] for x in shell.loadedItems() if data.items[x]['name'].startswith(text)])
+	result.update([x for x in data.completer if x.startswith(text)])
+	result.update([x for x in shell.actionWords() if x.startswith(text)])
+	result = list(result) + [None]
 	return result[state]

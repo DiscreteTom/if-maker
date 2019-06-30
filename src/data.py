@@ -22,7 +22,7 @@ class Data:
 		f.close()
 		# user defined global data
 		self.game = refdict({})
-		self.completer = []
+		self.completer = set()
 	def findItem(self, itemName: str):
 		'''
 		return itemID
