@@ -1,6 +1,7 @@
 from shell import shell
 from data import data
 from story import story
+import controller
 
 globalData = {}
 
@@ -13,17 +14,21 @@ def run(code: str, params = {}):
 	result = exec(code, globalData, params)
 	return result
 
-globalData['mount'] = shell.mount
-globalData['unmount'] = shell.unmount
-globalData['parse'] = shell.parse
-globalData['print'] = story.print
-globalData['printStory'] = story.printStory
-globalData['printItemList'] = story.printItemList
-globalData['config'] = data.config
-globalData['items'] = data.items
-globalData['game'] = data.game
-globalData['findItem'] = data.findItem
-globalData['run'] = run
-globalData['loadedItems'] = shell.loadedItems
-globalData['save'] = data.save
-globalData['load'] = data.load
+globalData = {
+	'mount': shell.mount,
+	'unmount': shell.unmount,
+	'parse': shell.parse,
+	'print': story.print,
+	'printStory': story.printStory,
+	'printItemList': story.printItemList,
+	'config': data.config,
+	'items': data.items,
+	'game': data.game,
+	'findItem': data.findItem,
+	'run': run,
+	'loadedItems': shell.loadedItems,
+	'save': data.save,
+	'load': data.load,
+	'newGame': controller.newGame,
+	'loop': controller.loop,
+}
