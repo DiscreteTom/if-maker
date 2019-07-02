@@ -58,7 +58,7 @@ def load(fileName = '') -> None:
 		items = eval(d['items'])
 		config = eval(d['config'])
 		game = eval(d['game'])
-		shell.loadedItems = eval(d['shell'])
+		shell.itemActions = eval(d['shell'])
 		f.close()
 		return
 
