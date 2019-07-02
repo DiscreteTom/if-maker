@@ -208,7 +208,6 @@ def getConfig() -> dict:
 	configTemplate = {
 		'project': {
 			'name': config.get('project.name', 'untitled project'),
-			'welcome': config.get('project.welcome', None)
 		},
 		'system': {
 			'shell': {
@@ -225,14 +224,16 @@ def getConfig() -> dict:
 			'story': {
 				'first': config.get('system.story.first', '0'),
 				'skip': config.get('system.story.skip', False)
-			}
+			},
+			'entry': config.get('system.entry', 'ifmain')
 		},
 		'make': {
 			'modules': config.get('make.modules', []),
 			'globalClasses': config.get('make.globalClasses', []),
 		},
 		'mainMenu': config.get('mainMenu', ['start', 'exit']),
-		'debug': [] if config.get('debug', []) is None else config.get('debug', []) 
+		'debug': [] if config.get('debug', []) is None else config.get('debug', []),
+		'data': config.get('data', None)
 	}
 
 	result = configTemplate.pop('make')
@@ -269,10 +270,16 @@ def processScripts():
 	combine scripts in _scripts into output/scripts.py
 	'''
 	fout = open('output/__init__.py', 'w', encoding='utf-8')
+	fout.write('''
+from shell import mount, unmount, parse, loadedItems
+from data import config, items, game, completer, findItem, save, load
+from story import printf, printStory, printItemList
+from controller import start, newGame, loop
+''')
 	for file in os.listdir('_scripts'):
-		if file.endswith('.py'):
+		if file.endswith('.py') and file != 'ifmu.py':
 			fin = open('_scripts/' + file, encoding='utf-8')
-			fout.write(fin.read() + '\n')
+			fout.write(fin.read().replace('from ifmu import *', '') + '\n')
 			fin.close()
 	fout.close()
 
