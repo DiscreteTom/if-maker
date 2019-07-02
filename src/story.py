@@ -84,7 +84,7 @@ def __printStoryText(text: str, skip: bool) -> bool:
 	for line in text.split('\n'):
 		line = line.strip()
 		if len(line):
-			print(line, skip = skip, indent = data.config['system.print.indent'])
+			printf(line, skip = skip, indent = data.config['system.print.indent'])
 			if not skip:
 				if msvcrt.getwch() == '\u001B':
 					# if `esc` is pressed
@@ -104,7 +104,7 @@ def __parseElement(el: ElementTree.Element, skip: bool) -> bool:
 			__printElement(el)
 	elif el.tag == 'input':
 		if el.get('prompt'):
-			print(el.get('prompt'), skip = skip, end = '')
+			printf(el.get('prompt'), skip = skip, end = '')
 			localData[el.text] = input()
 	elif el.tag == 'code':
 		from translator import run
@@ -118,7 +118,7 @@ def printItemList(l: list, skip = True, indent = '- ', sep = '\n', end = '\n'):
 		itemID = l[i]
 		if itemID.startswith('@'):
 			itemID = itemID[1:]
-		print(data.items[itemID]['name'], skip=skip, indent=indent, end='')
+		printf(data.items[itemID]['name'], skip=skip, indent=indent, end='')
 		if i != len(l) - 1:
 			print(sep, skip = skip, end = '')
-	print(end, skip=skip, end='')
+	printf(end, skip=skip, end='')
