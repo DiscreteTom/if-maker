@@ -19,6 +19,7 @@ def findItem(itemName: str):
 	'''
 	return item ID. if item ID is not found, return None
 	'''
+	global items
 	for itemID in items:
 		if items[itemID]["name"] == itemName:
 			return itemID
@@ -29,6 +30,7 @@ def save(fileName: str):
 	save game progress to `fileName`
 	'''
 	import shell
+	global items, config, game, completer
 	f = open(fileName, 'w', encoding='utf-8')
 	result = {
 		'items': str(items),
@@ -47,6 +49,7 @@ def load(fileName = '') -> None:
 	if `fileName` is not given, load data from default location
 	'''
 	import shell
+	global items, config, game, completer
 	if len(fileName):
 		# load data from SAVE file
 		f = open(fileName, encoding='utf-8')
@@ -71,3 +74,5 @@ def load(fileName = '') -> None:
 	# user defined global data
 	game = refdict({})
 	completer = set()
+
+load()
