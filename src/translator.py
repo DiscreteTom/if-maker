@@ -1,34 +1,12 @@
-from shell import shell
-from data import data
-from story import story
-import controller
-
-globalData = {}
+from shell import mount, unmount, parse, loadedItems
+from data import config, items, game, completer, findItem, save, load
+from story import print, printStory, printItemList
+from controller import start, newGame, loop
 
 def run(code: str, params = {}):
-	code = 'from output import *\n' + code
-	if 'debug.run' in data.config:
+	if 'debug.run' in config:
 		print('debug.run: running', code, 'params:', params)
 	result = None
 	# construct env
-	result = exec(code, globalData, params)
+	result = exec(code)
 	return result
-
-globalData = {
-	'mount': shell.mount,
-	'unmount': shell.unmount,
-	'parse': shell.parse,
-	'print': story.print,
-	'printStory': story.printStory,
-	'printItemList': story.printItemList,
-	'config': data.config,
-	'items': data.items,
-	'game': data.game,
-	'findItem': data.findItem,
-	'run': run,
-	'loadedItems': shell.loadedItems,
-	'save': data.save,
-	'load': data.load,
-	'newGame': controller.newGame,
-	'loop': controller.loop,
-}
