@@ -2,13 +2,13 @@ import yaml
 import msvcrt
 import os
 from time import sleep
-from data import data
-from shell import shell, completer
-from story import story
+import data
+import shell
+import story
 import readline
 
 readline.parse_and_bind('tab: complete')
-readline.set_completer(completer)
+readline.set_completer(shell.completer)
 
 def start():
 	from translator import run
@@ -16,6 +16,7 @@ def start():
 
 def newGame():
 	story.printStory(data.config['system.story.first'])
+	data.load()
 	loop()
 
 def loop():

@@ -1,4 +1,4 @@
-from data import data
+import data
 
 # itemActions = {
 # 	'itemID': [
