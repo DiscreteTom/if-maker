@@ -4,9 +4,9 @@ import msvcrt
 from time import sleep
 import xml.etree.ElementTree as ElementTree
 
-def print(*values: str, **kwargs):
+def printf(*values: str, **kwargs):
 	'''
-	`print(values, ..., skip = config['system.print.skip'], sep = ' ', end = '\\n', indent = config['system.print.indent'])`
+	`printf(values, ..., skip = config['system.print.skip'], sep = ' ', end = '\\n', indent = config['system.print.indent'])`
 
 	replace variables in `{{}}` with its value
 	'''
