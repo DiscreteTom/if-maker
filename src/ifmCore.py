@@ -311,6 +311,7 @@ def clear():
 		shutil.rmtree('_stories')
 		shutil.rmtree('_classes')
 		shutil.rmtree('_modules')
+		shutil.rmtree('output')
 		os.remove('_config.yml')
 	except:
 		pass
