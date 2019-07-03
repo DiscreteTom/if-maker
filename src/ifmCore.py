@@ -302,6 +302,3 @@ def make():
 	f.close()
 	processStories()
 	processScripts()
-
-if __name__ == '__main__':
-	make()
