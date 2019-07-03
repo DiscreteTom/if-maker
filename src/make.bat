@@ -1,0 +1,1 @@
+pyinstaller ifm.py --add-data=ifmu.py;ifmy.py
