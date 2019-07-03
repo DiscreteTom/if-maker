@@ -1,4 +1,4 @@
-from ifm import *
+from ifmCore import *
 if len(sys.argv) == 1:
 	print('usage: ifm {new|make|run|debug|package} [projectName]\n')
 	print('create a new project:')
