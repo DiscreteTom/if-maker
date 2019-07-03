@@ -243,27 +243,39 @@ def getConfig() -> dict:
 	f.close()
 	return result
 
-def new():
+def new(proName = ''):
 	'''
 	`output new`: create a new project, create folders and files
 	'''
-	proName = 'untitled'
-	if len(sys.argv) == 2:
+	if len(proName) == 0:
 		proName = input('please input the name of your project: (untitled)')
-		if proName == '':
-			proName = 'untitled'
-	elif len(sys.argv) > 2:
-		proName = sys.argv[2]
-	
-	os.mkdir('_classes')
-	os.mkdir('_items')
-	os.mkdir('_scripts')
-	os.mkdir('_stories')
-	open('_config.yml', 'w', encoding='utf-8').close()
-	open('_classes/index.ifd', 'w', encoding='utf-8').close()
-	open('_items/index.ifd', 'w', encoding='utf-8').close()
-	open('_stories/index.ift', 'w', encoding='utf-8').close()
-	# open('_scripts/index.yml', 'w', encoding='utf-8').close()
+	if len(proName) == 0:
+		proName = 'untitled'
+	try:
+		os.mkdir('_classes')
+		os.mkdir('_items')
+		os.mkdir('_scripts')
+		os.mkdir('_modules')
+		os.mkdir('_stories')
+		f = open('_config.yml', 'w', encoding='utf-8')
+		f.write('project:\n  name: "' + proName + '"')
+		f.close()
+		f = open('_items/index.ifd', 'w', encoding='utf-8')
+		f.close()
+		f = open('_classes/index.ifd', 'w', encoding='utf-8')
+		f.close()
+		f = open('_stories/index.ift', 'w', encoding='utf-8')
+		f.close()
+		f = open('_scripts/main.py', 'w', encoding='utf-8')
+		f.write("from ifmu import *\n\ndef ifmain():\n	printf('Hello World!')")
+		f.close()
+		f = open('_scripts/ifmu.py', 'w', encoding='utf-8')
+		f2 = open('ifmu.py', encoding='utf-8')
+		f.write(f2.read())
+		f2.close()
+		f.close()
+	except:
+		print('create project failed.\ntry "ifm clear" first.')
 
 def processScripts():
 	'''
