@@ -231,7 +231,6 @@ def getConfig() -> dict:
 			'modules': config.get('make.modules', []),
 			'globalClasses': config.get('make.globalClasses', []),
 		},
-		'mainMenu': config.get('mainMenu', ['start', 'exit']),
 		'debug': [] if config.get('debug', []) is None else config.get('debug', []),
 		'data': config.get('data', None)
 	}
