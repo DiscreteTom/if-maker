@@ -302,3 +302,15 @@ def make():
 	f.close()
 	processStories()
 	processScripts()
+
+def clear():
+	import shutil
+	try:
+		shutil.rmtree('_scripts')
+		shutil.rmtree('_items')
+		shutil.rmtree('_stories')
+		shutil.rmtree('_classes')
+		shutil.rmtree('_modules')
+		os.remove('_config.yml')
+	except:
+		pass

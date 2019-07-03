@@ -1,6 +1,6 @@
 from ifmCore import *
 if len(sys.argv) == 1:
-	print('usage: ifm {new|make|run|debug|package} [projectName]\n')
+	print('usage: ifm {new|make|run|debug|package|clear} [projectName]\n')
 	print('create a new project:')
 	print('	ifm new [projectName]')
 	print('')
@@ -15,6 +15,9 @@ if len(sys.argv) == 1:
 	print('')
 	print('package your project to an executable file:')
 	print('	ifm package')
+	print('')
+	print('clear current project')
+	print('	ifm clear')
 elif sys.argv[1] == 'new':
 	if len(sys.argv) > 2:
 		new(sys.argv[2])
@@ -30,3 +33,5 @@ elif sys.argv[1] == 'debug':
 	controller.start()
 elif sys.argv[1] == 'package':
 	pass
+elif sys.argv[1] == 'clear':
+	clear()
