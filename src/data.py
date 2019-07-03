@@ -37,7 +37,7 @@ def save(fileName: str):
 		'config': str(config),
 		'game': str(game),
 		'completer': str(completer),
-		'shell': str(shell.loadedItems)
+		'shell': str(shell.itemActions)
 	}
 	json.dump(result, f)
 	f.close()
