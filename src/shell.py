@@ -88,6 +88,9 @@ def unmount(*items):
 	return True
 
 def parse(cmd: str):
+	'''
+	parse a command
+	'''
 	if 'debug.parse' in data.config:
 		print('debug.parse: parsing', cmd)
 	import translator

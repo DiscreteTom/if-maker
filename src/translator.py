@@ -5,6 +5,9 @@ from controller import start, newGame, loop
 from output import *
 
 def run(code: str, params = {}):
+	'''
+	run `code` in ifm environment
+	'''
 	if 'debug.run' in config:
 		print('debug.run: running', code, 'params:', params)
 	result = None
