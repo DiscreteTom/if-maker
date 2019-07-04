@@ -318,11 +318,29 @@ def clear():
 	import shutil
 	try:
 		shutil.rmtree('_scripts')
+	except:
+		pass
+	try:
 		shutil.rmtree('_items')
+	except:
+		pass
+	try:
 		shutil.rmtree('_stories')
+	except:
+		pass
+	try:
 		shutil.rmtree('_classes')
+	except:
+		pass
+	try:
 		shutil.rmtree('_modules')
+	except:
+		pass
+	try:
 		shutil.rmtree('output')
+	except:
+		pass
+	try:
 		os.remove('_config.yml')
 	except:
 		pass
