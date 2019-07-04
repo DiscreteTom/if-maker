@@ -7,3 +7,6 @@ src/_stories/
 src/_scripts/
 src/_modules/
 src/_config.yml
+src/dist/
+src/build
+ifm.spec
