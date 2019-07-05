@@ -214,7 +214,6 @@ def getConfig() -> dict:
 				'prefix': config.get('system.shell.prefix', '>'),
 				'exitCmd': config.get('system.shell.exitCmd', 'exit'),
 				'errorMsg': config.get('system.shell.errorMsg', 'invalid command'),
-				'history': config.get('system.shell.history', 10)
 			},
 			'print': {
 				'interval': config.get('system.print.interval', 0.02),
