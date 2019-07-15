@@ -6,8 +6,12 @@ import shutil
 import re
 import json
 import xml.etree.ElementTree as ET
+import urllib.request
 
 def processCode(code: str) -> str:
+	'''
+	remove chars after the last `^` of `code`(including `^`) and return
+	'''
 	index = code.rfind('^')
 	if index == -1:
 		return code
@@ -87,7 +91,7 @@ def merge(higher: dict, lower: dict):
 
 def processIfdInclude(processType: str, modules: list):
 	'''
-	load files. missing attributes will be added. If file is empty or not exist, return empty dict
+	load files, missing attributes will be added. If file is empty or not exist, return empty dict
 
 	`processType` should be one of `['items', 'classes']`
 	'''
@@ -155,11 +159,11 @@ def processIfdInclude(processType: str, modules: list):
 
 def processStories():
 	'''
-	process _stories/index.ift, save result to output/story
+	process _stories/index.ift, save result to src/output/story
 	- process `#include`
 	- add xml header and root element
 	'''
-	fout = open('output/story', 'w', encoding='utf-8')
+	fout = open('src/output/story', 'w', encoding='utf-8')
 	fout.write('<?xml version="1.0"?>')
 	fout.write('<root>')
 	storyQueue = ['index.ift']
@@ -181,7 +185,7 @@ def processStories():
 	fout.close()
 	# try to parse xml
 	try:
-		ET.parse('output/story')
+		ET.parse('src/output/story')
 	except:
 		print('wrong format story')
 		errorHandler()
@@ -192,14 +196,14 @@ def itemsAddID(items: dict):
 
 def errorHandler():
 	'''
-	clear output folder and exit
+	clear src/output folder and exit
 	'''
-	shutil.rmtree('output')
+	shutil.rmtree('src/output')
 	os._exit(1)
 
 def getConfig() -> dict:
 	'''
-	generate output/config and return config['make']
+	generate src/output/config and return config['make']
 	'''
 	f = open('_config.yml', encoding='utf-8')
 	config = refdict(yaml.safe_load(f))
@@ -236,14 +240,14 @@ def getConfig() -> dict:
 
 	result = configTemplate.pop('make')
 
-	f = open('output/config', 'w', encoding='utf-8')
+	f = open('src/output/config', 'w', encoding='utf-8')
 	json.dump(configTemplate, f)
 	f.close()
 	return result
 
 def new(proName = ''):
 	'''
-	`output new`: create a new project, create folders and files
+	`ifm new`: create a new project, create folders and files
 	'''
 	if len(proName) == 0:
 		proName = input('please input the name of your project: (untitled)')
@@ -268,7 +272,7 @@ def new(proName = ''):
 		f.write("from ifmu import *\n\ndef ifmain():\n	printf('Hello World!')")
 		f.close()
 		f = open('_scripts/ifmu.py', 'w', encoding='utf-8')
-		f2 = open(resource_path('ifmu.py'), encoding='utf-8')
+		f2 = open('src/ifm.py', encoding='utf-8')
 		f.write(f2.read())
 		f2.close()
 		f.close()
@@ -277,15 +281,12 @@ def new(proName = ''):
 
 def processScripts():
 	'''
-	combine scripts in _scripts into output/scripts.py
+	combine scripts in _scripts into src/output/scripts.py
 	'''
-	fout = open('output/__init__.py', 'w', encoding='utf-8')
-	fout.write('''
-from shell import mount, unmount, parse, loadedItems
-from data import config, items, game, completer, findItem, save, load
-from story import printf, printStory, printItemList
-from controller import start, newGame, loop
-''')
+	fout = open('src/output/__init__.py', 'w', encoding='utf-8')
+	f = open('src/output_header.py', 'r', encoding='utf-8')
+	fout.write(f.read())
+	f.close()
 	for file in os.listdir('_scripts'):
 		if file.endswith('.py') and file != 'ifmu.py':
 			fin = open('_scripts/' + file, encoding='utf-8')
@@ -293,13 +294,12 @@ from controller import start, newGame, loop
 			fin.close()
 	fout.close()
 
-
 def make():
 	'''
-	`output make`: generate middle files to `output/`, combine items and classes, ignore comments in stories, generate config
+	`ifm make`: generate middle files to `src/output/`, combine items with classes, process stories to xml, generate config
 	'''
 	try:
-		os.mkdir('output')
+		os.mkdir('src/output')
 	except FileExistsError:
 		pass
 	config = getConfig()
@@ -307,7 +307,7 @@ def make():
 	classes = processIfdInclude('classes', config['modules'])
 	mergeItemsAndClasses(items, classes, config['globalClasses'])
 	itemsAddID(items)
-	f = open('output/items', 'w', encoding='utf-8')
+	f = open('src/output/items', 'w', encoding='utf-8')
 	json.dump(items, f)
 	f.close()
 	processStories()
@@ -336,7 +336,7 @@ def clear():
 	except:
 		pass
 	try:
-		shutil.rmtree('output')
+		shutil.rmtree('src/output')
 	except:
 		pass
 	try:
@@ -344,12 +344,60 @@ def clear():
 	except:
 		pass
 
-def resource_path(relative_path):
-	""" Get absolute path to resource, works for dev and for PyInstaller """
-	try:
-		# PyInstaller creates a temp folder and stores path in _MEIPASS
-		base_path = sys._MEIPASS
-	except Exception:
-		base_path = os.path.abspath(".")
-
-	return os.path.join(base_path, relative_path)
+# TODO: use argparse to refactor these codes below
+if len(sys.argv) == 1:
+	print('usage: ifm {install|new|make|run|debug|package|clear} [projectName]\n')
+	print('install if-maker:(need network access)')
+	print('	ifm install')
+	print('create a new project:')
+	print('	ifm new [projectName]')
+	print('')
+	print('make the project in this folder:')
+	print('	ifm make')
+	print('')
+	print('run your project:')
+	print('	ifm run')
+	print('')
+	print('make and run your project:')
+	print('	ifm debug')
+	print('')
+	print('package your project to an executable file:')
+	print('	ifm package')
+	print('')
+	print('clear current project')
+	print('	ifm clear')
+elif sys.argv[1] == 'install':
+	# TODO: add error handling
+	# TODO: add progress bar
+	os.mkdir('src')
+	open('src/controller.py', 'w', encoding='utf-8').close()
+	open('src/data.py', 'w', encoding='utf-8').close()
+	open('src/ifmu.py', 'w', encoding='utf-8').close()
+	open('src/output_header.py', 'w', encoding='utf-8').close()
+	open('src/shell.py', 'w', encoding='utf-8').close()
+	open('src/story.py', 'w', encoding='utf-8').close()
+	open('src/translator.py', 'w', encoding='utf-8').close()
+	urllib.request.urlretrieve('https://raw.githubusercontent.com/DiscreteTom/if-maker/master/src/controller.py', 'src/controller.py')
+	urllib.request.urlretrieve('https://raw.githubusercontent.com/DiscreteTom/if-maker/master/src/data.py', 'src/data.py')
+	urllib.request.urlretrieve('https://raw.githubusercontent.com/DiscreteTom/if-maker/master/src/data.py', 'src/ifmu.py')
+	urllib.request.urlretrieve('https://raw.githubusercontent.com/DiscreteTom/if-maker/master/src/data.py', 'src/output_header.py')
+	urllib.request.urlretrieve('https://raw.githubusercontent.com/DiscreteTom/if-maker/master/src/shell.py', 'src/shell.py')
+	urllib.request.urlretrieve('https://raw.githubusercontent.com/DiscreteTom/if-maker/master/src/story.py', 'src/story.py')
+	urllib.request.urlretrieve('https://raw.githubusercontent.com/DiscreteTom/if-maker/master/src/translator.py', 'src/translator.py')
+elif sys.argv[1] == 'new':
+	if len(sys.argv) > 2:
+		new(sys.argv[2])
+	new()
+elif sys.argv[1] == 'make':
+	make()
+elif sys.argv[1] == 'run':
+	from src import controller
+	controller.start()
+elif sys.argv[1] == 'debug':
+	make()
+	from src import controller
+	controller.start()
+elif sys.argv[1] == 'package':
+	pass
+elif sys.argv[1] == 'clear':
+	clear()
