@@ -360,7 +360,9 @@ def resource_path(relative_path):
 # TODO: use argparse to refactor these codes below
 # TODO: add `ifm install`
 if len(sys.argv) == 1:
-	print('usage: ifm {new|make|run|debug|package|clear} [projectName]\n')
+	print('usage: ifm {install|new|make|run|debug|package|clear} [projectName]\n')
+	print('install if-maker:(need network access)')
+	print('	ifm install')
 	print('create a new project:')
 	print('	ifm new [projectName]')
 	print('')
