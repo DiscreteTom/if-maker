@@ -253,6 +253,7 @@ def new(proName = ''):
 		proName = input('please input the name of your project: (untitled)')
 	if len(proName) == 0:
 		proName = 'untitled'
+	# TODO: add more error handling codes below
 	try:
 		os.mkdir('_classes')
 		os.mkdir('_items')
@@ -272,7 +273,7 @@ def new(proName = ''):
 		f.write("from ifmu import *\n\ndef ifmain():\n	printf('Hello World!')")
 		f.close()
 		f = open('_scripts/ifmu.py', 'w', encoding='utf-8')
-		f2 = open('src/ifm.py', encoding='utf-8')
+		f2 = open('src/ifmu.py', encoding='utf-8')
 		f.write(f2.read())
 		f2.close()
 		f.close()
