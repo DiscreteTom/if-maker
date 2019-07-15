@@ -272,7 +272,7 @@ def new(proName = ''):
 		f.write("from ifmu import *\n\ndef ifmain():\n	printf('Hello World!')")
 		f.close()
 		f = open('_scripts/ifmu.py', 'w', encoding='utf-8')
-		f2 = open(resource_path('ifmu.py'), encoding='utf-8')
+		f2 = open('src/ifm.py', encoding='utf-8')
 		f.write(f2.read())
 		f2.close()
 		f.close()
@@ -344,16 +344,6 @@ def clear():
 		os.remove('_config.yml')
 	except:
 		pass
-
-def resource_path(relative_path):
-	""" Get absolute path to resource, works for dev and for PyInstaller """
-	try:
-		# PyInstaller creates a temp folder and stores path in _MEIPASS
-		base_path = sys._MEIPASS
-	except Exception:
-		base_path = os.path.abspath(".")
-
-	return os.path.join(base_path, relative_path)
 
 # TODO: use argparse to refactor these codes below
 if len(sys.argv) == 1:
