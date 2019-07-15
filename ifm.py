@@ -345,6 +345,12 @@ def clear():
 	except:
 		pass
 
+def run():
+	sys.path.append(os.getcwd() + '/src')
+	os.chdir('src')
+	import controller
+	controller.start()
+
 # TODO: use argparse to refactor these codes below
 if len(sys.argv) == 1:
 	print('usage: ifm {install|new|make|run|debug|package|clear} [projectName]\n')
@@ -392,12 +398,10 @@ elif sys.argv[1] == 'new':
 elif sys.argv[1] == 'make':
 	make()
 elif sys.argv[1] == 'run':
-	from src import controller
-	controller.start()
+	run()
 elif sys.argv[1] == 'debug':
 	make()
-	from src import controller
-	controller.start()
+	run()
 elif sys.argv[1] == 'package':
 	pass
 elif sys.argv[1] == 'clear':
