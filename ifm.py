@@ -8,6 +8,9 @@ import json
 import xml.etree.ElementTree as ET
 
 def processCode(code: str) -> str:
+	'''
+	remove chars after the last `^` of `code`(including `^`) and return
+	'''
 	index = code.rfind('^')
 	if index == -1:
 		return code
@@ -87,7 +90,7 @@ def merge(higher: dict, lower: dict):
 
 def processIfdInclude(processType: str, modules: list):
 	'''
-	load files. missing attributes will be added. If file is empty or not exist, return empty dict
+	load files, missing attributes will be added. If file is empty or not exist, return empty dict
 
 	`processType` should be one of `['items', 'classes']`
 	'''
@@ -155,11 +158,11 @@ def processIfdInclude(processType: str, modules: list):
 
 def processStories():
 	'''
-	process _stories/index.ift, save result to output/story
+	process _stories/index.ift, save result to src/output/story
 	- process `#include`
 	- add xml header and root element
 	'''
-	fout = open('output/story', 'w', encoding='utf-8')
+	fout = open('src/output/story', 'w', encoding='utf-8')
 	fout.write('<?xml version="1.0"?>')
 	fout.write('<root>')
 	storyQueue = ['index.ift']
@@ -181,7 +184,7 @@ def processStories():
 	fout.close()
 	# try to parse xml
 	try:
-		ET.parse('output/story')
+		ET.parse('src/output/story')
 	except:
 		print('wrong format story')
 		errorHandler()
@@ -192,14 +195,14 @@ def itemsAddID(items: dict):
 
 def errorHandler():
 	'''
-	clear output folder and exit
+	clear src/output folder and exit
 	'''
-	shutil.rmtree('output')
+	shutil.rmtree('src/output')
 	os._exit(1)
 
 def getConfig() -> dict:
 	'''
-	generate output/config and return config['make']
+	generate src/output/config and return config['make']
 	'''
 	f = open('_config.yml', encoding='utf-8')
 	config = refdict(yaml.safe_load(f))
@@ -236,14 +239,14 @@ def getConfig() -> dict:
 
 	result = configTemplate.pop('make')
 
-	f = open('output/config', 'w', encoding='utf-8')
+	f = open('src/output/config', 'w', encoding='utf-8')
 	json.dump(configTemplate, f)
 	f.close()
 	return result
 
 def new(proName = ''):
 	'''
-	`output new`: create a new project, create folders and files
+	`ifm new`: create a new project, create folders and files
 	'''
 	if len(proName) == 0:
 		proName = input('please input the name of your project: (untitled)')
@@ -277,9 +280,9 @@ def new(proName = ''):
 
 def processScripts():
 	'''
-	combine scripts in _scripts into output/scripts.py
+	combine scripts in _scripts into src/output/scripts.py
 	'''
-	fout = open('output/__init__.py', 'w', encoding='utf-8')
+	fout = open('src/output/__init__.py', 'w', encoding='utf-8')
 	fout.write('''
 from shell import mount, unmount, parse, loadedItems
 from data import config, items, game, completer, findItem, save, load
@@ -296,10 +299,10 @@ from controller import start, newGame, loop
 
 def make():
 	'''
-	`output make`: generate middle files to `output/`, combine items and classes, ignore comments in stories, generate config
+	`ifm make`: generate middle files to `src/output/`, combine items and classes, ignore comments in stories, generate config
 	'''
 	try:
-		os.mkdir('output')
+		os.mkdir('src/output')
 	except FileExistsError:
 		pass
 	config = getConfig()
@@ -307,7 +310,7 @@ def make():
 	classes = processIfdInclude('classes', config['modules'])
 	mergeItemsAndClasses(items, classes, config['globalClasses'])
 	itemsAddID(items)
-	f = open('output/items', 'w', encoding='utf-8')
+	f = open('src/output/items', 'w', encoding='utf-8')
 	json.dump(items, f)
 	f.close()
 	processStories()
@@ -336,7 +339,7 @@ def clear():
 	except:
 		pass
 	try:
-		shutil.rmtree('output')
+		shutil.rmtree('src/output')
 	except:
 		pass
 	try:
@@ -355,6 +358,7 @@ def resource_path(relative_path):
 	return os.path.join(base_path, relative_path)
 
 # TODO: use argparse to refactor these codes below
+# TODO: add `ifm install`
 if len(sys.argv) == 1:
 	print('usage: ifm {new|make|run|debug|package|clear} [projectName]\n')
 	print('create a new project:')
