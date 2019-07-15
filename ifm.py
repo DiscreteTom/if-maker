@@ -6,6 +6,7 @@ import shutil
 import re
 import json
 import xml.etree.ElementTree as ET
+import urllib.request
 
 def processCode(code: str) -> str:
 	'''
@@ -283,12 +284,9 @@ def processScripts():
 	combine scripts in _scripts into src/output/scripts.py
 	'''
 	fout = open('src/output/__init__.py', 'w', encoding='utf-8')
-	fout.write('''
-from shell import mount, unmount, parse, loadedItems
-from data import config, items, game, completer, findItem, save, load
-from story import printf, printStory, printItemList
-from controller import start, newGame, loop
-''')
+	f = open('src/output_header.py', 'r', encoding='utf-8')
+	fout.write(f.read())
+	f.close()
 	for file in os.listdir('_scripts'):
 		if file.endswith('.py') and file != 'ifmu.py':
 			fin = open('_scripts/' + file, encoding='utf-8')
