@@ -378,6 +378,24 @@ if len(sys.argv) == 1:
 	print('')
 	print('clear current project')
 	print('	ifm clear')
+elif sys.argv[1] == 'install':
+	# TODO: add error handling
+	# TODO: add progress bar
+	os.mkdir('src')
+	open('src/controller.py', 'w', encoding='utf-8').close()
+	open('src/data.py', 'w', encoding='utf-8').close()
+	open('src/ifmu.py', 'w', encoding='utf-8').close()
+	open('src/output_header.py', 'w', encoding='utf-8').close()
+	open('src/shell.py', 'w', encoding='utf-8').close()
+	open('src/story.py', 'w', encoding='utf-8').close()
+	open('src/translator.py', 'w', encoding='utf-8').close()
+	urllib.request.urlretrieve('https://raw.githubusercontent.com/DiscreteTom/if-maker/master/src/controller.py', 'src/controller.py')
+	urllib.request.urlretrieve('https://raw.githubusercontent.com/DiscreteTom/if-maker/master/src/data.py', 'src/data.py')
+	urllib.request.urlretrieve('https://raw.githubusercontent.com/DiscreteTom/if-maker/master/src/data.py', 'src/ifmu.py')
+	urllib.request.urlretrieve('https://raw.githubusercontent.com/DiscreteTom/if-maker/master/src/data.py', 'src/output_header.py')
+	urllib.request.urlretrieve('https://raw.githubusercontent.com/DiscreteTom/if-maker/master/src/shell.py', 'src/shell.py')
+	urllib.request.urlretrieve('https://raw.githubusercontent.com/DiscreteTom/if-maker/master/src/story.py', 'src/story.py')
+	urllib.request.urlretrieve('https://raw.githubusercontent.com/DiscreteTom/if-maker/master/src/translator.py', 'src/translator.py')
 elif sys.argv[1] == 'new':
 	if len(sys.argv) > 2:
 		new(sys.argv[2])
