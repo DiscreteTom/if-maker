@@ -356,7 +356,6 @@ def resource_path(relative_path):
 	return os.path.join(base_path, relative_path)
 
 # TODO: use argparse to refactor these codes below
-# TODO: add `ifm install`
 if len(sys.argv) == 1:
 	print('usage: ifm {install|new|make|run|debug|package|clear} [projectName]\n')
 	print('install if-maker:(need network access)')
