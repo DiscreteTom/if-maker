@@ -294,10 +294,9 @@ def processScripts():
 			fin.close()
 	fout.close()
 
-
 def make():
 	'''
-	`ifm make`: generate middle files to `src/output/`, combine items and classes, ignore comments in stories, generate config
+	`ifm make`: generate middle files to `src/output/`, combine items with classes, process stories to xml, generate config
 	'''
 	try:
 		os.mkdir('src/output')
