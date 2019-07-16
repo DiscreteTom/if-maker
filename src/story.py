@@ -25,7 +25,12 @@ def printf(*values: str, **kwargs):
 			if not match:
 				# no more value refs
 				break
-			from translator import globalData
+			globalData = {
+				'config': data.config,
+				'items': data.items,
+				'game': data.game,
+				'completer': data.completer
+			}
 			s = s[:match.start()] + eval(match.group(2).strip(), globalData) + s[match.end():]
 		# print story
 		if skip or 'system.print.interval' not in data.config or data.config['system.print.interval'] <= 0:
