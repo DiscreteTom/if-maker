@@ -7,6 +7,7 @@ import re
 import json
 import xml.etree.ElementTree as ET
 import urllib.request
+import argparse
 
 def processCode(code: str) -> str:
 	'''
@@ -351,29 +352,20 @@ def run():
 	import controller
 	controller.start()
 
-# TODO: use argparse to refactor these codes below
-if len(sys.argv) == 1:
-	print('usage: ifm {install|new|make|run|debug|package|clear} [projectName]\n')
-	print('install if-maker:(need network access)')
-	print('	ifm install')
-	print('create a new project:')
-	print('	ifm new [projectName]')
-	print('')
-	print('make the project in this folder:')
-	print('	ifm make')
-	print('')
-	print('run your project:')
-	print('	ifm run')
-	print('')
-	print('make and run your project:')
-	print('	ifm debug')
-	print('')
-	print('package your project to an executable file:')
-	print('	ifm package')
-	print('')
-	print('clear current project')
-	print('	ifm clear')
-elif sys.argv[1] == 'install':
+# construct parser
+parser = argparse.ArgumentParser('ifm')
+subparsers = parser.add_subparsers(dest='subparser')
+installParser = subparsers.add_parser('install', help = 'Install if-maker in current folder. Network access is needed.')
+newParser = subparsers.add_parser('new', help = 'Create a new project in current folder.')
+newParser.add_argument('projectName', nargs='?', default='')
+makeParser = subparsers.add_parser('make', help = 'Compile current project.')
+runParser = subparsers.add_parser('run', help = 'Run current project.')
+debugParser = subparsers.add_parser('debug', help = 'Compile and run current project.')
+releaseParser = subparsers.add_parser('release', help = 'Package current project to an executable file.')
+clearParser = subparsers.add_parser('clear', help = 'Clear current project.')
+args = parser.parse_args()
+print(args)
+if args.subparser == 'install':
 	# TODO: add error handling
 	# TODO: add progress bar
 	os.mkdir('src')
@@ -391,18 +383,16 @@ elif sys.argv[1] == 'install':
 	urllib.request.urlretrieve('https://raw.githubusercontent.com/DiscreteTom/if-maker/master/src/shell.py', 'src/shell.py')
 	urllib.request.urlretrieve('https://raw.githubusercontent.com/DiscreteTom/if-maker/master/src/story.py', 'src/story.py')
 	urllib.request.urlretrieve('https://raw.githubusercontent.com/DiscreteTom/if-maker/master/src/translator.py', 'src/translator.py')
-elif sys.argv[1] == 'new':
-	if len(sys.argv) > 2:
-		new(sys.argv[2])
-	new()
-elif sys.argv[1] == 'make':
+elif args.subparser == 'new':
+	new(args.projectName)
+elif args.subparser == 'make':
 	make()
-elif sys.argv[1] == 'run':
+elif args.subparser == 'run':
 	run()
-elif sys.argv[1] == 'debug':
+elif args.subparser == 'debug':
 	make()
 	run()
-elif sys.argv[1] == 'package':
+elif args.subparser == 'package':
 	pass
-elif sys.argv[1] == 'clear':
+elif args.subparser == 'clear':
 	clear()
