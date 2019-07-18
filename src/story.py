@@ -102,6 +102,7 @@ def __parseElement(el: ElementTree.Element, skip: bool) -> bool:
 	parse `el` according to its tag, return `skip`
 	'''
 	localData = {}
+	# TODO: add element support: else/elif
 	if el.tag == 'if':
 		if eval(el.get('condition')):
 			__printElement(el)
