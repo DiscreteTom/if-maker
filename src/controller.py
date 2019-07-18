@@ -1,5 +1,4 @@
 import yaml
-import msvcrt
 import os
 from time import sleep
 import data

@@ -2,13 +2,19 @@
 
 ## [Unreleased]
 
+## [v0.1.1] - 2019-07-18
+
+### Added
+
+- Support for non-windows platform. 
+
 ## [v0.1.0] - 2019-07-16
 
 ### Added
 
-- use `ifm install` to install
-- use `ifm new` to create a new project
-- use `ifm make` to compile project
-- use `ifm run` to run project
-- use `ifm debug` to compile and run project
-- use `ifm clear` to clear project
+- Command `ifm install` to install.
+- Command `ifm new` to create a new project.
+- Command `ifm make` to compile project.
+- Command `ifm run` to run project.
+- Command `ifm debug` to compile and run project.
+- Command `ifm clear` to clear project.
