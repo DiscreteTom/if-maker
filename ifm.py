@@ -364,7 +364,6 @@ debugParser = subparsers.add_parser('debug', help = 'Compile and run current pro
 releaseParser = subparsers.add_parser('release', help = 'Package current project to an executable file.')
 clearParser = subparsers.add_parser('clear', help = 'Clear current project.')
 args = parser.parse_args()
-print(args)
 if args.subparser == 'install':
 	# TODO: add error handling
 	# TODO: add progress bar
