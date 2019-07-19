@@ -87,6 +87,7 @@ def unmount(*items):
 			translator.run(data.items[itemID]['onUnmount'], {'this': data.items(itemID)})
 	return True
 
+# TODO: add support for `[]`
 def parse(cmd: str):
 	'''
 	parse a command
@@ -152,6 +153,7 @@ def actionWords():
 	return result
 
 def completer(text: str, state: int):
+	# TODO: better completer
 	result = set([data.items[x]['name'] for x in loadedItems() if data.items[x]['name'].startswith(text)])
 	result.update([x for x in data.completer if x.startswith(text)])
 	result.update([x for x in actionWords() if x.startswith(text)])

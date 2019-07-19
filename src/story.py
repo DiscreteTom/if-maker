@@ -1,8 +1,8 @@
 import re
 import data
-import msvcrt
 from time import sleep
 import xml.etree.ElementTree as ElementTree
+import keyboard
 
 def printf(*values: str, **kwargs):
 	'''
@@ -34,7 +34,7 @@ def printf(*values: str, **kwargs):
 			s = s[:match.start()] + eval(match.group(2).strip(), globalData) + s[match.end():]
 		# print story
 		if skip or 'system.print.interval' not in data.config or data.config['system.print.interval'] <= 0:
-			# pring line by once
+			# print line by once
 			print(s, end='', flush=True)
 		else:
 			# print line by char
@@ -91,9 +91,10 @@ def __printStoryText(text: str, skip: bool) -> bool:
 		if len(line):
 			printf(line, skip = skip, indent = data.config['system.print.indent'])
 			if not skip:
-				if msvcrt.getwch() == '\u001B':
-					# if `esc` is pressed
+				if keyboard.read_key() == 'esc':
+					# esc is down
 					skip = True
+				keyboard.read_key() # any key up
 	return skip
 
 def __parseElement(el: ElementTree.Element, skip: bool) -> bool:
@@ -101,6 +102,7 @@ def __parseElement(el: ElementTree.Element, skip: bool) -> bool:
 	parse `el` according to its tag, return `skip`
 	'''
 	localData = {}
+	# TODO: add element support: else/elif/switch/case
 	if el.tag == 'if':
 		if eval(el.get('condition')):
 			__printElement(el)
