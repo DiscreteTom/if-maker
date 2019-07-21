@@ -6,7 +6,7 @@
     - [Prerequisites](#Prerequisites)
   - [Install](#Install)
     - [Dependency](#Dependency)
-    - [](#)
+    - [Download](#Download)
     - [Tools](#Tools)
   - [Project Management](#Project-Management)
     - [Create a project](#Create-a-project)
@@ -54,8 +54,19 @@ Though if-maker can help you to build a text-based game, you still have to know:
 
 ## Install
 
-- Download `ifm.py` in the root folder of the repository, then run `python3 ifm.py install`(network access is needed).
+### Dependency
+
+- [PyYAML](https://pypi.org/project/PyYAML/)
+- [refdict](https://pypi.org/project/refdict/)
+- [keyboard](https://pypi.org/project/keyboard/)
+- [pyreadline](https://pypi.org/project/pyreadline/)
+
+### Download
+
+- Download [`ifm.py`](https://raw.githubusercontent.com/DiscreteTom/if-maker/master/ifm.py) in the root folder of the repository, then run `python3 ifm.py install`(network access is needed).
 - Or, download `ifm.py` and `src/*` in the root folder of the repository.
+
+### Tools
 
 We recommend to edit the source code of your project with [VSCode](https://code.visualstudio.com/).
 
