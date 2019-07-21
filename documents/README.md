@@ -13,9 +13,12 @@
     - [Tools](#Tools)
   - [Project Management](#Project-Management)
     - [Create a project](#Create-a-project)
+    - [Config your project](#Config-your-project)
     - [Compile your project](#Compile-your-project)
     - [Run your project](#Run-your-project)
     - [Debug your project](#Debug-your-project)
+    - [Release your project](#Release-your-project)
+    - [Clear your project](#Clear-your-project)
   - [IFD - Interactive Fiction Data](#IFD---Interactive-Fiction-Data)
     - [Items](#Items)
     - [Classes](#Classes)
@@ -54,8 +57,8 @@ To make the developing process easier, developers just need to provide necessary
 
 Though if-maker can help you to build a text-based game, you still have to know:
 - Basic programming with python3(built-in data structure, control flow, function).
-- Basic data format of YAML file(ifd file is based on YAML file).
-- Basic data format of XML file(ift file is based on XML file).
+- Basic data format of YAML file.
+- Basic data format of XML file.
 
 ## Install
 
@@ -165,9 +168,15 @@ Run `python3 ifm.py run` to run your project. By default, if-maker will call the
 
 >Command `python3 ifm.py debug` will also run your project, see [Debug your project](#Debug-your-project).
 
+### Debug your project
+
 TODO
 
-### Debug your project
+### Release your project
+
+TODO
+
+### Clear your project
 
 TODO
 
@@ -191,7 +200,13 @@ TODO
 
 TODO
 
-## Control Logics
+## Scripts
+
+### Function Call
+
+TODO
+
+### Built-in Content
 
 TODO
 
