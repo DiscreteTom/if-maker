@@ -178,7 +178,9 @@ In debug mode, built-in functions in `config['debug']` will output debug message
 
 ### Release your project
 
-TODO
+>This feature is under development. You can use [PyInstaller](https://pypi.org/project/PyInstaller/) to realize this feature by yourself.
+
+Run `python3 ifm.py release` will generate an executable release of your project.
 
 ### Clear your project
 
