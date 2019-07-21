@@ -113,6 +113,39 @@ If everything is OK, your folder structure will be like this:
         index.ift
 ```
 
+### Config your project
+
+The file `_config.yml` in your project root folder contains the config information of your project. The items and their default values are as follows:
+
+```yaml
+project:
+  name: 'untitled project'
+system:
+  shell:
+    prefix: '>'
+    exitCmd: 'exit'
+    errorMsg: 'invalid command' # will be printed if command can not be parsed
+  print: # will influence the built-in function `printf`
+    skip: True # if false, print strings char by char
+    interval: 0.02 # become effective when system.print.skip is false. using second as unit
+    indent: ''
+  story:
+    first: '0' # ID of the first story
+    skip: False # if false, print stories char by char
+  entry: 'ifmain' # entry function
+make: # effective only at `ifm make`
+  modules: [] # activated modules
+  globalClasses: [] # all items will contain these classes
+debug: [] # debug these functions: ['run', 'mount', 'unmount', 'parse']
+data: # user defined config data
+```
+
+Configs of your project can be changed during your game. You can access it by using the variable `config` in your [scripts](#Scripts).
+
+The variable `config` is a [refdict](https://pypi.org/project/refdict/) object, so you can use a string as a chain key to get or set value.
+
+For example, if you want to set the value of `config['system']['shell']['prefix']` to `'player>>'`, you can just write `config['system.shell.prefix'] = 'player>>'`.
+
 ### Compile your project
 
 Run `python3 ifm.py make` to compile your project. After compiling, there should be an `output` folder in your `src` folder.
