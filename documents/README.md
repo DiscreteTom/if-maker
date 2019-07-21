@@ -157,9 +157,13 @@ These 4 files should be generated in `output` folder:
 - `story`
 - `__init__.py`
 
-Command `python3 ifm.py debug` will also compile your project, see [Debug your project](#Debug-your-project).
+>Command `python3 ifm.py debug` will also compile your project, see [Debug your project](#Debug-your-project).
 
 ### Run your project
+
+Run `python3 ifm.py run` to run your project. By default, if-maker will call the `ifmain` function in `_scripts/main.py`. You can change your entry function in [`_config.yml`](#Config-your-project).
+
+>Command `python3 ifm.py debug` will also run your project, see [Debug your project](#Debug-your-project).
 
 TODO
 
