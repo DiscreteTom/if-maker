@@ -1,12 +1,6 @@
-.vscode
-src/__pycache__
-src/.ifm/
 src/_classes/
 src/_items/
 src/_stories/
 src/_scripts/
 src/_modules/
 src/_config.yml
-src/dist/
-src/build
-ifm.spec
