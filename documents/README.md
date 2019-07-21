@@ -2,26 +2,48 @@
 
 - [if-maker](#if-maker)
   - [Description](#Description)
+    - [What is if-maker](#What-is-if-maker)
     - [Prerequisites](#Prerequisites)
   - [Install](#Install)
+    - [Dependency](#Dependency)
+    - [](#)
+    - [Tools](#Tools)
   - [Project Management](#Project-Management)
     - [Create a project](#Create-a-project)
     - [Compile your project](#Compile-your-project)
     - [Run your project](#Run-your-project)
     - [Debug your project](#Debug-your-project)
-  - [Interactive Fiction Data(ifd)](#Interactive-Fiction-Dataifd)
+  - [IFD - Interactive Fiction Data](#IFD---Interactive-Fiction-Data)
     - [Items](#Items)
     - [Classes](#Classes)
     - [Modules](#Modules)
-  - [Interactive Fiction Text(ift)](#Interactive-Fiction-Textift)
+  - [IFT - Interactive Fiction Text](#IFT---Interactive-Fiction-Text)
+  - [Scripts](#Scripts)
+    - [Function Call](#Function-Call)
+    - [Built-in Content](#Built-in-Content)
   - [Shell](#Shell)
+    - [Action](#Action)
     - [Mount & Unmount](#Mount--Unmount)
     - [OnMount & OnUnmount](#OnMount--OnUnmount)
     - [Tab Completion](#Tab-Completion)
+  - [Others](#Others)
+    - [Language Support](#Language-Support)
 
 ## Description
 
-TODO
+### What is if-maker
+
+The full name of if-maker is **[Interactive Fiction](https://en.wikipedia.org/wiki/Interactive_fiction) Maker**. Obviously it is designed to build interactive fiction games or text-based games just like [zork](https://en.wikipedia.org/wiki/Zork).
+
+The games built by if-maker have NO GUI, just CLI. Players have to type command in the [shell](#Shell) to interact with our games. It doesn't sound very attractive to many players nowadays, but it will be fun to explore a game just with your imagination.
+
+To make the developing process easier, developers just need to provide necessary [data](#IFD---Interactive-Fiction-Data), [stories](#IFT---Interactive-Fiction-Text) and [control logics](#Scripts) for if-maker, and if-maker will do the rest of all jobs, including:
+
+- Command parsing
+- Tab completion
+- Save & Load game data
+- Build executable release
+- ...
 
 ### Prerequisites
 
