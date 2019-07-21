@@ -170,7 +170,11 @@ Run `python3 ifm.py run` to run your project. By default, if-maker will call the
 
 ### Debug your project
 
-TODO
+>This feature is under development.
+
+Run `python3 ifm.py debug` will [compile](#Compile-your-project) your project and then [run](#Run-your-project) your project in debug mode.
+
+In debug mode, built-in functions in `config['debug']` will output debug message. See `config` in [Config your project](#Config-your-project).
 
 ### Release your project
 
