@@ -1,13 +1,26 @@
 # if-maker
 
 - [if-maker](#if-maker)
-  - [Install](#Install)
   - [Description](#Description)
+    - [Prerequisites](#Prerequisites)
+  - [Install](#Install)
   - [Project Management](#Project-Management)
     - [Create a project](#Create-a-project)
     - [Compile your project](#Compile-your-project)
     - [Run your project](#Run-your-project)
     - [Debug your project](#Debug-your-project)
+  - [Concepts](#Concepts)
+
+## Description
+
+TODO
+
+### Prerequisites
+
+Though if-maker can help you to build a text-based game, you still have to know:
+- Basic programming with python3(built-in data structure, control flow, function).
+- Basic data format of YAML file(ifd file is based on YAML file).
+- Basic data format of XML file(ift file is based on XML file).
 
 ## Install
 
