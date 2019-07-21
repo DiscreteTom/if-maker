@@ -1,9 +1,9 @@
 {
 	"cSpell.words": [
-		"unmount",
-		"ifmu",
 		"ifmain",
+		"ifmu",
+		"pyreadline",
 		"refdict",
-		"pyreadline"
+		"unmount"
 	]
 }
