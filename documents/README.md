@@ -134,4 +134,8 @@ TODO
 
 TODO
 
+## Others
 
+### Language Support
+
+We hope the games made by if-maker can support any language in the world. Now we have tested games in English and Chinese and they work well.
