@@ -96,7 +96,7 @@ TODO
 
 TODO
 
-## Interactive Fiction Data(ifd)
+## IFD - Interactive Fiction Data
 
 TODO
 
@@ -112,11 +112,15 @@ TODO
 
 TODO
 
-## Interactive Fiction Text(ift)
+## IFT - Interactive Fiction Text
 
 TODO
 
 ## Shell
+
+### Action
+
+TODO
 
 ### Mount & Unmount
 
