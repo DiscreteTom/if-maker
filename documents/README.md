@@ -1,5 +1,8 @@
 # if-maker
 
+<details>
+<summary>Table of Contents</summary>
+
 - [if-maker](#if-maker)
   - [Description](#Description)
     - [What is if-maker](#What-is-if-maker)
@@ -28,6 +31,8 @@
     - [Tab Completion](#Tab-Completion)
   - [Others](#Others)
     - [Language Support](#Language-Support)
+
+</details>
 
 ## Description
 
