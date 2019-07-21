@@ -9,7 +9,15 @@
     - [Compile your project](#Compile-your-project)
     - [Run your project](#Run-your-project)
     - [Debug your project](#Debug-your-project)
-  - [Concepts](#Concepts)
+  - [Interactive Fiction Data(ifd)](#Interactive-Fiction-Dataifd)
+    - [Items](#Items)
+    - [Classes](#Classes)
+    - [Modules](#Modules)
+  - [Interactive Fiction Text(ift)](#Interactive-Fiction-Textift)
+  - [Shell](#Shell)
+    - [Mount & Unmount](#Mount--Unmount)
+    - [OnMount & OnUnmount](#OnMount--OnUnmount)
+    - [Tab Completion](#Tab-Completion)
 
 ## Description
 
@@ -30,10 +38,6 @@ Though if-maker can help you to build a text-based game, you still have to know:
 We recommend to edit the source code of your project with [VSCode](https://code.visualstudio.com/).
 
 Also we developed two extensions for VSCode to edit `ifd` and `ift` file more effectively, just search `ifd-highlighter` and `ift-highlighter` in the extension window of VSCode to install them.
-
-## Description
-
-TODO
 
 ## Project Management
 
@@ -89,6 +93,40 @@ Command `python3 ifm.py debug` will also compile your project, see [Debug your p
 TODO
 
 ### Debug your project
+
+TODO
+
+## Interactive Fiction Data(ifd)
+
+TODO
+
+### Items
+
+TODO
+
+### Classes
+
+TODO
+
+### Modules
+
+TODO
+
+## Interactive Fiction Text(ift)
+
+TODO
+
+## Shell
+
+### Mount & Unmount
+
+TODO
+
+### OnMount & OnUnmount
+
+TODO
+
+### Tab Completion
 
 TODO
 
