@@ -25,7 +25,7 @@
     - [Items](#Items)
     - [Classes](#Classes)
     - [Modules](#Modules)
-    - [Merge Rules](#Merge-Rules)
+    - [Merging Rules](#Merging-Rules)
   - [IFT - Interactive Fiction Text](#IFT---Interactive-Fiction-Text)
   - [Scripts](#Scripts)
     - [Function Call](#Function-Call)
@@ -247,15 +247,38 @@ Item's id can not be `include` because this key is preserved in IFD files to inc
 
 ### Classes
 
-TODO
+If some items have some attributes in common, you can abstract those attributes in a class. For example, if you want all items to have an [action](#Action) named `watch this`, you can abstract a class as follows:
+
+```yaml
+watchable:
+  data:
+    _watchable_times: 0
+  actions:
+    - name: 'watch this'
+      code: |
+        printf(this['description'])
+        this['data._watchable_times'] += 1
+        printf('you have watched this item', this['data._watchable_times'], 'times')
+        ^
+```
+
+Then you can use this class in your items.
+
+Classes of your project are stored in `_classes` folder. The entry file is `_classes/index.ifd`. You can `include` other class files in index file.
+
+Just like items, every class also has an attribute called `classes`, so every class can contain other classes. When merging two classes, the current class is the `higher`, and the contained class is `lower`. See [Merging Rules](#Merge-Rules).
+
+When merging an item and it's classes, the items is the `higher` and the classes are the `lower`. See [Merging Rules](#Merge-Rules).
+
+To avoid conflicts, attributes of the `data` attribute in class should be well named. In the above example we use `_className_varName` as the naming rules.
 
 ### Modules
 
 TODO
 
-### Merge Rules
+### Merging Rules
 
-When we want to merge two IFD items, we name them `higher` and `lower`. Here is the merge rules:
+When we want to merge two IFD items, we name them `higher` and `lower`. Here is the merging rules:
 
 ```python
 result = {
