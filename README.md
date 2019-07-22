@@ -32,3 +32,5 @@ Also we developed two extensions for VSCode to edit `ifd` and `ift` file more ef
 - `python3 ifm.py clear` to clear your project.
 
 For more information, see documents [here](https://github.com/DiscreteTom/if-maker/tree/master/documents).
+
+## [CHANGELOG](https://github.com/DiscreteTom/if-maker/blob/master/CHANGELOG.md)
