@@ -4,41 +4,45 @@
 <summary>Table of Contents</summary>
 
 - [if-maker](#if-maker)
-  - [Description](#Description)
-    - [What is if-maker](#What-is-if-maker)
-    - [Prerequisites](#Prerequisites)
-  - [Install](#Install)
-    - [Dependency](#Dependency)
-    - [Download](#Download)
-    - [Tools](#Tools)
-  - [Project Management](#Project-Management)
-    - [Create a project](#Create-a-project)
-    - [Config your project](#Config-your-project)
-    - [Compile your project](#Compile-your-project)
-    - [Run your project](#Run-your-project)
-    - [Debug your project](#Debug-your-project)
-    - [Release your project](#Release-your-project)
-    - [Clear your project](#Clear-your-project)
-  - [IFD - Interactive Fiction Data](#IFD---Interactive-Fiction-Data)
-    - [Description of IFD](#Description-of-IFD)
-    - [Format of IFD](#Format-of-IFD)
-    - [Items](#Items)
-    - [Classes](#Classes)
-    - [Modules](#Modules)
-    - [IFD Merging Rules](#IFD-Merging-Rules)
-  - [IFT - Interactive Fiction Text](#IFT---Interactive-Fiction-Text)
-    - [Description of IFT](#Description-of-IFT)
-    - [Supported Elements](#Supported-Elements)
-  - [Scripts](#Scripts)
-    - [Description of Scripts](#Description-of-Scripts)
-    - [Built-in Content](#Built-in-Content)
-  - [Shell](#Shell)
-    - [Action](#Action)
-    - [Mount & Unmount](#Mount--Unmount)
-    - [Tab Completion](#Tab-Completion)
-  - [Others](#Others)
-    - [Manage Global Data](#Manage-Global-Data)
-    - [Language Support](#Language-Support)
+  - [Description](#description)
+    - [What is if-maker](#what-is-if-maker)
+    - [Prerequisites](#prerequisites)
+  - [Install](#install)
+    - [Dependency](#dependency)
+    - [Download](#download)
+    - [Tools](#tools)
+  - [Project Management](#project-management)
+    - [Create a project](#create-a-project)
+    - [Config your project](#config-your-project)
+    - [Compile your project](#compile-your-project)
+    - [Run your project](#run-your-project)
+    - [Debug your project](#debug-your-project)
+    - [Release your project](#release-your-project)
+    - [Clear your project](#clear-your-project)
+  - [IFD - Interactive Fiction Data](#ifd---interactive-fiction-data)
+    - [Description of IFD](#description-of-ifd)
+    - [Format of IFD](#format-of-ifd)
+    - [Items](#items)
+    - [Classes](#classes)
+    - [Modules](#modules)
+    - [Value Reference](#value-reference)
+    - [Self-Reference](#self-reference)
+    - [IFD Merging Rules](#ifd-merging-rules)
+  - [IFT - Interactive Fiction Text](#ift---interactive-fiction-text)
+    - [Description of IFT](#description-of-ift)
+    - [Supported Elements](#supported-elements)
+    - [Value Reference in IFT](#value-reference-in-ift)
+    - [Printing Story](#printing-story)
+  - [Scripts](#scripts)
+    - [Description of Scripts](#description-of-scripts)
+    - [Built-in Content](#built-in-content)
+  - [Shell](#shell)
+    - [Mount & Unmount](#mount--unmount)
+    - [Action](#action)
+    - [Tab Completion](#tab-completion)
+  - [Others](#others)
+    - [Manage Global Data](#manage-global-data)
+    - [Language Support](#language-support)
 
 </details>
 
@@ -351,7 +355,7 @@ sword:
 
 ### Self-Reference
 
-You can use the keyword [`this`](#built-in-content) in action's `name` and `code` as a reference of current item. In `action.name`, `this` will be replaced by the item's `name`. In `action.code`, `this` will be replaced by `items('itemID')`. Here is an example:
+You can use the keyword this in action's `name` and `code` as a reference of current item. In `action.name`, `this` will be replaced by the item's `name`. In `action.code`, `this` will be replaced by `items('itemID')`. Here is an example:
 
 ```yaml
 NPC-1:
@@ -593,13 +597,99 @@ def run(code: str, params = {}):
 
 ## Shell
 
-### Action
-
-TODO
-
 ### Mount & Unmount
 
-TODO
+Not every item can interact with the player. Only those which are **mounted** to shell can interact with the player. If an item can not interact with the player at some moment, it should be **unmounted** from shell.
+
+This is to avoid naming conflict, optimize command parsing and tab completion. Here is an example of using mount & unmount to achieve location change of the player:
+
+```yaml
+# _items/index.ifd
+player:
+  data:
+    location: '@home'
+  actions:
+    - name: 'where am i'
+      code: |
+        printf(this['data.location.name'])
+        printf(this['data.location.description'])
+        ^
+    - name: 'to (where)'
+      code: |
+        if ('@' + where) in this['data.location.data.neighbors']:
+          unmount(this['data.location'])
+          this['data.location'] = '@' + where
+          mount(this['data.location'])
+        ^
+
+home:
+  name: 'home'
+  description: 'your home'
+  data:
+    neighbors:
+      - '@shop'
+    contains:
+      - '@home-bed'
+      - '@home-table'
+  onMount: |
+    mount(this['data.contains'])
+    ^
+  onUnmount: |
+    unmount(this['data.contains'])
+    ^
+
+shop:
+  name: 'shop'
+  description: 'a nearby shop'
+  data:
+    neighbors:
+      - '@home'
+    contains:
+      - '@bottle-water'
+      - '@food'
+  onMount: |
+    mount(this['data.contains'])
+    ^
+  onUnmount: |
+    unmount(this['data.contains'])
+    ^
+```
+
+The `onMount` and `onUnmount` attribute are hooks of mount and unmount action. The content of `onMount` and `onUnmount` is python code and will be executed after mount and unmount.
+
+### Action
+
+Every action has two attributes: `name` and `code`.
+
+The keyword `this` in `name` will stand for the item's name. The variable `this` in `code` will stand for the item itself. See [Sefl-Reference](#self-reference).
+
+If a command contains some items' name and these items are not mounted to shell, you can use `(param: className)` in `name` to catch it. The `param` will be assigned to the matched item's id. Here is an example:
+
+```yaml
+player:
+  data:
+    location: '@home'
+  actions:
+    - name: 'to (where: location)'
+      code: |
+        if ('@' + where) in this['data.location.data.neighbors']:
+          unmount(this['data.location'])
+          this['data.location'] = '@' + where
+          mount(this['data.location'])
+        ^
+home:
+  classes:
+    - 'location'
+  data:
+    neighbors:
+      - '@shop'
+shop:
+  classes:
+    - 'location'
+  data:
+    neighbors:
+      - '@home'
+```
 
 ### Tab Completion
 
