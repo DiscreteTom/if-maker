@@ -4,41 +4,45 @@
 <summary>Table of Contents</summary>
 
 - [if-maker](#if-maker)
-  - [Description](#Description)
-    - [What is if-maker](#What-is-if-maker)
-    - [Prerequisites](#Prerequisites)
-  - [Install](#Install)
-    - [Dependency](#Dependency)
-    - [Download](#Download)
-    - [Tools](#Tools)
-  - [Project Management](#Project-Management)
-    - [Create a project](#Create-a-project)
-    - [Config your project](#Config-your-project)
-    - [Compile your project](#Compile-your-project)
-    - [Run your project](#Run-your-project)
-    - [Debug your project](#Debug-your-project)
-    - [Release your project](#Release-your-project)
-    - [Clear your project](#Clear-your-project)
-  - [IFD - Interactive Fiction Data](#IFD---Interactive-Fiction-Data)
-    - [Description of IFD](#Description-of-IFD)
-    - [Format of IFD](#Format-of-IFD)
-    - [Items](#Items)
-    - [Classes](#Classes)
-    - [Modules](#Modules)
-    - [IFD Merging Rules](#IFD-Merging-Rules)
-  - [IFT - Interactive Fiction Text](#IFT---Interactive-Fiction-Text)
-    - [Description of IFT](#Description-of-IFT)
-    - [Supported Elements](#Supported-Elements)
-  - [Scripts](#Scripts)
-    - [Description of Scripts](#Description-of-Scripts)
-    - [Built-in Content](#Built-in-Content)
-  - [Shell](#Shell)
-    - [Action](#Action)
-    - [Mount & Unmount](#Mount--Unmount)
-    - [Tab Completion](#Tab-Completion)
-  - [Others](#Others)
-    - [Manage Global Data](#Manage-Global-Data)
-    - [Language Support](#Language-Support)
+  - [Description](#description)
+    - [What is if-maker](#what-is-if-maker)
+    - [Prerequisites](#prerequisites)
+  - [Install](#install)
+    - [Dependency](#dependency)
+    - [Download](#download)
+    - [Tools](#tools)
+  - [Project Management](#project-management)
+    - [Create a project](#create-a-project)
+    - [Config your project](#config-your-project)
+    - [Compile your project](#compile-your-project)
+    - [Run your project](#run-your-project)
+    - [Debug your project](#debug-your-project)
+    - [Release your project](#release-your-project)
+    - [Clear your project](#clear-your-project)
+  - [IFD - Interactive Fiction Data](#ifd---interactive-fiction-data)
+    - [Description of IFD](#description-of-ifd)
+    - [Format of IFD](#format-of-ifd)
+    - [Items](#items)
+    - [Classes](#classes)
+    - [Modules](#modules)
+    - [Value Reference](#value-reference)
+    - [Self-Reference](#self-reference)
+    - [IFD Merging Rules](#ifd-merging-rules)
+  - [IFT - Interactive Fiction Text](#ift---interactive-fiction-text)
+    - [Description of IFT](#description-of-ift)
+    - [Supported Elements](#supported-elements)
+    - [Value Reference in IFT](#value-reference-in-ift)
+    - [Printing Story](#printing-story)
+  - [Scripts](#scripts)
+    - [Description of Scripts](#description-of-scripts)
+    - [Built-in Content](#built-in-content)
+  - [Shell](#shell)
+    - [Mount & Unmount](#mount--unmount)
+    - [Action](#action)
+    - [Tab Completion](#tab-completion)
+  - [Others](#others)
+    - [Manage Global Data](#manage-global-data)
+    - [Language Support](#language-support)
 
 </details>
 
@@ -64,6 +68,7 @@ Though if-maker can help you to build a text-based game, you still have to know:
 - Basic programming with python3(built-in data structure, control flow, function).
 - Basic data format of YAML file.
 - Basic data format of XML file.
+- Usage of [refdict](https://pypi.org/project/refdict/).
 
 ## Install
 
@@ -134,8 +139,8 @@ system:
     exitCmd: 'exit'
     errorMsg: 'invalid command' # will be printed if command can not be parsed
   print: # will influence the built-in function `printf`
-    skip: True # if false, print strings char by char
-    interval: 0.02 # become effective when system.print.skip is false. using second as unit
+    skip: True # if false, print strings char by char, 
+    interval: 0.02 # the time interval of chars when printing. become effective when system.print.skip is false. using second as unit
     indent: ''
   story:
     first: '0' # ID of the first story
@@ -317,6 +322,60 @@ debug: [] # merge
 data: # merge, consider conflicts, use project's
 ```
 
+### Value Reference
+
+Because the variable [`item`](#built-in-content) is a [refdict](https://pypi.org/project/refdict/), you can reference another item using a string starts with `@`. Here is an example:
+
+```yaml
+player:
+  name: 'DiscreteTom'
+  data:
+    items:
+      - '@apple'
+      - '@red-potion'
+    weapon: '@sword'
+    attack: '@player.weapon.attack'
+    me: '@player'
+
+apple:
+  name: 'apple'
+  description: 'restore your health by 10%'
+
+red-potion:
+  name: 'red potion'
+  description: 'restore your health by 20%'
+
+sword:
+  name: 'sword'
+  description: 'A nice sword'
+  data:
+    attack: 123
+    value: 50
+```
+
+### Self-Reference
+
+You can use the keyword this in action's `name` and `code` as a reference of current item. In `action.name`, `this` will be replaced by the item's `name`. In `action.code`, `this` will be replaced by `items('itemID')`. Here is an example:
+
+```yaml
+NPC-1:
+  name: 'DiscreteTom'
+  description: 'The developer of if-maker'
+  data:
+    repositories:
+      - 'if-maker'
+  action:
+    - name: 'who is this'
+      code: |
+        printf(this['name'])
+        printf(this['description'])
+        printf('repositories:')
+        printItemList(this['data.repositories'])
+        ^
+```
+
+During the game, when you input `who is DiscreteTom`, if this item is [mounted](#mount--unmount) to [shell](#shell) and there is no naming conflicts, the action `who is this` will be triggered.
+
 ### IFD Merging Rules
 
 When we want to merge two IFD items, we name them `higher` and `lower`. Here is the merging rules:
@@ -356,6 +415,61 @@ The stories are stored in `_stories` folder. The `_stories/index.ift` is the ent
 - `<while condition="">content</while>` - The content will take effect while `condition` returns true.
 - `<code>content</code>` - Run `content` as python code.
 - `<input prompt="">dest</input>` - Get user input and store it in `dest`. You can only access `dest` in the same context of this `input` element.
+
+### Value Reference in IFT
+
+In IFT file, you can use `{{ value }}` to reference a value. Here is an example:
+
+```xml
+<story id="0">
+  Hello everyone, my name is {{ items['player.name'] }}.
+</story>
+```
+
+### Printing Story
+
+If `config['system.story.skip']` is false, the story will be printed line by line. The leading blank characters will be removed. Here is an example:
+
+```xml
+<story id="0">
+  Hello, world.
+  <if condition="True">
+    There is no indentation in this line.
+  </if>
+</story>
+```
+
+If you print this story, the result is:
+
+```
+Hello, world.
+There is no indentation in this line.
+```
+
+If you want to set indentation of your story, you can use `config['system.print.indent']`:
+
+```xml
+<story id="0">
+  Hello, world.
+  <if condition="True">
+    <code>
+      game['tmp'] = config['system.print.indent']
+      config['system.print.indent'] = '    '
+    </code>
+    There are 4 spaced at the beginning of this line.
+    <code>
+      config['system.print.indent'] = game['tmp']
+    </code>
+  </if>
+</story>
+```
+
+If you print this story, the result is:
+
+```
+Hello world.
+    There are 4 spaced at the beginning of this line.
+```
 
 ## Scripts
 
@@ -483,17 +597,103 @@ def run(code: str, params = {}):
 
 ## Shell
 
-### Action
-
-TODO
-
 ### Mount & Unmount
 
-TODO
+Not every item can interact with the player. Only those which are **mounted** to shell can interact with the player. If an item can not interact with the player at some moment, it should be **unmounted** from shell.
+
+This is to avoid naming conflict, optimize command parsing and tab completion. Here is an example of using mount & unmount to achieve location change of the player:
+
+```yaml
+# _items/index.ifd
+player:
+  data:
+    location: '@home'
+  actions:
+    - name: 'where am i'
+      code: |
+        printf(this['data.location.name'])
+        printf(this['data.location.description'])
+        ^
+    - name: 'to (where)'
+      code: |
+        if ('@' + where) in this['data.location.data.neighbors']:
+          unmount(this['data.location'])
+          this['data.location'] = '@' + where
+          mount(this['data.location'])
+        ^
+
+home:
+  name: 'home'
+  description: 'your home'
+  data:
+    neighbors:
+      - '@shop'
+    contains:
+      - '@home-bed'
+      - '@home-table'
+  onMount: |
+    mount(this['data.contains'])
+    ^
+  onUnmount: |
+    unmount(this['data.contains'])
+    ^
+
+shop:
+  name: 'shop'
+  description: 'a nearby shop'
+  data:
+    neighbors:
+      - '@home'
+    contains:
+      - '@bottle-water'
+      - '@food'
+  onMount: |
+    mount(this['data.contains'])
+    ^
+  onUnmount: |
+    unmount(this['data.contains'])
+    ^
+```
+
+The `onMount` and `onUnmount` attribute are hooks of mount and unmount action. The content of `onMount` and `onUnmount` is python code and will be executed after mount and unmount.
+
+### Action
+
+Every action has two attributes: `name` and `code`.
+
+The keyword `this` in `name` will stand for the item's name. The variable `this` in `code` will stand for the item itself. See [Sefl-Reference](#self-reference).
+
+If a command contains some items' name and these items are not mounted to shell, you can use `(param: className)` in `name` to catch it. The `param` will be assigned to the matched item's id. Here is an example:
+
+```yaml
+player:
+  data:
+    location: '@home'
+  actions:
+    - name: 'to (where: location)'
+      code: |
+        if ('@' + where) in this['data.location.data.neighbors']:
+          unmount(this['data.location'])
+          this['data.location'] = '@' + where
+          mount(this['data.location'])
+        ^
+home:
+  classes:
+    - 'location'
+  data:
+    neighbors:
+      - '@shop'
+shop:
+  classes:
+    - 'location'
+  data:
+    neighbors:
+      - '@home'
+```
 
 ### Tab Completion
 
-TODO
+Pressing `tab` will trigger the tab completion of shell. Shell will first look for words in the variable [`completer`](#built-in-content), then in the mounted items in shell.
 
 ## Others
 
