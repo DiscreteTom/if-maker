@@ -25,7 +25,7 @@
     - [Items](#Items)
     - [Classes](#Classes)
     - [Modules](#Modules)
-    - [Merging Rules](#Merging-Rules)
+    - [IFD Merging Rules](#IFD-Merging-Rules)
   - [IFT - Interactive Fiction Text](#IFT---Interactive-Fiction-Text)
   - [Scripts](#Scripts)
     - [Function Call](#Function-Call)
@@ -266,17 +266,56 @@ Then you can use this class in your items.
 
 Classes of your project are stored in `_classes` folder. The entry file is `_classes/index.ifd`. You can `include` other class files in index file.
 
-Just like items, every class also has an attribute called `classes`, so every class can contain other classes. When merging two classes, the current class is the `higher`, and the contained class is `lower`. See [Merging Rules](#Merge-Rules).
+Just like items, every class also has an attribute called `classes`, so every class can contain other classes. When merging two classes, the current class is the `higher`, and the contained class is `lower`. See [IFD Merging Rules](#Merge-Rules).
 
-When merging an item and it's classes, the items is the `higher` and the classes are the `lower`. See [Merging Rules](#Merge-Rules).
+When merging an item and it's classes, the items is the `higher` and the classes are the `lower`. See [IFD Merging Rules](#Merge-Rules).
 
 To avoid conflicts, attributes of the `data` attribute in class should be well named. In the above example we use `_className_varName` as the naming rules.
 
 ### Modules
 
-TODO
+Modules are project-independent classes, items and configs. You can reuse them in many projects.
 
-### Merging Rules
+Modules are stored in `_modules` folder as sub-folders. Every module contains an `item.ifd` file, a `classes.ifd` file, and a `config.yml` file. For example, if we have a module named `test`, the folder structure of `_modules` should be like this:
+
+```
+_modules
+└───test
+        classes.ifd
+        items.ifd
+        config.yml
+```
+
+You have to add module names in `config['make.modules']` to activate these modules.
+
+When merging items and classes, the project items and classes are the `higher` and the module items and classes are the `lower`. See [IFD Merging Rules](#Merging-Rules).
+
+When merging config, the merging rules of config are as follows:
+
+```yaml
+project:
+  name: '' # use project's if project's is not empty
+system:
+  shell:
+    prefix: '>' # use project's if project's is not empty
+    exitCmd: 'exit' # use project's if project's is not empty
+    errorMsg: 'invalid command' # use project's if project's is not empty
+  print:
+    skip: True # use project's if project's is given
+    interval: 0.02 # use project's if project's is given
+    indent: '' # use project's if project's is not empty
+  story:
+    first: '0' # use project's if project's is not empty
+    skip: False # use project's if project's is given
+  entry: 'ifmain' # use project's if project's is not empty
+make: 
+  modules: [] # merge
+  globalClasses: [] # merge
+debug: [] # merge
+data: # merge, consider conflicts, use project's
+```
+
+### IFD Merging Rules
 
 When we want to merge two IFD items, we name them `higher` and `lower`. Here is the merging rules:
 
