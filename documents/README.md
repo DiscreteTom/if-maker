@@ -27,8 +27,10 @@
     - [Modules](#Modules)
     - [IFD Merging Rules](#IFD-Merging-Rules)
   - [IFT - Interactive Fiction Text](#IFT---Interactive-Fiction-Text)
+    - [Description of IFT](#Description-of-IFT)
+    - [Supported Elements](#Supported-Elements)
   - [Scripts](#Scripts)
-    - [Function Call](#Function-Call)
+    - [Description of Scripts](#Description-of-Scripts)
     - [Built-in Content](#Built-in-Content)
   - [Shell](#Shell)
     - [Action](#Action)
@@ -337,17 +339,147 @@ result = {
 
 ## IFT - Interactive Fiction Text
 
-TODO
+### Description of IFT
+
+IFT files are based on XML, but IFT files are not valid XML files. To make it simpler than XML, we remove the XML header label and the root element, and add an include rule.
+
+In [VSCode](https://code.visualstudio.com/), we developed an extension [ift-highlighter](https://marketplace.visualstudio.com/items?itemName=DiscreteTom.ift-highlighter) to optimize your developing experience.
+
+Every IFT file consists many **stories**. Every story has an ID, you can print your story by using `printStory`. See [Built-in Content](#Built-in-Content).
+
+The stories are stored in `_stories` folder. The `_stories/index.ift` is the entry file. You can include other IFT files by adding `#include filename` at the top of IFT files. The `filename` should not contain blank characters.
+
+### Supported Elements
+
+- `<story id="">content</story>` - Story element. The basic unit of IFT file.
+- `<if condition="">content</if>` - The content will take effect if `condition` returns true.
+- `<while condition="">content</while>` - The content will take effect while `condition` returns true.
+- `<code>content</code>` - Run `content` as python code.
+- `<input prompt="">dest</input>` - Get user input and store it in `dest`. You can only access `dest` in the same context of this `input` element.
 
 ## Scripts
 
-### Function Call
+### Description of Scripts
 
-TODO
+You can run any python code in if-maker.
+
+All your scripts should be stored in `_scripts` folder. After you [creating a new project](#Create-a-project), their will be 2 files in `_scripts` folder:
+- `ifmu.py`
+- `main.py`
+
+The `ifmu.py` contains the code completion information of [built-in content](#Built-in-Content) of if-maker, so it will be ignored when compiling your project. The `main.py` contains the default entry function `ifmain`. You can change the default entry function in `config['system.entry']`, see [Config your project](#Config-your-project).
+
+There is no entry file. All files in `_scripts` folder except `ifmu.py` will be merged into an output script file. The output script will remove all `from ifmu import *`.
+
+In script files you can do anything you want to do. You can also define classes there.
+
+If you want to call something in these scripts, for example you write a function named `func`, then you can directly call it in IFT and IFD.
 
 ### Built-in Content
 
-TODO
+You can find all information of built-in content in `ifmu.py`.
+
+<details>
+<summary>ifmu.py</summary>
+
+```python
+from refdict import refdict
+
+def printf(*values: str, **kwargs):
+	'''
+	`printf(values, ..., skip = config['system.print.skip'], sep = ' ', end = '\\n', indent = config['system.print.indent'])`
+
+	replace variables in `{{}}` with its value
+	'''
+
+def printStory(story_id: str) -> bool:
+	'''
+	print the story whose id is `story_id`
+
+	return False if story_id is not found in story file
+	'''
+
+def printItemList(l: list, skip = True, indent = '- ', sep = '\n', end = '\n'):
+	'''
+	`l` should be a list of item id, print those names
+	'''
+
+def parse(cmd: str):
+	'''
+	parse a command
+	'''
+
+def loadedItems() -> list:
+	'''
+	return a list of item id which are loaded in shell
+	'''
+
+def mount(*items):
+	'''
+	mount `items` to shell so that shell can parse their commands
+
+	`items` can be a list of:
+	- `str` as item ID
+	- `list` as a list of item ID
+	- `tuple` as a list of item ID
+	- `dict` as an existing item
+	'''
+
+def unmount(*items):
+	'''
+	unmount `items` from shell so that shell can not parse their commands
+
+	`items` can be a list of:
+	- `str` as item ID
+	- `list` as a list of item ID
+	- `tuple` as a list of item ID
+	- `dict` as an existing item
+	'''
+
+items = refdict({})
+config = refdict({})
+game = refdict({}) # store user defined global data
+completer = set()
+
+def findItem(itemName: str):
+	'''
+	return item ID. if item ID is not found, return None
+	'''
+
+def save(fileName: str):
+	'''
+	save game progress to `fileName`
+	'''
+
+def load(fileName = '') -> None:
+	'''
+	load game progress from `fileName`
+
+	if `fileName` is not given, load data from default location
+	'''
+
+def start():
+	'''
+	start project by calling `config['system.entry']`
+	'''
+
+def newGame():
+	'''
+	start a new game, print story: `config['system.story.first']`, load data and loop
+	'''
+
+def loop():
+	'''
+	enable shell
+	'''
+
+def run(code: str, params = {}):
+	'''
+	run `code` in ifm environment
+	'''
+```
+
+</details>
 
 ## Shell
 
