@@ -693,7 +693,7 @@ shop:
 
 ### Tab Completion
 
-TODO
+Pressing `tab` will trigger the tab completion of shell. Shell will first look for words in the variable [`completer`](#built-in-content), then in the mounted items in shell.
 
 ## Others
 
