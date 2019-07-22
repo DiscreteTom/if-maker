@@ -91,10 +91,9 @@ def __printStoryText(text: str, skip: bool) -> bool:
 		if len(line):
 			printf(line, skip = skip, indent = data.config['system.print.indent'])
 			if not skip:
-				if keyboard.read_key() == 'esc':
-					# esc is down
+				if keyboard.read_key(True) == 'esc':
 					skip = True
-				keyboard.read_key() # any key up
+	flush_input()
 	return skip
 
 def __parseElement(el: ElementTree.Element, skip: bool) -> bool:
@@ -129,3 +128,15 @@ def printItemList(l: list, skip = True, indent = '- ', sep = '\n', end = '\n'):
 		if i != len(l) - 1:
 			print(sep, skip = skip, end = '')
 	printf(end, skip=skip, end='')
+
+def flush_input():
+	'''
+	ref: https://rosettacode.org/wiki/Keyboard_input/Flush_the_keyboard_buffer
+	'''
+	try:
+		import msvcrt
+		while msvcrt.kbhit():
+			msvcrt.getch()
+	except ImportError:
+		import sys, termios
+		termios.tcflush(sys.stdin, termios.TCIOFLUSH)
