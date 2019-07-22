@@ -318,6 +318,60 @@ debug: [] # merge
 data: # merge, consider conflicts, use project's
 ```
 
+### Value Reference
+
+Because the variable [`item`](#built-in-content) is a [refdict](https://pypi.org/project/refdict/), you can reference another item using a string starts with `@`. Here is an example:
+
+```yaml
+player:
+  name: 'DiscreteTom'
+  data:
+    items:
+      - '@apple'
+      - '@red-potion'
+    weapon: '@sword'
+    attack: '@player.weapon.attack'
+    me: '@player'
+
+apple:
+  name: 'apple'
+  description: 'restore your health by 10%'
+
+red-potion:
+  name: 'red potion'
+  description: 'restore your health by 20%'
+
+sword:
+  name: 'sword'
+  description: 'A nice sword'
+  data:
+    attack: 123
+    value: 50
+```
+
+### Self-Reference
+
+You can use the keyword [`this`](#built-in-content) in action's `name` and `code` as a reference of current item. In `action.name`, `this` will be replaced by the item's `name`. In `action.code`, `this` will be replaced by `items('itemID')`. Here is an example:
+
+```yaml
+NPC-1:
+  name: 'DiscreteTom'
+  description: 'The developer of if-maker'
+  data:
+    repositories:
+      - 'if-maker'
+  action:
+    - name: 'who is this'
+      code: |
+        printf(this['name'])
+        printf(this['description'])
+        printf('repositories:')
+        printItemList(this['data.repositories'])
+        ^
+```
+
+During the game, when you input `who is DiscreteTom`, if this item is [mounted](#mount--unmount) to [shell](#shell) and there is no naming conflicts, the action `who is this` will be triggered.
+
 ### IFD Merging Rules
 
 When we want to merge two IFD items, we name them `higher` and `lower`. Here is the merging rules:
