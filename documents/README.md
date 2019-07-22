@@ -412,6 +412,16 @@ The stories are stored in `_stories` folder. The `_stories/index.ift` is the ent
 - `<code>content</code>` - Run `content` as python code.
 - `<input prompt="">dest</input>` - Get user input and store it in `dest`. You can only access `dest` in the same context of this `input` element.
 
+### Value Reference in IFT
+
+In IFT file, you can use `{{ value }}` to reference a value. Here is an example:
+
+```xml
+<story id="0">
+  Hello everyone, my name is {{ items['player.name'] }}.
+</story>
+```
+
 ## Scripts
 
 ### Description of Scripts
