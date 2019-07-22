@@ -134,8 +134,8 @@ system:
     exitCmd: 'exit'
     errorMsg: 'invalid command' # will be printed if command can not be parsed
   print: # will influence the built-in function `printf`
-    skip: True # if false, print strings char by char
-    interval: 0.02 # become effective when system.print.skip is false. using second as unit
+    skip: True # if false, print strings char by char, 
+    interval: 0.02 # the time interval of chars when printing. become effective when system.print.skip is false. using second as unit
     indent: ''
   story:
     first: '0' # ID of the first story
