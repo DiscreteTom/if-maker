@@ -422,6 +422,51 @@ In IFT file, you can use `{{ value }}` to reference a value. Here is an example:
 </story>
 ```
 
+### Printing Story
+
+If `config['system.story.skip']` is false, the story will be printed line by line. The leading blank characters will be removed. Here is an example:
+
+```xml
+<story id="0">
+  Hello, world.
+  <if condition="True">
+    There is no indentation in this line.
+  </if>
+</story>
+```
+
+If you print this story, the result is:
+
+```
+Hello, world.
+There is no indentation in this line.
+```
+
+If you want to set indentation of your story, you can use `config['system.print.indent']`:
+
+```xml
+<story id="0">
+  Hello, world.
+  <if condition="True">
+    <code>
+      game['tmp'] = config['system.print.indent']
+      config['system.print.indent'] = '    '
+    </code>
+    There are 4 spaced at the beginning of this line.
+    <code>
+      config['system.print.indent'] = game['tmp']
+    </code>
+  </if>
+</story>
+```
+
+If you print this story, the result is:
+
+```
+Hello world.
+    There are 4 spaced at the beginning of this line.
+```
+
 ## Scripts
 
 ### Description of Scripts
