@@ -27,6 +27,8 @@
     - [Modules](#Modules)
     - [IFD Merging Rules](#IFD-Merging-Rules)
   - [IFT - Interactive Fiction Text](#IFT---Interactive-Fiction-Text)
+    - [Description of IFT](#Description-of-IFT)
+    - [Supported Elements](#Supported-Elements)
   - [Scripts](#Scripts)
     - [Function Call](#Function-Call)
     - [Built-in Content](#Built-in-Content)
@@ -337,7 +339,23 @@ result = {
 
 ## IFT - Interactive Fiction Text
 
-TODO
+### Description of IFT
+
+IFT files are based on XML, but IFT files are not valid XML files. To make it simpler than XML, we remove the XML header label and the root element, and add an include rule.
+
+In [VSCode](https://code.visualstudio.com/), we developed an extension [ift-highlighter](https://marketplace.visualstudio.com/items?itemName=DiscreteTom.ift-highlighter) to optimize your developing experience.
+
+Every IFT file consists many **stories**. Every story has an ID, you can print your story by using `printStory`. See [Built-in Content](#Built-in-Content).
+
+The stories are stored in `_stories` folder. The `_stories/index.ift` is the entry file. You can include other IFT files by adding `#include filename` at the top of IFT files. The `filename` should not contain blank characters.
+
+### Supported Elements
+
+- `<story id="">content</story>` - Story element. The basic unit of IFT file.
+- `<if condition="">content</if>` - The content will take effect if `condition` returns true.
+- `<while condition="">content</while>` - The content will take effect while `condition` returns true.
+- `<code>content</code>` - Run `content` as python code.
+- `<input prompt="">dest</input>` - Get user input and store it in `dest`. You can only access `dest` in the same context of this `input` element.
 
 ## Scripts
 
