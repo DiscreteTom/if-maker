@@ -193,8 +193,6 @@ If you want to remove your project without removing if-maker, you can run `pytho
 
 IFD file is designed to store object or item data of the game. It is based on [YAML](https://yaml.org/). Actually, every IFD file is a valid YAML file, the file name extension IFD is used only for VSCode extension [ifd-highlighter](https://marketplace.visualstudio.com/items?itemName=DiscreteTom.ifd-highlighter) to recognize that this file is an interactive fiction data file.
 
-IFD files are stored in `_items` folder. The entry file is the `_items/index.ifd`. You can write all your items in the index file, or you can write them in other IFD files and `include` then in index file.
-
 ### Format of IFD
 
 Every IFD file can include other IFD files. Remember that recursive including is invalid.
@@ -239,7 +237,11 @@ itemID:
 
 ### Items
 
-TODO
+Items of your project are stored in `_items` folder. The entry file is the `_items/index.ifd`. You can write all your items in the index file, or you can write them in other IFD files in `_items` folder and `include` then in index file.
+
+Usually items are the kind of data which can interact with player because they have the `actions` attribute. Also you can store some global data as an item. See [Manage Global Data](#Manage-Global-Data)
+
+Item's id can not be `include` because this key is preserved in IFD files to include other IFD files.
 
 ### Classes
 
