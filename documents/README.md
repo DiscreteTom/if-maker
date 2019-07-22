@@ -20,9 +20,12 @@
     - [Release your project](#Release-your-project)
     - [Clear your project](#Clear-your-project)
   - [IFD - Interactive Fiction Data](#IFD---Interactive-Fiction-Data)
+    - [Description of IFD](#Description-of-IFD)
+    - [Format of IFD](#Format-of-IFD)
     - [Items](#Items)
     - [Classes](#Classes)
     - [Modules](#Modules)
+    - [IFD Merging Rules](#IFD-Merging-Rules)
   - [IFT - Interactive Fiction Text](#IFT---Interactive-Fiction-Text)
   - [Scripts](#Scripts)
     - [Function Call](#Function-Call)
@@ -30,9 +33,9 @@
   - [Shell](#Shell)
     - [Action](#Action)
     - [Mount & Unmount](#Mount--Unmount)
-    - [OnMount & OnUnmount](#OnMount--OnUnmount)
     - [Tab Completion](#Tab-Completion)
   - [Others](#Others)
+    - [Manage Global Data](#Manage-Global-Data)
     - [Language Support](#Language-Support)
 
 </details>
@@ -188,19 +191,149 @@ If you want to remove your project without removing if-maker, you can run `pytho
 
 ## IFD - Interactive Fiction Data
 
-TODO
+### Description of IFD
+
+IFD file is designed to store object or item data of the game. It is based on [YAML](https://yaml.org/). Actually, every IFD file is a valid YAML file, the file name extension IFD is used only for VSCode extension [ifd-highlighter](https://marketplace.visualstudio.com/items?itemName=DiscreteTom.ifd-highlighter) to recognize that this file is an interactive fiction data file.
+
+### Format of IFD
+
+Every IFD file can include other IFD files. Remember that recursive including is invalid.
+
+```yaml
+include:
+  - filename
+```
+
+Every IFD file can contain many items, every item has these attributes:
+- id - The identifier in your [scripts](#Scripts). You can reference an item using `items['itemID']`. See [Built-in Content](#Built-in-Content).
+- name - The name is used to be displayed on [shell](#Shell). You can change the name of any item during the game, but do not change its id.
+- description
+- onMount & onUnmount - Python scripts that will be executed when this item is [mounted & unmounted](#Mount--Unmount) to [shell](#Shell). The `|` and `^` are not the part of python code. Please see the examples below to make sure your indentation of code is right.
+- actions - Every action has two attributes: name and code. The code are the same format as the code in onMount & onUnmount. See [Action](#Action).
+- classes - Each item can belong to 0 or many classes. See [Classes](#Classes).
+- data - Custom data.
+
+```yaml
+itemID:
+  id: 'itemID' # Auto-generated. you don't have to write this attribute in your IFD file
+  name: 'itemName'
+  description: ''
+  onMount: |
+    # python code here
+    ^
+  onUnmount: |
+    # here is an example about indentation
+    while input('please input "1"') != '1':
+      print('you are wrong')
+    ^
+  actions:
+    - name: 'word1 word2'
+      code: |
+        # python code here
+        ^
+  classes: 
+    - 'className'
+  data:
+    customData
+```
 
 ### Items
 
-TODO
+Items of your project are stored in `_items` folder. The entry file is the `_items/index.ifd`. You can write all your items in the index file, or you can write them in other IFD files in `_items` folder and `include` then in index file.
+
+Usually items are the kind of data which can interact with player because they have the `actions` attribute. Also you can store some global data as an item. See [Manage Global Data](#Manage-Global-Data)
+
+Item's id can not be `include` because this key is preserved in IFD files to include other IFD files.
 
 ### Classes
 
-TODO
+If some items have some attributes in common, you can abstract those attributes in a class. For example, if you want all items to have an [action](#Action) named `watch this`, you can abstract a class as follows:
+
+```yaml
+watchable:
+  data:
+    _watchable_times: 0
+  actions:
+    - name: 'watch this'
+      code: |
+        printf(this['description'])
+        this['data._watchable_times'] += 1
+        printf('you have watched this item', this['data._watchable_times'], 'times')
+        ^
+```
+
+Then you can use this class in your items.
+
+Classes of your project are stored in `_classes` folder. The entry file is `_classes/index.ifd`. You can `include` other class files in index file.
+
+Just like items, every class also has an attribute called `classes`, so every class can contain other classes. When merging two classes, the current class is the `higher`, and the contained class is `lower`. See [IFD Merging Rules](#Merge-Rules).
+
+When merging an item and it's classes, the items is the `higher` and the classes are the `lower`. See [IFD Merging Rules](#Merge-Rules).
+
+To avoid conflicts, attributes of the `data` attribute in class should be well named. In the above example we use `_className_varName` as the naming rules.
 
 ### Modules
 
-TODO
+Modules are project-independent classes, items and configs. You can reuse them in many projects.
+
+Modules are stored in `_modules` folder as sub-folders. Every module contains an `item.ifd` file, a `classes.ifd` file, and a `config.yml` file. For example, if we have a module named `test`, the folder structure of `_modules` should be like this:
+
+```
+_modules
+└───test
+        classes.ifd
+        items.ifd
+        config.yml
+```
+
+You have to add module names in `config['make.modules']` to activate these modules.
+
+When merging items and classes, the project items and classes are the `higher` and the module items and classes are the `lower`. See [IFD Merging Rules](#Merging-Rules).
+
+When merging config, the merging rules of config are as follows:
+
+```yaml
+project:
+  name: '' # use project's if project's is not empty
+system:
+  shell:
+    prefix: '>' # use project's if project's is not empty
+    exitCmd: 'exit' # use project's if project's is not empty
+    errorMsg: 'invalid command' # use project's if project's is not empty
+  print:
+    skip: True # use project's if project's is given
+    interval: 0.02 # use project's if project's is given
+    indent: '' # use project's if project's is not empty
+  story:
+    first: '0' # use project's if project's is not empty
+    skip: False # use project's if project's is given
+  entry: 'ifmain' # use project's if project's is not empty
+make: 
+  modules: [] # merge
+  globalClasses: [] # merge
+debug: [] # merge
+data: # merge, consider conflicts, use project's
+```
+
+### IFD Merging Rules
+
+When we want to merge two IFD items, we name them `higher` and `lower`. Here is the merging rules:
+
+```python
+result = {
+'name': '', # use higher's if higher's is not empty
+'description': '', # use higher's if higher's is not empty
+'actions': [ # merge, ignore conflict, lower's after higher's
+	{
+		'name': '',
+		'code': ''
+	}
+],
+'onMount': '', # merge, ignore conflict, higher's after lower's
+'onUnmount': '', # merge, ignore conflict, higher's after lower's
+'data': {} # merge, consider conflict, use higher's
+}
+```
 
 ## IFT - Interactive Fiction Text
 
@@ -226,15 +359,23 @@ TODO
 
 TODO
 
-### OnMount & OnUnmount
-
-TODO
-
 ### Tab Completion
 
 TODO
 
 ## Others
+
+### Manage Global Data
+
+There are 3 places to store global data:
+- In `config['data']`. See [Config your project](#Config-your-project).
+- In `items`. See [Items](#Items)
+- In `game`. See [Built-in Content](#Built-in-Content)
+
+Here is a suggestion about where to put your global data:
+1. If the data is generated during the game, store it in `game` because the content of `game` is generated during the game and you can not edit `game` when developing your project.
+2. If the data is defined when developing your project, and it's project-independent, maybe you can abstract it as a part of [module](#Modules) so you can reuse it in other projects.
+3. Otherwise, store these data in an item is fine.
 
 ### Language Support
 
