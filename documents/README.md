@@ -20,6 +20,8 @@
     - [Release your project](#Release-your-project)
     - [Clear your project](#Clear-your-project)
   - [IFD - Interactive Fiction Data](#IFD---Interactive-Fiction-Data)
+    - [Description of IFD](#Description-of-IFD)
+    - [Format of IFD](#Format-of-IFD)
     - [Items](#Items)
     - [Classes](#Classes)
     - [Modules](#Modules)
@@ -30,7 +32,6 @@
   - [Shell](#Shell)
     - [Action](#Action)
     - [Mount & Unmount](#Mount--Unmount)
-    - [OnMount & OnUnmount](#OnMount--OnUnmount)
     - [Tab Completion](#Tab-Completion)
   - [Others](#Others)
     - [Language Support](#Language-Support)
@@ -188,7 +189,53 @@ If you want to remove your project without removing if-maker, you can run `pytho
 
 ## IFD - Interactive Fiction Data
 
-TODO
+### Description of IFD
+
+IFD file is designed to store object or item data of the game. It is based on [YAML](https://yaml.org/). Actually, every IFD file is a valid YAML file, the file name extension IFD is used only for VSCode extension [ifd-highlighter](https://marketplace.visualstudio.com/items?itemName=DiscreteTom.ifd-highlighter) to recognize that this file is an interactive fiction data file.
+
+IFD files are stored in `_items` folder. The entry file is the `_items/index.ifd`. You can write all your items in the index file, or you can write them in other IFD files and `include` then in index file.
+
+### Format of IFD
+
+Every IFD file can include other IFD files. Remember that recursive including is invalid.
+
+```yaml
+include:
+  - filename
+```
+
+Every IFD file can contain many items, every item has these attributes:
+- id - The identifier in your [scripts](#Scripts). You can reference an item using `items['itemID']`. See [Built-in Content](#Built-in-Content).
+- name - The name is used to be displayed on [shell](#Shell). You can change the name of any item during the game, but do not change its id.
+- description
+- onMount & onUnmount - Python scripts that will be executed when this item is [mounted & unmounted](#Mount--Unmount) to [shell](#Shell). The `|` and `^` are not the part of python code. Please see the examples below to make sure your indentation of code is right.
+- actions - Every action has two attributes: name and code. The code are the same format as the code in onMount & onUnmount. See [Action](#Action).
+- classes - Each item can belong to 0 or many classes. See [Classes](#Classes).
+- data - Custom data.
+
+```yaml
+itemID:
+  id: 'itemID' # Auto-generated. you don't have to write this attribute in your IFD file
+  name: 'itemName'
+  description: ''
+  onMount: |
+    # python code here
+    ^
+  onUnmount: |
+    # here is an example about indentation
+    while input('please input "1"') != '1':
+      print('you are wrong')
+    ^
+  actions:
+    - name: 'word1 word2'
+      code: |
+        # python code here
+        ^
+  classes: 
+    - 'className'
+  data:
+    customData
+```
 
 ### Items
 
@@ -223,10 +270,6 @@ TODO
 TODO
 
 ### Mount & Unmount
-
-TODO
-
-### OnMount & OnUnmount
 
 TODO
 
