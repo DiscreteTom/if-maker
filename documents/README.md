@@ -64,6 +64,7 @@ Though if-maker can help you to build a text-based game, you still have to know:
 - Basic programming with python3(built-in data structure, control flow, function).
 - Basic data format of YAML file.
 - Basic data format of XML file.
+- Usage of [refdict](https://pypi.org/project/refdict/).
 
 ## Install
 
