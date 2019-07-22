@@ -8,9 +8,26 @@ def run(code: str, params = {}):
 	'''
 	run `code` in ifm environment
 	'''
+	# remove empty lines
+	codes = code.split('\n')
+	code = ''
+	for line in codes:
+		if line.strip() != '':
+			code += line + '\n'
+
+	if code == '':
+		# empty code
+		return
+
+	# process code, remove indent
+	codes = code.split('\n')
+	while codes[0][0] in [' ', '	']:
+		for i in range(len(codes)):
+			codes[i] = codes[i][1:]
+	code = '\n'.join(codes)
+
+	# run code
 	if 'debug.run' in config:
 		print('debug.run: running', code, 'params:', params)
-	result = None
-	# construct env
-	result = exec(code, globals(), params)
-	return result
+	exec(code, globals(), params)
+	return

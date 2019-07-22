@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- Function `run` can not remove the indent of code.
+
 ## [v0.1.1] - 2019-07-18
 
 ### Added
