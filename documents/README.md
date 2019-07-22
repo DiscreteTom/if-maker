@@ -25,6 +25,7 @@
     - [Items](#Items)
     - [Classes](#Classes)
     - [Modules](#Modules)
+    - [Merge Rules](#Merge-Rules)
   - [IFT - Interactive Fiction Text](#IFT---Interactive-Fiction-Text)
   - [Scripts](#Scripts)
     - [Function Call](#Function-Call)
@@ -34,6 +35,7 @@
     - [Mount & Unmount](#Mount--Unmount)
     - [Tab Completion](#Tab-Completion)
   - [Others](#Others)
+    - [Manage Global Data](#Manage-Global-Data)
     - [Language Support](#Language-Support)
 
 </details>
@@ -250,6 +252,26 @@ TODO
 ### Modules
 
 TODO
+
+### Merge Rules
+
+When we want to merge two IFD items, we name them `higher` and `lower`. Here is the merge rules:
+
+```python
+result = {
+'name': '', # use higher's if higher's is not empty
+'description': '', # use higher's if higher's is not empty
+'actions': [ # merge, ignore conflict, lower's after higher's
+	{
+		'name': '',
+		'code': ''
+	}
+],
+'onMount': '', # merge, ignore conflict, higher's after lower's
+'onUnmount': '', # merge, ignore conflict, higher's after lower's
+'data': {} # merge, consider conflict, use higher's
+}
+```
 
 ## IFT - Interactive Fiction Text
 
