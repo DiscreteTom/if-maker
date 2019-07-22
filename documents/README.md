@@ -279,6 +279,18 @@ TODO
 
 ## Others
 
+### Manage Global Data
+
+There are 3 places to store global data:
+- In `config['data']`. See [Config your project](#Config-your-project).
+- In `items`. See [Items](#Items)
+- In `game`. See [Built-in Content](#Built-in-Content)
+
+Here is a suggestion about where to put your global data:
+1. If the data is generated during the game, store it in `game` because the content of `game` is generated during the game and you can not edit `game` when developing your project.
+2. If the data is defined when developing your project, and it's project-independent, maybe you can abstract it as a part of [module](#Modules) so you can reuse it in other projects.
+3. Otherwise, store these data in an item is fine.
+
 ### Language Support
 
 We hope the games made by if-maker can support any language in the world. Now we have tested games in English and Chinese and they work well.
