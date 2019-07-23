@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Modules can contain a `config.yml` file.
+
 ### Fixed
 
 - Function `run` can not remove the indent of code.

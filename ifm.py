@@ -49,6 +49,20 @@ def processSingleClass(classes: dict, classID: str):
 		merge(currentClass, targetClass)
 	currentClass.pop('classes')
 
+def mergeCode(lower: dict, higher: dict, key: str) -> None:
+	'''
+	`lower[key]` and `higher[key]` should be str
+	
+	`higher[key]` = `higher[key]` + '\\n' + `lower[key]`
+	'''
+	if key in higher:
+		if key in lower:
+			higher[key] += '\n' + lower[key]
+	else:
+		if key in lower:
+			higher[key] = lower[key]
+
+
 def merge(higher: dict, lower: dict):
 	'''
 	merge those attributes below from lower to higher(higher will be changed):
@@ -68,27 +82,12 @@ def merge(higher: dict, lower: dict):
 	}
 	```
 	'''
-	if len(higher['name']) == 0 and 'name' in lower:
-		higher['name'] = lower['name']
-
-	if len(higher['description']) == 0 and 'description' in lower:
-		higher['description'] = lower['description']
-	
-	if 'actions' in lower:
-		higher['actions'] += lower['actions']
-
-	if 'onMount' in lower:
-		higher['onMount'] = lower['onMount'] + '\n' + higher['onMount']
-
-	if 'onUnmount' in lower:
-		higher['onUnmount'] = lower['onUnmount'] + '\n' + higher['onUnmount']
-
-	if 'data' in lower:
-		for key in lower['data']:
-			if key in higher['data'] and lower['data'][key] is not None:
-				print('warning: data conflict, key=', key, ', using ', higher['data'][key], ' instead of ', lower['data'][key], sep='')
-			else:
-				higher['data'][key] = lower['data'][key]
+	mergeValue(lower, higher, higher, 'name')
+	mergeValue(lower, higher, higher, 'description')
+	mergeList(lower, higher, higher, 'actions')
+	mergeCode(lower, higher, 'onMount')
+	mergeCode(lower, higher, 'onUnmount')
+	mergeDict(lower, higher, higher, 'data')
 
 def processIfdInclude(processType: str, modules: list):
 	'''
@@ -202,15 +201,120 @@ def errorHandler():
 	shutil.rmtree('src/output')
 	os._exit(1)
 
+def mergeValue(lower: dict, higher: dict, result: dict, key: str) -> None:
+	'''
+	- if `higher[key]` exists and is not None, `result[key] = higher[key]`
+	- else if `lower[key]` exists and is not None, `result[key] = lower[key]`
+	'''
+	t = higher.get(key, lower.get(key, None))
+	if t is not None:
+		result[key] = t
+
+def mergeList(lower: dict, higher: dict, result: dict, key: str) -> None:
+	'''
+	if `higher[key]` and `lower[key]` exist, they should be list.
+	
+	merge list, ignore conflict, remove duplicate value
+	'''
+	# TODO: type test
+	if key in higher:
+		result[key] = higher[key]
+		if key in lower:
+			for value in lower[key]:
+				if value not in result[key]:
+					result[key].append(value)
+	else:
+		if key in lower:
+			result[key] = lower[key]
+
+def mergeDict(lower: dict, higher: dict, result: dict, key: str) -> None:
+	'''
+	if `higher[key]` and `lower[key]` exist, they should be dict.
+
+	merge dict, consider conflict, use higher's value if conflict
+	'''
+	# TODO: type test
+	if key in lower:
+		result[key] = lower[key]
+	if key in higher:
+		for k in higher[key]:
+			result[k] = higher[key][k]
+
+def mergeConfig(lower: dict, higher: dict) -> dict:
+	'''
+	```
+	result = {
+		'project': {
+			'name': # use higher's if higher's exists
+		},
+		'system': {
+			'shell': {
+				'prefix': # use higher's if higher's exists
+				'exitCmd': # use higher's if higher's exists
+				'errorMsg': # use higher's if higher's exists
+			},
+			'print': {
+				'interval': # use higher's if higher's exist
+				'indent': # use higher's if higher's exists
+				'skip': # use higher's if higher's exists
+			},
+			'story': {
+				'first': # use higher's if higher's exists
+				'skip': # use higher's if higher's exists
+			},
+			'entry': # use higher's if higher's exists
+		},
+		'make': {
+			'modules': # merge, ignore conflict
+			'globalClasses': # merge, ignore conflict
+		},
+		'debug': # use higher's if higher's exists
+		'data': # merge, consider conflict, use higher's
+	}
+	```
+	'''
+	result = refdict({})
+	mergeValue(lower, higher, result, 'project.name')
+	mergeValue(lower, higher, result, 'system.shell.prefix')
+	mergeValue(lower, higher, result, 'system.shell.exitCmd')
+	mergeValue(lower, higher, result, 'system.shell.errorMsg')
+	mergeValue(lower, higher, result, 'system.print.interval')
+	mergeValue(lower, higher, result, 'system.print.indent')
+	mergeValue(lower, higher, result, 'system.print.skip')
+	mergeValue(lower, higher, result, 'system.story.first')
+	mergeValue(lower, higher, result, 'system.story.skip')
+	mergeValue(lower, higher, result, 'system.entry')
+	mergeList(lower, higher, result, 'make.modules')
+	mergeList(lower, higher, result, 'make.globalClasses')
+	mergeList(lower, higher, result, 'debug')
+	mergeDict(lower, higher, result, 'data')
+	return result
+
 def getConfig() -> dict:
 	'''
 	generate src/output/config and return config['make']
 	'''
+	# read original config
 	f = open('_config.yml', encoding='utf-8')
 	config = refdict(yaml.safe_load(f))
 	f.close()
 
-	configTemplate = {
+	# merge module config
+	if 'make.modules' in config:
+		i = 0
+		while i < len(config['make.modules']):
+			m = config['make.modules'][i]
+			try:
+				f = open('_modules/' + m + '/config.yml', 'r', encoding='utf-8')
+				t = refdict(yaml.safe_load(f))
+				config = mergeConfig(t, config)
+				f.close()
+			except:
+				pass
+			i += 1
+
+	# add default value
+	result = {
 		'project': {
 			'name': config.get('project.name', 'untitled project'),
 		},
@@ -235,16 +339,16 @@ def getConfig() -> dict:
 			'modules': config.get('make.modules', []),
 			'globalClasses': config.get('make.globalClasses', []),
 		},
-		'debug': [] if config.get('debug', []) is None else config.get('debug', []),
+		'debug': config.get('debug', []),
 		'data': config.get('data', None)
 	}
 
-	result = configTemplate.pop('make')
+	ret = result.pop('make')
 
 	f = open('src/output/config', 'w', encoding='utf-8')
-	json.dump(configTemplate, f)
+	json.dump(result, f)
 	f.close()
-	return result
+	return ret
 
 def new(proName = ''):
 	'''

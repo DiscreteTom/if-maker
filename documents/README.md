@@ -150,7 +150,7 @@ make: # effective only at `ifm make`
   modules: [] # activated modules
   globalClasses: [] # all items will contain these classes
 debug: [] # debug these functions: ['run', 'mount', 'unmount', 'parse']
-data: # user defined config data
+data: {} # user defined config data
 ```
 
 Configs of your project can be changed during your game. You can access it by using the variable `config` in your [scripts](#Scripts).
@@ -301,25 +301,25 @@ When merging config, the merging rules of config are as follows:
 
 ```yaml
 project:
-  name: '' # use project's if project's is not empty
+  name: '' # use project's if project's exists
 system:
   shell:
-    prefix: '>' # use project's if project's is not empty
-    exitCmd: 'exit' # use project's if project's is not empty
-    errorMsg: 'invalid command' # use project's if project's is not empty
+    prefix: '>' # use project's if project's exists
+    exitCmd: 'exit' # use project's if project's exists
+    errorMsg: 'invalid command' # use project's if project's exists
   print:
-    skip: True # use project's if project's is given
-    interval: 0.02 # use project's if project's is given
-    indent: '' # use project's if project's is not empty
+    skip: True # use project's if project's exists
+    interval: 0.02 # use project's if project's exists
+    indent: '' # use project's if project's exists
   story:
-    first: '0' # use project's if project's is not empty
-    skip: False # use project's if project's is given
-  entry: 'ifmain' # use project's if project's is not empty
+    first: '0' # use project's if project's exists
+    skip: False # use project's if project's exists
+  entry: 'ifmain' # use project's if project's exists
 make: 
-  modules: [] # merge
-  globalClasses: [] # merge
-debug: [] # merge
-data: # merge, consider conflicts, use project's
+  modules: [] # merge, remove duplicate value
+  globalClasses: [] # merge, remove duplicate value
+debug: [] # merge, remove duplicate value
+data: # merge, use project's value if conflict
 ```
 
 ### Value Reference
