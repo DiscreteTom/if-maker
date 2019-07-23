@@ -88,7 +88,7 @@ Though if-maker can help you to build a text-based game, you still have to know:
 
 We recommend to edit the source code of your project with [VSCode](https://code.visualstudio.com/).
 
-Also we developed two extensions for VSCode to edit `ifd` and `ift` file more effectively, just search `ifd-highlighter` and `ift-highlighter` in the extension window of VSCode to install them.
+Also we developed two extensions for VSCode to edit `ifd` and `ift` file more effectively, just search [`ifd-highlighter`](https://marketplace.visualstudio.com/items?itemName=DiscreteTom.ifd-highlighter) and [`ift-highlighter`](https://marketplace.visualstudio.com/items?itemName=DiscreteTom.ift-highlighter) in the extension window of VSCode to install them.
 
 ## Project Management
 
