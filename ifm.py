@@ -49,6 +49,20 @@ def processSingleClass(classes: dict, classID: str):
 		merge(currentClass, targetClass)
 	currentClass.pop('classes')
 
+def mergeCode(lower: dict, higher: dict, key: str) -> None:
+	'''
+	`lower[key]` and `higher[key]` should be str
+	
+	`higher[key]` = `higher[key]` + '\\n' + `lower[key]`
+	'''
+	if key in higher:
+		if key in lower:
+			higher[key] += '\n' + lower[key]
+	else:
+		if key in lower:
+			higher[key] = lower[key]
+
+
 def merge(higher: dict, lower: dict):
 	'''
 	merge those attributes below from lower to higher(higher will be changed):
@@ -68,27 +82,12 @@ def merge(higher: dict, lower: dict):
 	}
 	```
 	'''
-	if len(higher['name']) == 0 and 'name' in lower:
-		higher['name'] = lower['name']
-
-	if len(higher['description']) == 0 and 'description' in lower:
-		higher['description'] = lower['description']
-	
-	if 'actions' in lower:
-		higher['actions'] += lower['actions']
-
-	if 'onMount' in lower:
-		higher['onMount'] = lower['onMount'] + '\n' + higher['onMount']
-
-	if 'onUnmount' in lower:
-		higher['onUnmount'] = lower['onUnmount'] + '\n' + higher['onUnmount']
-
-	if 'data' in lower:
-		for key in lower['data']:
-			if key in higher['data'] and lower['data'][key] is not None:
-				print('warning: data conflict, key=', key, ', using ', higher['data'][key], ' instead of ', lower['data'][key], sep='')
-			else:
-				higher['data'][key] = lower['data'][key]
+	mergeValue(lower, higher, higher, 'name')
+	mergeValue(lower, higher, higher, 'description')
+	mergeList(lower, higher, higher, 'actions')
+	mergeCode(lower, higher, 'onMount')
+	mergeCode(lower, higher, 'onUnmount')
+	mergeDict(lower, higher, higher, 'data')
 
 def processIfdInclude(processType: str, modules: list):
 	'''
