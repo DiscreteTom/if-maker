@@ -11,6 +11,7 @@
 
 - Function `run` can not remove the indent of code.
 - Clear input buffer after printing story.
+- Function `make` can not generate right item file.
 
 ## [v0.1.1] - 2019-07-18
 
