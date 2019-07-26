@@ -45,6 +45,7 @@ def processActionName(data: dict) -> None:
 			for action in data[itemID]['actions']:
 				result = []
 				action['name'] = removeInnerWhiteChars(action['name'], '(', ')')
+				action['name'] = removeInnerWhiteChars(action['name'], '[', ']')
 				result = action['name'].split()
 				for i in range(len(result)):
 					if result[i] == 'this':
