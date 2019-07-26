@@ -9,6 +9,57 @@ import xml.etree.ElementTree as ET
 import urllib.request
 import argparse
 
+def removeInnerWhiteChars(s: str, left: str, right: str) -> str:
+	'''
+	remove all whitespaces and tab in `s` between all `left` and `right`
+	'''
+	startIndex = s.find(left)
+	while startIndex != -1:
+		endIndex = s.find(right, startIndex)
+		if endIndex == -1:
+			# no matching parentheses
+			# TODO: print error msg
+			errorHandler()
+		s = s[:startIndex] + s[startIndex:endIndex].replace(' ', '').replace('\t', '') + s[endIndex:]
+		# reset startIndex for next loop
+		startIndex = s.find(left, s.find(right, startIndex))
+	return s
+
+def processActionName(data: dict) -> None:
+	'''
+	`data` should be `items` or `classes`
+
+	change every action.name to this format:
+	```
+	name = [
+		{
+			'type': 'LITERAL',
+			'value': 'value'
+		}
+	]
+	```
+	`type` can be `LITERAL`/`THIS`/`OBJECT.classname`/`ANY`
+	'''
+	for itemID in data:
+		if 'actions' in data[itemID]:
+			for action in data[itemID]['actions']:
+				result = []
+				action['name'] = removeInnerWhiteChars(action['name'], '(', ')')
+				result = action['name'].split()
+				for i in range(len(result)):
+					if result[i] == 'this':
+						result[i] = {'type': 'THIS', 'value': 'this'}
+					elif result[i].startswith('('):
+						t = result[i][1:-1].split(':')
+						result[i] = {'type': 'OBJECT', 'value': t[0]}
+						if len(t) > 1:
+							result[i]['type'] = result[i]['type'] + '.' + t[1] # format 'OBJECT.classname'
+					elif result[i].startswith('['):
+						result[i] = {'type': 'ANY', 'value': result[i][1:-1]}
+					else:
+						result[i] = {'type': 'LITERAL', 'value': result[i]}
+				action['name'] = result
+
 def processCode(code: str) -> str:
 	'''
 	remove chars after the last `^` of `code`(including `^`) and return
@@ -411,6 +462,8 @@ def make():
 	config = getConfig()
 	items = processIfdInclude('items', config['modules'])
 	classes = processIfdInclude('classes', config['modules'])
+	processActionName(items)
+	processActionName(classes)
 	mergeItemsAndClasses(items, classes, config['globalClasses'])
 	itemsAddID(items)
 	f = open('src/output/items', 'w', encoding='utf-8')
