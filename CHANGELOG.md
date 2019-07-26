@@ -5,6 +5,7 @@
 ### Added
 
 - Modules can contain a `config.yml` file.
+- Action names can contain `[]` to match any string.
 
 ### Fixed
 
