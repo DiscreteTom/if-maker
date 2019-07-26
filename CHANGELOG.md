@@ -5,11 +5,13 @@
 ### Added
 
 - Modules can contain a `config.yml` file.
+- Action names can contain `[]` to match any string.
 
 ### Fixed
 
 - Function `run` can not remove the indent of code.
 - Clear input buffer after printing story.
+- Function `make` can not generate the right item file.
 
 ## [v0.1.1] - 2019-07-18
 

@@ -3,7 +3,10 @@ import data
 # itemActions = {
 # 	'itemID': [
 # 		{
-# 			'name': str[],
+# 			'name': [
+# 				'type': str,
+# 				'value': str
+# 			],
 # 			'code': str
 # 		}
 # 	]
@@ -45,9 +48,7 @@ def mount(*items):
 		# add actions
 		if 'debug.mount' in data.config:
 			print('debug.mount: loading', itemID)
-		itemActions[itemID] = []
-		for action in data.items[itemID]['actions']:
-			itemActions[itemID].append({'name': action['name'].split(), 'code': action['code']})
+		itemActions[itemID] = data.items[itemID]['actions']
 
 		if 'onMount' in data.items[itemID]:
 			translator.run(data.items[itemID]['onMount'], {'this': data.items(itemID)})
@@ -99,37 +100,42 @@ def parse(cmd: str):
 	# traverse actions
 	for itemID in itemActions:
 		for action in itemActions[itemID]:
-			# try to match
-			pattern = action['name']
 			# judge cmd length
-			if len(cmd) != len(pattern):
+			if len(cmd) != len(action['name']):
 				continue
 			# match each part
 			match = True
 			params = {}
 			for i in range(len(cmd)):
-				if pattern[i] == 'this':
+				if action['name'][i]['type'] == 'THIS':
 					if cmd[i] != data.items[itemID]['name']:
 						# can not match `this`
 						match = False
 						break
-				elif pattern[i][0] == '(' and pattern[i][-1] == ')':
+				elif action['name'][i]['type'].startswith('OBJECT'):
 					# match params
-					targetID = data.findItem(cmd[i])
+					className = ''
+					if len(action['name'][i]['type'].split('.')) > 1:
+						# class name exists
+						className = action['name'][i]['type'].split('.')[1]
+					targetID = data.findItem(cmd[i], className)
 					if targetID:
-						# target exist, get id
-						params[pattern[i][1:-1]] = targetID
+						# target exists, assign id to params
+						params[action['name'][i]['value']] = targetID
 					else:
+						match = False
 						break
+				elif action['name'][i]['type'] == 'ANY':
+					params[action['name'][i]['value']] = cmd[i]
 				else:
-					# normal
-					if pattern[i] != cmd[i]:
+					# match literal text, action['name'][i]['type'] == 'LITERAL'
+					if action['name'][i]['value'] != cmd[i]:
 						match = False
 						break
 			if match:
-				# process `this`
 				if 'debug.parse' in data.config:
 					print('debug.parse: matching', action['name'], 'of', itemID)
+				# process `this`
 				params['this'] = data.items(itemID)
 				return translator.run(action['code'], params)
 	return False

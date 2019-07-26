@@ -9,6 +9,58 @@ import xml.etree.ElementTree as ET
 import urllib.request
 import argparse
 
+def removeInnerWhiteChars(s: str, left: str, right: str) -> str:
+	'''
+	remove all whitespaces and tab in `s` between all `left` and `right`
+	'''
+	startIndex = s.find(left)
+	while startIndex != -1:
+		endIndex = s.find(right, startIndex)
+		if endIndex == -1:
+			# no matching parentheses
+			# TODO: print error msg
+			errorHandler()
+		s = s[:startIndex] + s[startIndex:endIndex].replace(' ', '').replace('\t', '') + s[endIndex:]
+		# reset startIndex for next loop
+		startIndex = s.find(left, s.find(right, startIndex))
+	return s
+
+def processActionName(data: dict) -> None:
+	'''
+	`data` should be `items` or `classes`
+
+	change every action.name to this format:
+	```
+	name = [
+		{
+			'type': 'LITERAL',
+			'value': 'value'
+		}
+	]
+	```
+	`type` can be `LITERAL`/`THIS`/`OBJECT.classname`/`ANY`
+	'''
+	for itemID in data:
+		if 'actions' in data[itemID]:
+			for action in data[itemID]['actions']:
+				result = []
+				action['name'] = removeInnerWhiteChars(action['name'], '(', ')')
+				action['name'] = removeInnerWhiteChars(action['name'], '[', ']')
+				result = action['name'].split()
+				for i in range(len(result)):
+					if result[i] == 'this':
+						result[i] = {'type': 'THIS', 'value': 'this'}
+					elif result[i].startswith('('):
+						t = result[i][1:-1].split(':')
+						result[i] = {'type': 'OBJECT', 'value': t[0]}
+						if len(t) > 1:
+							result[i]['type'] = result[i]['type'] + '.' + t[1] # format 'OBJECT.classname'
+					elif result[i].startswith('['):
+						result[i] = {'type': 'ANY', 'value': result[i][1:-1]}
+					else:
+						result[i] = {'type': 'LITERAL', 'value': result[i]}
+				action['name'] = result
+
 def processCode(code: str) -> str:
 	'''
 	remove chars after the last `^` of `code`(including `^`) and return
@@ -82,12 +134,12 @@ def merge(higher: dict, lower: dict):
 	}
 	```
 	'''
-	mergeValue(lower, higher, higher, 'name')
-	mergeValue(lower, higher, higher, 'description')
-	mergeList(lower, higher, higher, 'actions')
+	mergeValue(lower, higher, 'name')
+	mergeValue(lower, higher, 'description')
+	mergeList(lower, higher, 'actions')
 	mergeCode(lower, higher, 'onMount')
 	mergeCode(lower, higher, 'onUnmount')
-	mergeDict(lower, higher, higher, 'data')
+	mergeDict(lower, higher, 'data')
 
 def processIfdInclude(processType: str, modules: list):
 	'''
@@ -201,33 +253,28 @@ def errorHandler():
 	shutil.rmtree('src/output')
 	os._exit(1)
 
-def mergeValue(lower: dict, higher: dict, result: dict, key: str) -> None:
+def mergeValue(lower: dict, higher: dict, key: str) -> None:
 	'''
-	- if `higher[key]` exists and is not None, `result[key] = higher[key]`
-	- else if `lower[key]` exists and is not None, `result[key] = lower[key]`
+	if `lower[key]` exists and `higher[key]` not exists, `higher[key] = lower[key]`
 	'''
-	t = higher.get(key, lower.get(key, None))
-	if t is not None:
-		result[key] = t
+	if key in lower and key not in higher:
+		higher[key] = lower[key]
 
-def mergeList(lower: dict, higher: dict, result: dict, key: str) -> None:
+def mergeList(lower: dict, higher: dict, key: str) -> None:
 	'''
 	if `higher[key]` and `lower[key]` exist, they should be list.
 	
 	merge list, ignore conflict, remove duplicate value
 	'''
 	# TODO: type test
-	if key in higher:
-		result[key] = higher[key]
-		if key in lower:
-			for value in lower[key]:
-				if value not in result[key]:
-					result[key].append(value)
-	else:
-		if key in lower:
-			result[key] = lower[key]
+	if key in lower:
+		if key not in higher:
+			higher[key] = []
+		for value in lower[key]:
+			if value not in higher[key]:
+				higher[key].append(value)
 
-def mergeDict(lower: dict, higher: dict, result: dict, key: str) -> None:
+def mergeDict(lower: dict, higher: dict, key: str) -> None:
 	'''
 	if `higher[key]` and `lower[key]` exist, they should be dict.
 
@@ -235,12 +282,13 @@ def mergeDict(lower: dict, higher: dict, result: dict, key: str) -> None:
 	'''
 	# TODO: type test
 	if key in lower:
-		result[key] = lower[key]
-	if key in higher:
-		for k in higher[key]:
-			result[k] = higher[key][k]
+		if key not in higher:
+			higher[key] = {}
+		for k in lower[key]:
+			if k not in higher[key]:
+				higher[key][k] = lower[key][k]
 
-def mergeConfig(lower: dict, higher: dict) -> dict:
+def mergeConfig(lower: dict, higher: dict) -> None:
 	'''
 	```
 	result = {
@@ -273,22 +321,20 @@ def mergeConfig(lower: dict, higher: dict) -> dict:
 	}
 	```
 	'''
-	result = refdict({})
-	mergeValue(lower, higher, result, 'project.name')
-	mergeValue(lower, higher, result, 'system.shell.prefix')
-	mergeValue(lower, higher, result, 'system.shell.exitCmd')
-	mergeValue(lower, higher, result, 'system.shell.errorMsg')
-	mergeValue(lower, higher, result, 'system.print.interval')
-	mergeValue(lower, higher, result, 'system.print.indent')
-	mergeValue(lower, higher, result, 'system.print.skip')
-	mergeValue(lower, higher, result, 'system.story.first')
-	mergeValue(lower, higher, result, 'system.story.skip')
-	mergeValue(lower, higher, result, 'system.entry')
-	mergeList(lower, higher, result, 'make.modules')
-	mergeList(lower, higher, result, 'make.globalClasses')
-	mergeList(lower, higher, result, 'debug')
-	mergeDict(lower, higher, result, 'data')
-	return result
+	mergeValue(lower, higher, 'project.name')
+	mergeValue(lower, higher, 'system.shell.prefix')
+	mergeValue(lower, higher, 'system.shell.exitCmd')
+	mergeValue(lower, higher, 'system.shell.errorMsg')
+	mergeValue(lower, higher, 'system.print.interval')
+	mergeValue(lower, higher, 'system.print.indent')
+	mergeValue(lower, higher, 'system.print.skip')
+	mergeValue(lower, higher, 'system.story.first')
+	mergeValue(lower, higher, 'system.story.skip')
+	mergeValue(lower, higher, 'system.entry')
+	mergeList(lower, higher, 'make.modules')
+	mergeList(lower, higher, 'make.globalClasses')
+	mergeList(lower, higher, 'debug')
+	mergeDict(lower, higher, 'data')
 
 def getConfig() -> dict:
 	'''
@@ -307,7 +353,7 @@ def getConfig() -> dict:
 			try:
 				f = open('_modules/' + m + '/config.yml', 'r', encoding='utf-8')
 				t = refdict(yaml.safe_load(f))
-				config = mergeConfig(t, config)
+				mergeConfig(t, config)
 				f.close()
 			except:
 				pass
@@ -411,6 +457,8 @@ def make():
 	config = getConfig()
 	items = processIfdInclude('items', config['modules'])
 	classes = processIfdInclude('classes', config['modules'])
+	processActionName(items)
+	processActionName(classes)
 	mergeItemsAndClasses(items, classes, config['globalClasses'])
 	itemsAddID(items)
 	f = open('src/output/items', 'w', encoding='utf-8')

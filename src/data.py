@@ -15,13 +15,15 @@ items = refdict({})
 game = refdict({})
 completer = set()
 
-def findItem(itemName: str):
+def findItem(itemName: str, className = ''):
 	'''
 	return item ID. if item ID is not found, return None
+
+	`className` is a class name
 	'''
 	global items
 	for itemID in items:
-		if items[itemID]["name"] == itemName:
+		if items[itemID]["name"] == itemName and className in items[itemID]['classes']:
 			return itemID
 	return None
 
