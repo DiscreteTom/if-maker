@@ -134,12 +134,12 @@ def merge(higher: dict, lower: dict):
 	}
 	```
 	'''
-	mergeValue(lower, higher, higher, 'name')
-	mergeValue(lower, higher, higher, 'description')
-	mergeList(lower, higher, higher, 'actions')
+	mergeValue(lower, higher, 'name')
+	mergeValue(lower, higher, 'description')
+	mergeList(lower, higher, 'actions')
 	mergeCode(lower, higher, 'onMount')
 	mergeCode(lower, higher, 'onUnmount')
-	mergeDict(lower, higher, higher, 'data')
+	mergeDict(lower, higher, 'data')
 
 def processIfdInclude(processType: str, modules: list):
 	'''
@@ -253,33 +253,28 @@ def errorHandler():
 	shutil.rmtree('src/output')
 	os._exit(1)
 
-def mergeValue(lower: dict, higher: dict, result: dict, key: str) -> None:
+def mergeValue(lower: dict, higher: dict, key: str) -> None:
 	'''
-	- if `higher[key]` exists and is not None, `result[key] = higher[key]`
-	- else if `lower[key]` exists and is not None, `result[key] = lower[key]`
+	if `lower[key]` exists and `higher[key]` not exists, `higher[key] = lower[key]`
 	'''
-	t = higher.get(key, lower.get(key, None))
-	if t is not None:
-		result[key] = t
+	if key in lower and key not in higher:
+		higher[key] = lower[key]
 
-def mergeList(lower: dict, higher: dict, result: dict, key: str) -> None:
+def mergeList(lower: dict, higher: dict, key: str) -> None:
 	'''
 	if `higher[key]` and `lower[key]` exist, they should be list.
 	
 	merge list, ignore conflict, remove duplicate value
 	'''
 	# TODO: type test
-	if key in higher:
-		result[key] = higher[key]
-		if key in lower:
-			for value in lower[key]:
-				if value not in result[key]:
-					result[key].append(value)
-	else:
-		if key in lower:
-			result[key] = lower[key]
+	if key in lower:
+		if key not in higher:
+			higher[key] = []
+		for value in lower[key]:
+			if value not in higher[key]:
+				higher[key].append(value)
 
-def mergeDict(lower: dict, higher: dict, result: dict, key: str) -> None:
+def mergeDict(lower: dict, higher: dict, key: str) -> None:
 	'''
 	if `higher[key]` and `lower[key]` exist, they should be dict.
 
@@ -287,12 +282,13 @@ def mergeDict(lower: dict, higher: dict, result: dict, key: str) -> None:
 	'''
 	# TODO: type test
 	if key in lower:
-		result[key] = lower[key]
-	if key in higher:
-		for k in higher[key]:
-			result[k] = higher[key][k]
+		if key not in higher:
+			higher[key] = {}
+		for k in lower[key]:
+			if k not in higher[key]:
+				higher[key][k] = lower[key][k]
 
-def mergeConfig(lower: dict, higher: dict) -> dict:
+def mergeConfig(lower: dict, higher: dict) -> None:
 	'''
 	```
 	result = {
@@ -325,22 +321,20 @@ def mergeConfig(lower: dict, higher: dict) -> dict:
 	}
 	```
 	'''
-	result = refdict({})
-	mergeValue(lower, higher, result, 'project.name')
-	mergeValue(lower, higher, result, 'system.shell.prefix')
-	mergeValue(lower, higher, result, 'system.shell.exitCmd')
-	mergeValue(lower, higher, result, 'system.shell.errorMsg')
-	mergeValue(lower, higher, result, 'system.print.interval')
-	mergeValue(lower, higher, result, 'system.print.indent')
-	mergeValue(lower, higher, result, 'system.print.skip')
-	mergeValue(lower, higher, result, 'system.story.first')
-	mergeValue(lower, higher, result, 'system.story.skip')
-	mergeValue(lower, higher, result, 'system.entry')
-	mergeList(lower, higher, result, 'make.modules')
-	mergeList(lower, higher, result, 'make.globalClasses')
-	mergeList(lower, higher, result, 'debug')
-	mergeDict(lower, higher, result, 'data')
-	return result
+	mergeValue(lower, higher, 'project.name')
+	mergeValue(lower, higher, 'system.shell.prefix')
+	mergeValue(lower, higher, 'system.shell.exitCmd')
+	mergeValue(lower, higher, 'system.shell.errorMsg')
+	mergeValue(lower, higher, 'system.print.interval')
+	mergeValue(lower, higher, 'system.print.indent')
+	mergeValue(lower, higher, 'system.print.skip')
+	mergeValue(lower, higher, 'system.story.first')
+	mergeValue(lower, higher, 'system.story.skip')
+	mergeValue(lower, higher, 'system.entry')
+	mergeList(lower, higher, 'make.modules')
+	mergeList(lower, higher, 'make.globalClasses')
+	mergeList(lower, higher, 'debug')
+	mergeDict(lower, higher, 'data')
 
 def getConfig() -> dict:
 	'''
@@ -359,7 +353,7 @@ def getConfig() -> dict:
 			try:
 				f = open('_modules/' + m + '/config.yml', 'r', encoding='utf-8')
 				t = refdict(yaml.safe_load(f))
-				config = mergeConfig(t, config)
+				mergeConfig(t, config)
 				f.close()
 			except:
 				pass
