@@ -4,3 +4,4 @@
 - Chain command parsing.
 - IFT include many files in one line.
 - Download ifm from pypi.
+- Command name can accept many classes.
