@@ -56,25 +56,34 @@ def load(fileName = '') -> None:
 		# load data from SAVE file
 		f = open(fileName, encoding='utf-8')
 		d = json.load(f)
-		completer = eval(d['completer'])
-		items = eval(d['items'])
-		config = eval(d['config'])
-		game = eval(d['game'])
-		shell.itemActions = eval(d['shell'])
+		# reload refdict
+		items.load(eval(d['items']))
+		config.load(eval(d['config']))
+		game.load(eval(d['game']))
+		# reload set
+		completer.clear()
+		t = eval(d['completer'])
+		for value in t:
+			completer.add(value)
+		# reload dict
+		shell.itemActions.clear()
+		t = eval(d['shell'])
+		for key in t:
+			shell.itemActions[key] = t[key]
 		f.close()
 		return
 
 	# ======================== load file from default location
 	# load config
 	f = open('output/config', encoding='utf-8')
-	config = refdict(json.load(f))
+	config.load(json.load(f))
 	f.close()
 	# load items
 	f = open('output/items', encoding='utf-8')
-	items = refdict(json.load(f))
+	items.load(json.load(f))
 	f.close()
 	# user defined global data
-	game = refdict({})
-	completer = set()
+	game.load({})
+	completer.clear()
 
 load()
