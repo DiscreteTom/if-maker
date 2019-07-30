@@ -154,14 +154,17 @@ def actionWords():
 	for itemID in itemActions:
 		for action in itemActions[itemID]:
 			for word in action['name']:
-				if not word.startswith('('):
-					result.add(word)
+				if word['type'] == 'LITERAL':
+					result.add(word['value'])
 	return result
 
 def completer(text: str, state: int):
 	# TODO: better completer
+	# add items' name
 	result = set([data.items[x]['name'] for x in loadedItems() if data.items[x]['name'].startswith(text)])
+	# add data.completer
 	result.update([x for x in data.completer if x.startswith(text)])
+	# add words in actions
 	result.update([x for x in actionWords() if x.startswith(text)])
 	result = list(result) + [None]
 	return result[state]
