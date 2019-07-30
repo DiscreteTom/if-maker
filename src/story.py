@@ -127,7 +127,7 @@ def printItemList(l: list, skip = True, indent = '- ', sep = '\n', end = '\n'):
 			itemID = itemID[1:]
 		printf(data.items[itemID]['name'], skip=skip, indent=indent, end='')
 		if i != len(l) - 1:
-			print(sep, skip = skip, end = '')
+			printf(sep, skip = skip, end = '')
 	printf(end, skip=skip, end='')
 
 def flush_input():
