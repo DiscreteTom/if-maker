@@ -95,6 +95,11 @@ def parse(cmd: str):
 	'''
 	if 'debug.parse' in data.config:
 		print('debug.parse: parsing', cmd)
+	# judge exit
+	if cmd == data.config['system.shell.exitCmd']:
+		import os
+		os._exit(0)
+	# normal parse
 	import translator
 	cmd = cmd.split()
 	# traverse actions
