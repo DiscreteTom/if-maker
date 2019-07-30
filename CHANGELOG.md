@@ -15,6 +15,7 @@
 - Function `make` can not generate the right item file.
 - Function `load` will break data consistency.
 - Pressing `ESC` can not skip complex stories with many tags.
+- Function `printItemList` went wrong if the size of item list is bigger than two.
 
 ## [v0.1.1] - 2019-07-18
 
