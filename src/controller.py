@@ -20,8 +20,8 @@ def newGame():
 	'''
 	start a new game, print story: `config['system.story.first']`, load data and loop
 	'''
-	story.printStory(data.config['system.story.first'])
 	data.load()
+	story.printStory(data.config['system.story.first'])
 	loop()
 
 def loop():
