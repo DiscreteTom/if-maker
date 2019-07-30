@@ -104,10 +104,10 @@ def __parseElement(el: ElementTree.Element, skip: bool) -> bool:
 	# TODO: add element support: else/elif/switch/case
 	if el.tag == 'if':
 		if eval(el.get('condition')):
-			__printElement(el)
+			skip = __printElement(el, skip)
 	elif el.tag == 'while':
 		while eval(el.get('condition')):
-			__printElement(el)
+			skip = __printElement(el, skip)
 	elif el.tag == 'input':
 		if el.get('prompt'):
 			printf(el.get('prompt'), skip = skip, end = '')
@@ -115,6 +115,7 @@ def __parseElement(el: ElementTree.Element, skip: bool) -> bool:
 	elif el.tag == 'code':
 		from translator import run
 		run(el.text, localData)
+	return skip
 
 def printItemList(l: list, skip = True, indent = '- ', sep = '\n', end = '\n'):
 	'''

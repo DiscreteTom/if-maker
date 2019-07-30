@@ -13,6 +13,7 @@
 - Clear input buffer after printing story.
 - Function `make` can not generate the right item file.
 - Function `load` will break data consistency.
+- Pressing `ESC` can not skip complex stories with many tags.
 
 ## [v0.1.1] - 2019-07-18
 
