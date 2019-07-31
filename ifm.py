@@ -71,6 +71,19 @@ def processCode(code: str) -> str:
 	else:
 		return code[:index]
 
+def processItemCode(items: dict):
+	'''
+	remove `^` from `onMount`/`onUnmount`/`action.code` of items
+	'''
+	for itemID in items:
+		if 'onMount' in items[itemID]:
+			items[itemID]['onMount'] = processCode(items[itemID]['onMount'])
+		if 'onUnmount' in items[itemID]:
+			items[itemID]['onUnmount'] = processCode(items[itemID]['onUnmount'])
+		if 'actions' in items[itemID]:
+			for action in items[itemID]['actions']:
+				action['code'] = processCode(action['code'])
+
 def mergeItemsAndClasses(items: dict, classes: dict, globalClasses: list):
 	# traverse all items
 	for key in items:
@@ -175,11 +188,14 @@ def processIfdInclude(processType: str, modules: list):
 					result[item] = current[item]
 		# now result['include'] is empty
 		result.pop('include')
+	# process with `^`
+	processItemCode(result)
 	# process modules
 	for module in modules:
 		try:
 			f = open('_modules/' + module + '/' + processType + '.ifd', encoding='utf-8')
 			yml = yaml.safe_load(f)
+			processItemCode(yml)
 			for item in yml:
 				if item in result:
 					merge(result[item], yml[item])
@@ -201,12 +217,6 @@ def processIfdInclude(processType: str, modules: list):
 			result[itemID]['onUnmount'] = ''
 		if 'data' not in result[itemID]:
 			result[itemID]['data'] = {}
-	# process with `^`
-	for itemID in result:
-		result[itemID]['onMount'] = processCode(result[itemID]['onMount'])
-		result[itemID]['onUnmount'] = processCode(result[itemID]['onUnmount'])
-		for action in result[itemID]['actions']:
-			action['code'] = processCode(action['code'])
 	return result
 
 def processStories():
