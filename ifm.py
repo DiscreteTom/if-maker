@@ -144,12 +144,14 @@ def merge(higher: dict, lower: dict):
 		'onMount': '', # merge, ignore conflict, higher's after lower's
 		'onUnmount': '', # merge, ignore conflict, higher's after lower's
 		'data': {} # merge, consider conflict, use higher's
+		'classes': [] # merge, remove duplicate value
 	}
 	```
 	'''
 	mergeValue(lower, higher, 'name')
 	mergeValue(lower, higher, 'description')
 	mergeList(lower, higher, 'actions')
+	mergeList(lower, higher, 'classes')
 	mergeCode(lower, higher, 'onMount')
 	mergeCode(lower, higher, 'onUnmount')
 	mergeDict(lower, higher, 'data')
