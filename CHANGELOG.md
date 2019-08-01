@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [v0.1.2] - 2019-08-01
+
 ### Added
 
 - Modules can contain a `config.yml` file.
