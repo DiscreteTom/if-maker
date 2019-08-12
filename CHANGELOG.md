@@ -2,6 +2,21 @@
 
 ## [Unreleased]
 
+## [v0.2.0] - 2019-08-12
+
+### Added
+
+- Modules can contain scripts. Just name it `scripts.py` in module folders.
+- Include many other IFT files in one line in IFT file just like `#include file1 file2 file3`
+
+### Changed
+
+- Params in the name of actions will be passed as the item itself rather than the item's id.
+
+### Removed
+
+- Removed command `ifm install`. Please download if-maker in the release page of this repository.
+
 ## [v0.1.2] - 2019-08-01
 
 ### Added

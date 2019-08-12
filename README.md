@@ -13,8 +13,7 @@ A text-based game engine.
 
 ### Download
 
-- Download [`ifm.py`](https://raw.githubusercontent.com/DiscreteTom/if-maker/master/ifm.py) in the root folder of the repository, then run `python3 ifm.py install`(network access is needed).
-- Or, download `ifm.py` and `src/*` in the root folder of the repository.
+From github [releases](https://github.com/DiscreteTom/if-maker/releases).
 
 ### Tools
 
@@ -24,7 +23,6 @@ Also we developed two extensions for VSCode to edit `ifd` and `ift` file more ef
 
 ## Usage
 
-- `python3 ifm.py install` to install if-maker.
 - `python3 ifm.py new` to create a new project.
 - `python3 ifm.py make` to compile your project.
 - `python3 ifm.py run` to run your project.

@@ -6,7 +6,6 @@ import shutil
 import re
 import json
 import xml.etree.ElementTree as ET
-import urllib.request
 import argparse
 
 def removeInnerWhiteChars(s: str, left: str, right: str) -> str:
@@ -239,8 +238,8 @@ def processStories():
 				# EOF
 				break
 			if s.startswith('#include '):
-				# add another story file
-				storyQueue.append(s.split()[1])
+				# add other story files
+				storyQueue += s.split()[1:]
 			else:
 				# normal story
 				fout.write(s)
@@ -443,19 +442,29 @@ def new(proName = ''):
 	except:
 		print('create project failed.\ntry "ifm clear" first.')
 
-def processScripts():
+def processScripts(modules: list):
 	'''
 	combine scripts in _scripts into src/output/scripts.py
 	'''
 	fout = open('src/output/__init__.py', 'w', encoding='utf-8')
+	# write header content
 	f = open('src/output_header.py', 'r', encoding='utf-8')
 	fout.write(f.read())
 	f.close()
+	# merge scripts in _scripts folder to output file
 	for file in os.listdir('_scripts'):
 		if file.endswith('.py') and file != 'ifmu.py':
 			fin = open('_scripts/' + file, encoding='utf-8')
 			fout.write(fin.read().replace('from ifmu import *', '') + '\n')
 			fin.close()
+	# merge scripts in modules to output file
+	for module in modules:
+		try:
+			fin = open('_modules/' + module + '/scripts.py', 'r', encoding='utf-8')
+			fout.write(fin.read().replace('from ifmu import *', '') + '\n')
+			fin.close()
+		except:
+			pass
 	fout.close()
 
 def make():
@@ -477,7 +486,7 @@ def make():
 	json.dump(items, f)
 	f.close()
 	processStories()
-	processScripts()
+	processScripts(config['modules'])
 
 def clear():
 	import shutil
@@ -519,7 +528,6 @@ def run():
 # construct parser
 parser = argparse.ArgumentParser('ifm')
 subparsers = parser.add_subparsers(dest='subparser')
-installParser = subparsers.add_parser('install', help = 'Install if-maker in current folder. Network access is needed.')
 newParser = subparsers.add_parser('new', help = 'Create a new project in current folder.')
 newParser.add_argument('projectName', nargs='?', default='')
 makeParser = subparsers.add_parser('make', help = 'Compile current project.')
@@ -528,25 +536,7 @@ debugParser = subparsers.add_parser('debug', help = 'Compile and run current pro
 releaseParser = subparsers.add_parser('release', help = 'Package current project to an executable file.')
 clearParser = subparsers.add_parser('clear', help = 'Clear current project.')
 args = parser.parse_args()
-if args.subparser == 'install':
-	# TODO: add error handling
-	# TODO: add progress bar
-	os.mkdir('src')
-	open('src/controller.py', 'w', encoding='utf-8').close()
-	open('src/data.py', 'w', encoding='utf-8').close()
-	open('src/ifmu.py', 'w', encoding='utf-8').close()
-	open('src/output_header.py', 'w', encoding='utf-8').close()
-	open('src/shell.py', 'w', encoding='utf-8').close()
-	open('src/story.py', 'w', encoding='utf-8').close()
-	open('src/translator.py', 'w', encoding='utf-8').close()
-	urllib.request.urlretrieve('https://raw.githubusercontent.com/DiscreteTom/if-maker/master/src/controller.py', 'src/controller.py')
-	urllib.request.urlretrieve('https://raw.githubusercontent.com/DiscreteTom/if-maker/master/src/data.py', 'src/data.py')
-	urllib.request.urlretrieve('https://raw.githubusercontent.com/DiscreteTom/if-maker/master/src/ifmu.py', 'src/ifmu.py')
-	urllib.request.urlretrieve('https://raw.githubusercontent.com/DiscreteTom/if-maker/master/src/output_header.py', 'src/output_header.py')
-	urllib.request.urlretrieve('https://raw.githubusercontent.com/DiscreteTom/if-maker/master/src/shell.py', 'src/shell.py')
-	urllib.request.urlretrieve('https://raw.githubusercontent.com/DiscreteTom/if-maker/master/src/story.py', 'src/story.py')
-	urllib.request.urlretrieve('https://raw.githubusercontent.com/DiscreteTom/if-maker/master/src/translator.py', 'src/translator.py')
-elif args.subparser == 'new':
+if args.subparser == 'new':
 	new(args.projectName)
 elif args.subparser == 'make':
 	make()
