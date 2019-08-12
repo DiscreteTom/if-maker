@@ -37,7 +37,7 @@ def mount(*items):
 		# itemID is a str, judge `@`
 		if itemID.startswith('@'):
 			itemID = itemID[1:]
-		# judge existance
+		# judge existence
 		if itemID not in data.items:
 			if 'debug.mount' in data.config:
 				print('debug.mount:', itemID, 'not exist in items')
@@ -74,7 +74,7 @@ def unmount(*items):
 		if isinstance(itemID, dict):
 			unmount(itemID['id'])
 			continue
-		# itemID is a str, judge existance
+		# itemID is a str, judge existence
 		if itemID.startswith('@'):
 			itemID = itemID[1:]
 		if itemID not in itemActions:
@@ -125,8 +125,8 @@ def parse(cmd: str):
 						className = action['name'][i]['type'].split('.')[1]
 					targetID = data.findItem(cmd[i], className)
 					if targetID:
-						# target exists, assign id to params
-						params[action['name'][i]['value']] = targetID
+						# target exists, assign item to params
+						params[action['name'][i]['value']] = data.items(targetID)
 					else:
 						match = False
 						break
