@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Modules can contain scripts. Just name it `scripts.py` in module folders.
+
 ### Changed
 
 - Params in the name of actions will be passed as the item itself rather than the item's id.
