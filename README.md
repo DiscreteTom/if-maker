@@ -13,7 +13,7 @@ A text-based game engine.
 
 ### Download
 
-From github [releases](https://github.com/DiscreteTom/if-maker/releases).
+[Clike me](https://github.com/DiscreteTom/if-maker/releases/download/v0.2.0/if-maker.zip).
 
 ### Tools
 
