@@ -239,8 +239,8 @@ def processStories():
 				# EOF
 				break
 			if s.startswith('#include '):
-				# add another story file
-				storyQueue.append(s.split()[1])
+				# add other story files
+				storyQueue.append(s.split()[1:])
 			else:
 				# normal story
 				fout.write(s)
