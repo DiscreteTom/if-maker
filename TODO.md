@@ -6,4 +6,3 @@
 - Download ifm from pypi.
 - Command name can accept many classes.
 - Modules can contain scripts.
-- Shell should pass item instead of item id to action code.

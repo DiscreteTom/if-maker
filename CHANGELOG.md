@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Params in the name of actions will be passed as the item itself rather than the item's id.
+
 ## [v0.1.2] - 2019-08-01
 
 ### Added
