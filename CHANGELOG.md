@@ -11,6 +11,10 @@
 
 - Params in the name of actions will be passed as the item itself rather than the item's id.
 
+### Removed
+
+- Removed command `ifm install`. Please download if-maker in the release page of this repository.
+
 ## [v0.1.2] - 2019-08-01
 
 ### Added
