@@ -5,6 +5,7 @@
 ### Added
 
 - Modules can contain scripts. Just name it `scripts.py` in module folders.
+- Include many other IFT files in one line in IFT file just like `#include file1 file2 file3`
 
 ### Changed
 
