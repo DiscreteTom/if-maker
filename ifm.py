@@ -240,7 +240,7 @@ def processStories():
 				break
 			if s.startswith('#include '):
 				# add other story files
-				storyQueue.append(s.split()[1:])
+				storyQueue += s.split()[1:]
 			else:
 				# normal story
 				fout.write(s)
