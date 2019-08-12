@@ -443,19 +443,29 @@ def new(proName = ''):
 	except:
 		print('create project failed.\ntry "ifm clear" first.')
 
-def processScripts():
+def processScripts(modules: list):
 	'''
 	combine scripts in _scripts into src/output/scripts.py
 	'''
 	fout = open('src/output/__init__.py', 'w', encoding='utf-8')
+	# write header content
 	f = open('src/output_header.py', 'r', encoding='utf-8')
 	fout.write(f.read())
 	f.close()
+	# merge scripts in _scripts folder to output file
 	for file in os.listdir('_scripts'):
 		if file.endswith('.py') and file != 'ifmu.py':
 			fin = open('_scripts/' + file, encoding='utf-8')
 			fout.write(fin.read().replace('from ifmu import *', '') + '\n')
 			fin.close()
+	# merge scripts in modules to output file
+	for module in modules:
+		try:
+			fin = open('_modules/' + module + '/scripts.py', 'r', encoding='utf-8')
+			fout.write(fin.read().replace('from ifmu import *', '') + '\n')
+			fin.close()
+		except:
+			pass
 	fout.close()
 
 def make():
