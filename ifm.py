@@ -487,7 +487,7 @@ def make():
 	json.dump(items, f)
 	f.close()
 	processStories()
-	processScripts()
+	processScripts(config['modules'])
 
 def clear():
 	import shutil
