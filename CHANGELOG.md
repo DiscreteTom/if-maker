@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [v0.2.0] - 2019-08-12
+
 ### Added
 
 - Modules can contain scripts. Just name it `scripts.py` in module folders.
