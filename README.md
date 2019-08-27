@@ -13,13 +13,13 @@ A text-based game engine.
 
 ### Download
 
-[Clike me](https://github.com/DiscreteTom/if-maker/releases/download/v0.2.0/if-maker.zip).
+[Click me](https://github.com/DiscreteTom/if-maker/releases/download/v0.2.0/if-maker.zip).
 
 ### Tools
 
 We recommend to edit the source code of your project with [VSCode](https://code.visualstudio.com/).
 
-Also we developed two extensions for VSCode to edit `ifd` and `ift` file more effectively, just search `ifd-highlighter` and `ift-highlighter` in the extension window of VSCode to install them.
+Also we developed two extensions for VSCode to edit `ifd` and `ift` file more effectively, just search [`ifd-highlighter`](https://marketplace.visualstudio.com/items?itemName=DiscreteTom.ifd-highlighter) and [`ift-highlighter`](https://marketplace.visualstudio.com/items?itemName=DiscreteTom.ift-highlighter) in the extension window of VSCode to install them.
 
 ## Usage
 
