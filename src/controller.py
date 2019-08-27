@@ -18,7 +18,7 @@ def start():
 
 def newGame():
 	'''
-	start a new game, print story: `config['system.story.first']`, load data and loop
+	start a new game, load data, print story: `config['system.story.first']` and loop
 	'''
 	data.load()
 	story.printStory(data.config['system.story.first'])
