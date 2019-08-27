@@ -88,7 +88,6 @@ def unmount(*items):
 			translator.run(data.items[itemID]['onUnmount'], {'this': data.items(itemID)})
 	return True
 
-# TODO: add support for `[]`
 def parse(cmd: str):
 	'''
 	parse a command
