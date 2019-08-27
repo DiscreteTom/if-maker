@@ -64,11 +64,11 @@ To make the developing process easier, developers just need to provide necessary
 
 ### Prerequisites
 
-Though if-maker can help you to build a text-based game, you still have to know:
+Though if-maker can help you to build text-based games, you still have to know:
 - Basic programming with python3(built-in data structure, control flow, function).
 - Basic data format of YAML file.
 - Basic data format of XML file.
-- Usage of [refdict](https://pypi.org/project/refdict/).
+- Usage of [refdict](https://pypi.org/project/refdict/) in python.
 
 ## Install
 
@@ -81,8 +81,7 @@ Though if-maker can help you to build a text-based game, you still have to know:
 
 ### Download
 
-- Download [`ifm.py`](https://raw.githubusercontent.com/DiscreteTom/if-maker/master/ifm.py) in the root folder of the repository, then run `python3 ifm.py install`(network access is needed).
-- Or, download `ifm.py` and `src/*` in the root folder of the repository.
+[Click me](https://github.com/DiscreteTom/if-maker/releases/latest/download/if-maker.zip) to download from github [releases](https://github.com/DiscreteTom/if-maker/releases).
 
 ### Tools
 
@@ -212,8 +211,8 @@ include:
 ```
 
 Every IFD file can contain many items, every item has these attributes:
-- id - The identifier in your [scripts](#Scripts). You can reference an item using `items['itemID']`. See [Built-in Content](#Built-in-Content).
-- name - The name is used to be displayed on [shell](#Shell). You can change the name of any item during the game, but do not change its id.
+- id - The identifier of an item in your [scripts](#Scripts). You can reference an item using `items['itemID']`. See [Built-in Content](#Built-in-Content).
+- name - The name is used to be displayed in [shell](#Shell). You can change the name of any item during the game, but do not change its id.
 - description
 - onMount & onUnmount - Python scripts that will be executed when this item is [mounted & unmounted](#Mount--Unmount) to [shell](#Shell). The `|` and `^` are not the part of python code. Please see the examples below to make sure your indentation of code is right.
 - actions - Every action has two attributes: name and code. The code are the same format as the code in onMount & onUnmount. See [Action](#Action).
@@ -273,7 +272,7 @@ Then you can use this class in your items.
 
 Classes of your project are stored in `_classes` folder. The entry file is `_classes/index.ifd`. You can `include` other class files in index file.
 
-Just like items, every class also has an attribute called `classes`, so every class can contain other classes. When merging two classes, the current class is the `higher`, and the contained class is `lower`. See [IFD Merging Rules](#Merge-Rules).
+Just like items, every class also has an attribute called `classes`, so every class can contain other classes. When merging two classes, the current class is the `higher`, and the contained class is the `lower`. See [IFD Merging Rules](#Merge-Rules).
 
 When merging an item and it's classes, the items is the `higher` and the classes are the `lower`. See [IFD Merging Rules](#Merge-Rules).
 
@@ -283,17 +282,18 @@ To avoid conflicts, attributes of the `data` attribute in class should be well n
 
 Modules are project-independent classes, items and configs. You can reuse them in many projects.
 
-Modules are stored in `_modules` folder as sub-folders. Every module contains an `item.ifd` file, a `classes.ifd` file, and a `config.yml` file. For example, if we have a module named `test`, the folder structure of `_modules` should be like this:
+Modules are stored in `_modules` folder as sub-folders. The name of sub-folders are the name of modules. Every module can contain an `items.ifd` file, a `classes.ifd` file, a `scripts.py` file and a `config.yml` file. For example, if we have a module named `test`, the folder structure of `_modules` could be like this:
 
 ```
 _modules
 └───test
         classes.ifd
         items.ifd
+        scripts.py
         config.yml
 ```
 
-You have to add module names in `config['make.modules']` to activate these modules.
+You have to add module names in `config['make.modules']` to activate these modules before running `ifm make`.
 
 When merging items and classes, the project items and classes are the `higher` and the module items and classes are the `lower`. See [IFD Merging Rules](#Merging-Rules).
 
@@ -334,7 +334,7 @@ player:
       - '@apple'
       - '@red-potion'
     weapon: '@sword'
-    attack: '@player.weapon.attack'
+    attack: '@player.weapon.data.attack'
     me: '@player'
 
 apple:
@@ -353,9 +353,11 @@ sword:
     value: 50
 ```
 
+Then the value of `items['player.data.attack']` will be `123`.
+
 ### Self-Reference
 
-You can use the keyword this in action's `name` and `code` as a reference of current item. In `action.name`, `this` will be replaced by the item's `name`. In `action.code`, `this` will be replaced by `items('itemID')`. Here is an example:
+You can use the keyword `this` in action's `name` and `code` as a reference of current item. In `action.name`, `this` will be replaced by the item's `name`. In `action.code`, `this` will be replaced by `items('itemID')`. Here is an example:
 
 ```yaml
 NPC-1:
@@ -375,6 +377,8 @@ NPC-1:
 ```
 
 During the game, when you input `who is DiscreteTom`, if this item is [mounted](#mount--unmount) to [shell](#shell) and there is no naming conflicts, the action `who is this` will be triggered.
+
+For more information about actions, see [Action](#action).
 
 ### IFD Merging Rules
 
@@ -404,9 +408,9 @@ IFT files are based on XML, but IFT files are not valid XML files. To make it si
 
 In [VSCode](https://code.visualstudio.com/), we developed an extension [ift-highlighter](https://marketplace.visualstudio.com/items?itemName=DiscreteTom.ift-highlighter) to optimize your developing experience.
 
-Every IFT file consists many **stories**. Every story has an ID, you can print your story by using `printStory`. See [Built-in Content](#Built-in-Content).
+Every IFT file consists many **stories**. Every story has an ID, you can print your story by using `printStory(storyID)`. See [Built-in Content](#Built-in-Content).
 
-The stories are stored in `_stories` folder. The `_stories/index.ift` is the entry file. You can include other IFT files by adding `#include filename` at the top of IFT files. The `filename` should not contain blank characters.
+The stories are stored in `_stories` folder. The `_stories/index.ift` is the entry file. You can include other IFT files by adding `#include filename` at the top of IFT files. You can include many other IFT files just like writing `#include filename1 filename2 ...` in one line.
 
 ### Supported Elements
 
@@ -414,7 +418,7 @@ The stories are stored in `_stories` folder. The `_stories/index.ift` is the ent
 - `<if condition="">content</if>` - The content will take effect if `condition` returns true.
 - `<while condition="">content</while>` - The content will take effect while `condition` returns true.
 - `<code>content</code>` - Run `content` as python code.
-- `<input prompt="">dest</input>` - Get user input and store it in `dest`. You can only access `dest` in the same context of this `input` element.
+<!-- - `<input prompt="">dest</input>` - Get user input and store it in `dest`. You can only access `dest` in the same context of this `input` element. -->
 
 ### Value Reference in IFT
 
@@ -456,7 +460,7 @@ If you want to set indentation of your story, you can use `config['system.print.
       game['tmp'] = config['system.print.indent']
       config['system.print.indent'] = '    '
     </code>
-    There are 4 spaced at the beginning of this line.
+    There are 4 spaces at the beginning of this line.
     <code>
       config['system.print.indent'] = game['tmp']
     </code>
@@ -468,36 +472,52 @@ If you print this story, the result is:
 
 ```
 Hello world.
-    There are 4 spaced at the beginning of this line.
+    There are 4 spaces at the beginning of this line.
 ```
 
 ## Scripts
 
 ### Description of Scripts
 
-You can run any python code in if-maker.
+You can run any python3 code in if-maker.
 
 All your scripts should be stored in `_scripts` folder. After you [creating a new project](#Create-a-project), their will be 2 files in `_scripts` folder:
 - `ifmu.py`
 - `main.py`
 
-The `ifmu.py` contains the code completion information of [built-in content](#Built-in-Content) of if-maker, so it will be ignored when compiling your project. The `main.py` contains the default entry function `ifmain`. You can change the default entry function in `config['system.entry']`, see [Config your project](#Config-your-project).
+The `ifmu.py` contains the code completion information of [built-in content](#Built-in-Content) of if-maker, so it will be **ignored** when compiling your project. The `main.py` contains the default entry function `ifmain`. You can change the default entry function in `config['system.entry']`, see [Config your project](#Config-your-project).
 
-There is no entry file. All files in `_scripts` folder except `ifmu.py` will be merged into an output script file. The output script will remove all `from ifmu import *`.
+There is no entry file. All files in `_scripts` folder and in module folders (except `ifmu.py`) will be merged into an output script file. The output script will remove all `from ifmu import *`.
 
 In script files you can do anything you want to do. You can also define classes there.
 
-If you want to call something in these scripts, for example you write a function named `func`, then you can directly call it in IFT and IFD.
+If you want to call something in these scripts, for example you write a function named `func`, then you can directly call it in IFT and IFD. Here are examples:
+
+```yaml
+itemID:
+  actions:
+    - name: 'test'
+      code: |
+        func()
+        ^
+```
+
+```xml
+<story id="0">
+  <code>func()</code>
+  My name is {{ func() }}.
+</story>
+```
 
 ### Built-in Content
 
-You can find all information of built-in content in `ifmu.py`.
-
-<details>
-<summary>ifmu.py</summary>
-
 ```python
 from refdict import refdict
+
+items = refdict({})
+config = refdict({})
+game = refdict({}) # store user defined global data
+completer = set()
 
 def printf(*values: str, **kwargs):
 	'''
@@ -550,14 +570,11 @@ def unmount(*items):
 	- `dict` as an existing item
 	'''
 
-items = refdict({})
-config = refdict({})
-game = refdict({}) # store user defined global data
-completer = set()
-
-def findItem(itemName: str):
+def findItem(itemName: str, className = ''):
 	'''
 	return item ID. if item ID is not found, return None
+
+	`className` is a class name
 	'''
 
 def save(fileName: str):
@@ -579,8 +596,11 @@ def start():
 
 def newGame():
 	'''
-	start a new game, print story: `config['system.story.first']`, load data and loop
+	start a new game, load data, print story: `config['system.story.first']` and loop
 	'''
+	load()
+	printStory(data.config['system.story.first'])
+	loop()
 
 def loop():
 	'''
@@ -592,8 +612,6 @@ def run(code: str, params = {}):
 	run `code` in ifm environment
 	'''
 ```
-
-</details>
 
 ## Shell
 
@@ -616,9 +634,9 @@ player:
         ^
     - name: 'to (where)'
       code: |
-        if ('@' + where) in this['data.location.data.neighbors']:
+        if ('@' + where['id']) in this['data.location.data.neighbors']:
           unmount(this['data.location'])
-          this['data.location'] = '@' + where
+          this['data.location'] = '@' + where['id']
           mount(this['data.location'])
         ^
 
@@ -663,7 +681,7 @@ Every action has two attributes: `name` and `code`.
 
 The keyword `this` in `name` will stand for the item's name. The variable `this` in `code` will stand for the item itself. See [Self-Reference](#self-reference).
 
-If a command contains some items' name and these items are not mounted to shell, you can use `(param: className)` in `name` to catch it. The `param` will be assigned to the matched item's id. Here is an example:
+If a command contains some items' name and these items are not mounted to shell, you can use `(param: className)` in `name` to catch it. The `param` will be assigned to the matched item. Here is an example:
 
 ```yaml
 player:
@@ -672,9 +690,9 @@ player:
   actions:
     - name: 'to (where: location)'
       code: |
-        if ('@' + where) in this['data.location.data.neighbors']:
+        if ('@' + where['id']) in this['data.location.data.neighbors']:
           unmount(this['data.location'])
-          this['data.location'] = '@' + where
+          this['data.location'] = '@' + where['id']
           mount(this['data.location'])
         ^
 home:
@@ -689,6 +707,17 @@ shop:
   data:
     neighbors:
       - '@home'
+```
+
+You can use `[param]` to catch any string like this:
+
+```yaml
+player:
+  actions:
+    - name: 'load [filename]'
+      code: |
+        load(filename)
+        ^
 ```
 
 ### Tab Completion
