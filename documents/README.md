@@ -533,10 +533,14 @@ def printStory(story_id: str) -> bool:
 	return False if story_id is not found in story file
 	'''
 
-def printItemList(l: list, skip = True, indent = '- ', sep = '\n', end = '\n'):
+def printItemList(*itemID, **kw):
 	'''
-	`l` should be a list of item id, print those names
-	'''
+	`printItemList(itemID, ..., skip=config['system.print.skip'], indent='- ', sep='\\n', end='\\n')`
+
+	`itemID` can be:
+	- A list of itemID
+	- A string as an item ID
+  '''
 
 def parse(cmd: str):
 	'''

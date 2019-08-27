@@ -1,5 +1,10 @@
 from refdict import refdict
 
+items = refdict({})
+config = refdict({})
+game = refdict({}) # store user defined global data
+completer = set()
+
 def printf(*values: str, **kwargs):
 	'''
 	`printf(values, ..., skip = config['system.print.skip'], sep = ' ', end = '\\n', indent = config['system.print.indent'])`
@@ -14,10 +19,14 @@ def printStory(story_id: str) -> bool:
 	return False if story_id is not found in story file
 	'''
 
-def printItemList(l: list, skip = True, indent = '- ', sep = '\n', end = '\n'):
+def printItemList(*itemID, **kw):
 	'''
-	`l` should be a list of item id, print those names
-	'''
+	`printItemList(itemID, ..., skip=config['system.print.skip'], indent='- ', sep='\\n', end='\\n')`
+
+	`itemID` can be:
+	- A list of itemID
+	- A string as an item ID
+  '''
 
 def parse(cmd: str):
 	'''
@@ -51,14 +60,11 @@ def unmount(*items):
 	- `dict` as an existing item
 	'''
 
-items = refdict({})
-config = refdict({})
-game = refdict({}) # store user defined global data
-completer = set()
-
-def findItem(itemName: str):
+def findItem(itemName: str, className = ''):
 	'''
 	return item ID. if item ID is not found, return None
+
+	`className` is a class name
 	'''
 
 def save(fileName: str):
@@ -80,8 +86,11 @@ def start():
 
 def newGame():
 	'''
-	start a new game, print story: `config['system.story.first']`, load data and loop
+	start a new game, load data, print story: `config['system.story.first']` and loop
 	'''
+	load()
+	printStory(data.config['system.story.first'])
+	loop()
 
 def loop():
 	'''

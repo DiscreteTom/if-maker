@@ -117,10 +117,25 @@ def __parseElement(el: ElementTree.Element, skip: bool) -> bool:
 		run(el.text, localData)
 	return skip
 
-def printItemList(l: list, skip = True, indent = '- ', sep = '\n', end = '\n'):
+def printItemList(*itemID, **kw):
 	'''
-	`l` should be a list of item id, print those names
+	`printItemList(itemID, ..., skip=config['system.print.skip'], indent='- ', sep='\\n', end='\\n')`
+
+	`itemID` can be:
+	- A list of itemID
+	- A string as an item ID
 	'''
+	skip = kw.get('skip', data.config['system.print.skip'])
+	indent = kw.get('indent', '- ')
+	sep = kw.get('sep', '\n')
+	end = kw.get('end', '\n')
+	l = []
+	for i in itemID:
+		if isinstance(i, list):
+			l += i
+		elif isinstance(i, str):
+			l.append(i)
+		# TODO: error handle if i is not a list or str
 	for i in range(len(l)):
 		itemID = l[i]
 		if itemID.startswith('@'):
