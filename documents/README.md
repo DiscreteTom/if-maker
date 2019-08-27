@@ -661,7 +661,7 @@ The `onMount` and `onUnmount` attribute are hooks of mount and unmount action. T
 
 Every action has two attributes: `name` and `code`.
 
-The keyword `this` in `name` will stand for the item's name. The variable `this` in `code` will stand for the item itself. See [Sefl-Reference](#self-reference).
+The keyword `this` in `name` will stand for the item's name. The variable `this` in `code` will stand for the item itself. See [Self-Reference](#self-reference).
 
 If a command contains some items' name and these items are not mounted to shell, you can use `(param: className)` in `name` to catch it. The `param` will be assigned to the matched item's id. Here is an example:
 
